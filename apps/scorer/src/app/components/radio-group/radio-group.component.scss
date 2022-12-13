@@ -1,0 +1,67 @@
+@import "../../../theming";
+
+scorer-radio-group {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    border: none;
+    outline: none;
+    margin: 0;
+    padding: 0;
+
+    > legend:first-child {
+        position: absolute;
+        bottom: 200%;
+    }
+
+    > input[type=radio] {
+        position: absolute;
+        bottom: 200%;
+    }
+
+    > label {
+        display: block;
+        flex: 1 0 auto;
+        text-align: center;
+        background-color: $button-color;
+        border: $element-border;
+        line-height: 1.75em;
+        white-space: nowrap;
+        padding: 0 4px;
+        cursor: pointer;
+
+        &:first-of-type {
+            border-top-left-radius: $border-radius;
+            border-bottom-left-radius: $border-radius;
+        }
+
+        &:not(:first-of-type) {
+            margin-left: -1px;
+        }
+
+        &:last-of-type {
+            border-top-right-radius: $border-radius;
+            border-bottom-right-radius: $border-radius;
+        }
+    }
+
+    > input[type=radio][disabled] + label {
+        cursor: default;
+        opacity: 0.6
+    }
+
+    > input[type=radio]:checked + label {
+        background-color: $accent-color;
+        color: $contrast-text;
+    }
+
+    > input[type=radio]:active:not([disabled]) + label {
+        background-color: $accent-color-lighter;
+        color: $contrast-text;
+    }
+
+    > input[type=radio]:focus:not([disabled]) + label {
+        z-index: 20;
+        border-color: $accent-color-lighter;
+    }
+}

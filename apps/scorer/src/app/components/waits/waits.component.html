@@ -1,0 +1,19 @@
+<section>
+    <h2>Waits</h2>
+    <output *ngFor="let wait of state.possibleWaits">
+        <scorer-tile [tile]="wait.tile"></scorer-tile>
+        <scorer-mahjong [mahjong]="wait.result.mahjong"></scorer-mahjong>
+        <div *ngIf="!wait.result.yaku.length; else scoreOuput" class="scorer-waits__no-yaku">
+            No yaku
+        </div>
+        <ng-template #scoreOuput>
+            <div>
+                {{
+                    wait.result.payment.limit
+                    ? wait.result.payment.limit
+                    : wait.result.totalHan + ' Han / ' + wait.result.totalFu + ' Fu'
+                }}
+            </div>
+        </ng-template>
+    </output>
+</section>

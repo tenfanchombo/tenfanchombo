@@ -1,0 +1,15 @@
+{
+  "name": "@riichi/server-core",
+  "version": "0.1.0",
+  "description": "Core server library for Riichi",
+  "keywords": [
+    "riichi"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/noggin182/riichi/libs/server-core"
+  },
+  "author": "Matthew Gregory",
+  "license": "MIT",
+  "homepage": "https://github.com/noggin182/riichi#readme"
+}

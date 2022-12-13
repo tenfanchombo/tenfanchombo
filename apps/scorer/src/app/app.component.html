@@ -1,0 +1,27 @@
+<header>
+    <h1>Riichi Scorer</h1>
+    <!-- <mat-button-toggle-group aria-label="Language" [(value)]="state.currentLanguage">
+        <mat-button-toggle [value]="0">EN</mat-button-toggle>
+        <mat-button-toggle [value]="1">JP</mat-button-toggle>
+    </mat-button-toggle-group> -->
+</header>
+
+<aside>
+    <section>
+        <h3>Options</h3>
+        <scorer-options></scorer-options>
+    </section>
+</aside>
+
+<main>
+    <scorer-palette></scorer-palette>
+
+    <scorer-hand></scorer-hand>
+
+    <scorer-computed-hand *ngFor="let scoredHand of state.winningResults || []; let index = index"
+        [index]="index"
+        [scoredHand]="scoredHand"
+    ></scorer-computed-hand>
+
+    <scorer-waits *ngIf="state.possibleWaits && state.possibleWaits.length" [waits]="state.possibleWaits"></scorer-waits>
+</main>

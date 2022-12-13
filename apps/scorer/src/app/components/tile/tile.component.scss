@@ -1,0 +1,60 @@
+@mixin sizes($height) {
+    padding: ceil($height / 10) floor($height / 10 * 3/4);
+    &:before {
+        height: $height;
+        width: ceil($height * 3/4);
+    }
+    &[data-rotated]:before {
+        margin: ($height - ceil($height * 3/4)) / -2 0 ;
+        width: $height;
+    }
+}
+
+scorer-tile                  { @include sizes(50px); }
+scorer-tile[data-size=small] { @include sizes(40px); }
+scorer-tile[data-size=tiny]  { @include sizes(12px); }
+
+scorer-tile {
+    display: inline-flex;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    background: linear-gradient(to bottom, #fff 0%, #F5F5F5 100%);
+    border-radius: 8%/6%;
+    border-width: 1px;
+    border-color: #ccc;
+    border-style: solid;
+}
+
+scorer-tile[data-final] {
+    background: linear-gradient(to bottom, #eff8ff 0%, #cfeaff 100%);
+}
+
+scorer-tile[data-rotated]:before {
+    transform: rotate(90deg);
+}
+
+scorer-tile:before {
+    content: "";
+    background-size: contain;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+};
+
+scorer-tile span {
+    position: absolute;
+    bottom: 100%;
+}
+
+$tiles:
+    'Man1', 'Man2', 'Man3', 'Man4', 'Man5', 'Man6', 'Man7', 'Man8', 'Man9',
+    'Sou1', 'Sou2', 'Sou3', 'Sou4', 'Sou5', 'Sou6', 'Sou7', 'Sou8', 'Sou9',
+    'Pin1', 'Pin2', 'Pin3', 'Pin4', 'Pin5', 'Pin6', 'Pin7', 'Pin8', 'Pin9',
+    'Ton',  'Nan',  'Shaa', 'Pei',
+    'Chun', 'Hatsu', 'Haku';
+
+@each $tile in $tiles {
+    scorer-tile[data-tile=#{$tile}]:before {
+        background-image: url('/assets/riichi-mahjong-tiles/Regular/#{$tile}.svg');
+    }
+}

@@ -1,0 +1,24 @@
+<section>
+    <h2>Available Tiles</h2>
+
+    <scorer-radio-group
+        title="Style"
+        name="tileStyle"
+        [options]="styles"
+        [(ngModel)]="state.appendStyle"
+    ></scorer-radio-group>
+
+    <scorer-radio-group
+        title="Claimed from"
+        name="claimedFrom"
+        [options]="claims"
+        [(ngModel)]="state.fromSeat"
+        [disabled]="state.appendStyle === styles[0].value"
+    ></scorer-radio-group>
+
+    <ul>
+        <li *ngFor="let tile of allTiles">
+            <button scorer-tile-button [tile]="tile" (click)="state.appendTile(tile)"></button>
+        </li>
+    </ul>
+</section>
