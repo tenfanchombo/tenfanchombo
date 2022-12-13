@@ -5,8 +5,7 @@ import {
     createMoveProxy,
     moveValidators
 } from "@riichi/server-core";
-import { GameService, MoveFunctions, PlayerIndex } from '@riichi/game-core';
-
+import { GameService, PlayerIndex } from '@riichi/game-core';
 
 export class TestServer {
     constructor() {

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, ViewEncapsulation } from '@angular/core';
 import { Wind } from '@riichi/common';
-import { TestServer } from '@riichi/test-server';
+import { TestServer } from './test-server';
 import { TableComponent } from './table/table.component';
 import { filterLogType, GameService, LogEntry, LogEntryType, PlayerIndex } from '@riichi/game-core';
 import { PlayerSelectComponent } from './player-select/player-select.component';
