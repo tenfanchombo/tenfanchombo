@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SeatComponent } from "../seat/seat.component";
-import { GameService, PlayerIndex } from '@riichi/game-core';
+import { GameService, PlayerIndex } from '@tenfanchombo/game-core';
 
 @Component({
     selector: 'rth-table',

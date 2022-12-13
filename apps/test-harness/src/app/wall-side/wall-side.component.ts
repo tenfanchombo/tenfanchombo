@@ -13,9 +13,9 @@ import {
     PipeTransform,
     OnDestroy} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Tile, UnknownTile } from '@riichi/common';
-import { TileComponent } from '@riichi/components';
-import { DECK_SIZE, filterLogType, GameService, LogEntry, LogEntryType, PlayerIndex, TileIndex } from '@riichi/game-core';
+import { Tile, UnknownTile } from '@tenfanchombo/common';
+import { TileComponent } from '@tenfanchombo/components';
+import { DECK_SIZE, filterLogType, GameService, LogEntry, LogEntryType, PlayerIndex, TileIndex } from '@tenfanchombo/game-core';
 import { BehaviorSubject, filter, map, Observable, Subscription, scan } from 'rxjs';
 import { TileClickBehaviour, TILE_CLICK_BEHAVIOUR } from '../state/state';
 

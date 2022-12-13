@@ -12,7 +12,7 @@ import {
     RelativeSeat,
     relativeSeatToWind,
     MeldKind
-} from '@riichi/common';
+} from '@tenfanchombo/common';
 
 export enum AppendStyle {
     Concealed,

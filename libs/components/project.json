@@ -1,7 +1,7 @@
 {
   "projectType": "library",
   "sourceRoot": "libs/components/src",
-  "prefix": "riichi",
+  "prefix": "tfc",
   "targets": {
     "build": {
       "executor": "@nrwl/angular:package",

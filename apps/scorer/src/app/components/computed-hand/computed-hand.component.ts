@@ -1,5 +1,5 @@
 import { Component, Input, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
-import { ScoredHand } from '@riichi/common';
+import { ScoredHand } from '@tenfanchombo/common';
 import { State } from '../../state';
 
 @Component({

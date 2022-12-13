@@ -1,5 +1,5 @@
 {
-  "name": "@riichi/game-core",
+  "name": "@tenfanchombo/game-core",
   "version": "0.1.0",
   "description": "Core game library for Riichi",
   "keywords": [
@@ -7,9 +7,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/noggin182/riichi/libs/game-core"
+    "url": "https://github.com/tenfanchombo/tenfanchombo.git",
+    "directory": "libs/game-core"
   },
   "author": "Matthew Gregory",
   "license": "MIT",
-  "homepage": "https://github.com/noggin182/riichi#readme"
+  "homepage": "https://github.com/tenfanchombo/tenfanchombo#readme"
 }

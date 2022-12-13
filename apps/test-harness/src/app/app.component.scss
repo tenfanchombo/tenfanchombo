@@ -15,7 +15,7 @@
     }
 }
 
-riichi-tile[data-tile="xx"]:after {
+tfc-tile[data-tile="xx"]:after {
     content: attr(data-tile-index);
     display: block;
     text-align: center;

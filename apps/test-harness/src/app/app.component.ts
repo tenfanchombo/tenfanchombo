@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, ViewEncapsulation } from '@angular/core';
-import { Wind } from '@riichi/common';
+import { Wind } from '@tenfanchombo/common';
 import { TestServer } from './test-server';
 import { TableComponent } from './table/table.component';
-import { filterLogType, GameService, LogEntry, LogEntryType, PlayerIndex } from '@riichi/game-core';
+import { filterLogType, GameService, LogEntry, LogEntryType, PlayerIndex } from '@tenfanchombo/game-core';
 import { PlayerSelectComponent } from './player-select/player-select.component';
 import { BehaviorSubject, skip, take } from 'rxjs';
 import { TileClickBehaviour, TILE_CLICK_BEHAVIOUR } from './state/state';

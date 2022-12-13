@@ -1,5 +1,5 @@
-import { RelativeSeat, relativeSeatToWind, Wind } from "@riichi/common";
-import { GameDocument, ServerConnection } from "@riichi/game-core";
+import { RelativeSeat, relativeSeatToWind, Wind } from "@tenfanchombo/common";
+import { GameDocument, ServerConnection } from "@tenfanchombo/game-core";
 
 import { delay, pairwise } from "rxjs";
 

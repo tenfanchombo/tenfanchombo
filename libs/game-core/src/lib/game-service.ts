@@ -1,4 +1,4 @@
-import { Tile, UnknownTile } from "@riichi/common";
+import { Tile, UnknownTile } from "@tenfanchombo/common";
 import { distinctUntilChanged, map, Observable, ReplaySubject, shareReplay } from "rxjs";
 import { GameDocument, PlayerInfo } from "./documents";
 import { filterLogType, LogEntry, LogEntryType } from "./log-entry";

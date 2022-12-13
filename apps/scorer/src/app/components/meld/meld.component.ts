@@ -1,5 +1,5 @@
 import { Component, Input, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
-import { FinalMeld, OpenMeld } from '@riichi/common';
+import { FinalMeld, OpenMeld } from '@tenfanchombo/common';
 import { State } from '../../state';
 
 @Component({

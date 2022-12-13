@@ -10,7 +10,7 @@ import {
     PlayerIndex,
     PlayerInfo,
     TileIndex
-} from '@riichi/game-core';
+} from '@tenfanchombo/game-core';
 import { InternalGameDocument, InternalPlayerInfo } from "./internal/documents";
 
 export const moveHandlers: {[K in keyof MoveFunctions]: MoveFunctions[K] extends (...args: infer P) => void ? (game: InternalGameDocument, callingPlayer: PlayerIndex, ...args: P) => void : never } = {

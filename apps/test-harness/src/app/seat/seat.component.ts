@@ -9,11 +9,11 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Wind } from '@riichi/common';
+import { Wind } from '@tenfanchombo/common';
 import { DiscardsComponent } from "../discards/discards.component";
 import { WallSideComponent } from "../wall-side/wall-side.component";
 import { HandComponent } from "../hand/hand.component";
-import { GameService, PlayerIndex, TileIndex } from '@riichi/game-core';
+import { GameService, PlayerIndex, TileIndex } from '@tenfanchombo/game-core';
 import { BehaviorSubject } from 'rxjs';
 import { TileClickBehaviour, TILE_CLICK_BEHAVIOUR } from '../state/state';
 

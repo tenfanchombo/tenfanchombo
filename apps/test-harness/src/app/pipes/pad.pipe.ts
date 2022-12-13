@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { TileIndex } from "@riichi/game-core";
+import { TileIndex } from "@tenfanchombo/game-core";
 
 @Pipe({name:'pad', standalone: true})
 export class PadPipe implements PipeTransform {

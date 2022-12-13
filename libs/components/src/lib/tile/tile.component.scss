@@ -1,4 +1,4 @@
-riichi-tile {
+tfc-tile {
     display: inline-block;
     box-sizing: border-box;
     // background-color: linear-gradient(to bottom, #fff 0%, #F5F5F5 100%);
@@ -14,7 +14,7 @@ riichi-tile {
     background-repeat: no-repeat;
     background-position: center;
 
-    &.riichi-tile--rotate {
+    &.tfc-tile--rotate {
         width: 32px;
         height: 24px;
     }

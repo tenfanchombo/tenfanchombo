@@ -1,5 +1,5 @@
 import { Component, ViewEncapsulation } from '@angular/core';
-import { createDummySetOfTiles, RelativeSeat } from '@riichi/common';
+import { createDummySetOfTiles, RelativeSeat } from '@tenfanchombo/common';
 import { State, AppendStyle } from '../../state';
 
 @Component({

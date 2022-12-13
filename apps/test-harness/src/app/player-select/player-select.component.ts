@@ -7,7 +7,7 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PlayerIndex } from '@riichi/game-core';
+import { PlayerIndex } from '@tenfanchombo/game-core';
 
 @Component({
     selector: 'rth-player-select',

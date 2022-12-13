@@ -1,5 +1,5 @@
 import { Component, Input, ChangeDetectionStrategy, HostBinding, ViewEncapsulation } from '@angular/core';
-import { Tile, TileKind, Wind, Dragon, tileRank, tileKind } from '@riichi/common';
+import { Tile, TileKind, Wind, Dragon, tileRank, tileKind } from '@tenfanchombo/common';
 
 @Component({
     selector: 'scorer-tile',

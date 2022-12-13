@@ -13,31 +13,31 @@ rth-wall-side {
     }
 
     &[data-tile-click-behaviour="splitAfter"] {
-        > riichi-tile:nth-child(2n):hover {
+        > tfc-tile:nth-child(2n):hover {
             z-index: 10;
             box-shadow: -4px 0px 0px 0px rgba(255,0,0,0.75);
         }
     }
 
     &[data-tile-click-behaviour="splitBefore"] {
-        > riichi-tile:nth-child(2n):hover {
+        > tfc-tile:nth-child(2n):hover {
             z-index: 10;
             box-shadow: 4px 0px 0px 0px rgba(255,0,0,0.75);
         }
     }
 
-    > riichi-tile {
+    > tfc-tile {
         flex: 0 0 auto;
         cursor: pointer;
         position: relative;
         z-index: 1;
     }
 
-    > riichi-tile:not([data-tile]) {
+    > tfc-tile:not([data-tile]) {
         visibility: hidden;
     }
 
-    > riichi-tile:nth-child(2n) {
+    > tfc-tile:nth-child(2n) {
         z-index: 2;
         margin-right: -24px;
         top: -4px;
@@ -45,13 +45,13 @@ rth-wall-side {
     }
 
     &.rth-wall-side--ready-to-break {
-        > riichi-tile:nth-child(2n + 1):hover {
+        > tfc-tile:nth-child(2n + 1):hover {
             z-index: 10;
             box-shadow: -4px 0px 0px 0px rgba(255,0,0,0.75);
         }
     }
 
-    > riichi-tile.rth-wall-side__tile--split-after {
+    > tfc-tile.rth-wall-side__tile--split-after {
         margin-left: 10px;
     }
 }

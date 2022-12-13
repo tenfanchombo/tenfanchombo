@@ -1,5 +1,5 @@
-import { createNewDeck, randomNumberGenerator, Wind } from "@riichi/common";
-import { GameDocument, MoveFunctions } from "@riichi/game-core";
+import { createNewDeck, randomNumberGenerator, Wind } from "@tenfanchombo/common";
+import { GameDocument, MoveFunctions } from "@tenfanchombo/game-core";
 import { InternalGameDocument, InternalPlayerInfo } from "./internal/documents";
 import { moveHandlers } from "./move-handler";
 import { DocumentStore } from "./stores";

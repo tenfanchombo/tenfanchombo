@@ -1,5 +1,5 @@
 {
-  "name": "@riichi/components",
+  "name": "@tenfanchombo/components",
   "version": "0.1.0",
   "description": "Core library for Riichi",
   "keywords": [
@@ -7,11 +7,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/noggin182/riichi/libs/components"
+    "url": "https://github.com/tenfanchombo/tenfanchombo.git",
+    "directory": "libs/components"
   },
   "author": "Matthew Gregory",
   "license": "MIT",
-  "homepage": "https://github.com/noggin182/riichi#readme",
+  "homepage": "https://github.com/tenfanchombo/tenfanchombo#readme",
   "peerDependencies": {
     "@angular/common": "^15.0.0",
     "@angular/core": "^15.0.0"

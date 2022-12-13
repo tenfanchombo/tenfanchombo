@@ -1,4 +1,4 @@
-import { Wind } from "@riichi/common";
+import { Wind } from "@tenfanchombo/common";
 import {
     calculateStartOfWall,
     calculateWallFromDiceValue,
@@ -13,7 +13,7 @@ import {
     findLastInLedger,
     findAllInLedger,
     CallType
- } from "@riichi/game-core";
+ } from "@tenfanchombo/game-core";
 
 export const moveValidators: {[K in keyof MoveFunctions]: MoveFunctions[K] extends (...args: infer P) => void ? (game: GameDocument, callingPlayer: PlayerIndex, ...args: P) => (true | string) : never } = {
 

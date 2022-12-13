@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Wind } from '@riichi/common';
+import { Wind } from '@tenfanchombo/common';
 
 @Pipe({
     name: 'wind'

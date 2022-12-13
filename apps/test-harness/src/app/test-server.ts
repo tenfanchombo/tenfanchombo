@@ -4,8 +4,8 @@ import {
     DocumentStore,
     createMoveProxy,
     moveValidators
-} from "@riichi/server-core";
-import { GameService, PlayerIndex } from '@riichi/game-core';
+} from "@tenfanchombo/server-core";
+import { GameService, PlayerIndex } from '@tenfanchombo/game-core';
 
 export class TestServer {
     constructor() {

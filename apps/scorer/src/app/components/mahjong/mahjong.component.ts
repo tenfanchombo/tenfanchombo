@@ -1,5 +1,5 @@
 import { Component, Input, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
-import {  Mahjong } from '@riichi/common';
+import {  Mahjong } from '@tenfanchombo/common';
 
 
 @Component({

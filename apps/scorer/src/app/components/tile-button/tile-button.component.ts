@@ -1,5 +1,5 @@
 import { Component, Input, ViewEncapsulation } from '@angular/core';
-import { Tile } from '@riichi/common';
+import { Tile } from '@tenfanchombo/common';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector

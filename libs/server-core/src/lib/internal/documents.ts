@@ -1,5 +1,5 @@
-import { Tile, Wind } from "@riichi/common";
-import { LogEntry, TileIndex } from '@riichi/game-core';
+import { Tile, Wind } from "@tenfanchombo/common";
+import { LogEntry, TileIndex } from '@tenfanchombo/game-core';
 
 // These interfaces are very similar to the public ones with only a couple 
 // properties different. The big difference comes in it's mutability

@@ -1,6 +1,6 @@
 import { Component, ViewEncapsulation, ChangeDetectionStrategy, Input } from '@angular/core';
 import { State } from '../../state';
-import { Tile, ScoredHand } from '@riichi/common';
+import { Tile, ScoredHand } from '@tenfanchombo/common';
 
 @Component({
     selector: 'scorer-waits',

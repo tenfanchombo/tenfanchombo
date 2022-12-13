@@ -1,4 +1,4 @@
-import { Tile, Wind } from "@riichi/common";
+import { Tile, Wind } from "@tenfanchombo/common";
 import { LogEntry } from "./log-entry";
 
 // ================================================

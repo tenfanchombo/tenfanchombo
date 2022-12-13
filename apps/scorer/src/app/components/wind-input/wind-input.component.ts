@@ -1,6 +1,6 @@
 import { Component, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Wind } from '@riichi/common';
+import { Wind } from '@tenfanchombo/common';
 
 let id = 0;
 

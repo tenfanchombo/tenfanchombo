@@ -5,10 +5,10 @@ import {
     Input,
     ViewEncapsulation,
 } from '@angular/core';
-import { Tile, UnknownTile } from '@riichi/common';
+import { Tile, UnknownTile } from '@tenfanchombo/common';
 
 @Component({
-    selector: 'riichi-tile',
+    selector: 'tfc-tile',
     standalone: true,
     template: '',
     styleUrls: ['./tile.component.scss'],
@@ -24,6 +24,6 @@ export class TileComponent {
     @HostBinding('attr.data-tile')
     @Input() tile: Tile | UnknownTile | undefined;
 
-    @HostBinding('class.riichi-tile--rotate')
+    @HostBinding('class.tfc-tile--rotate')
     @Input() rotated = false;
 }

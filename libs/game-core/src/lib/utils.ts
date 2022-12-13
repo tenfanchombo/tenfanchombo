@@ -1,4 +1,4 @@
-import { Wind } from "@riichi/common";
+import { Wind } from "@tenfanchombo/common";
 import { TileIndex } from "./documents";
 import { findLastInLedger, LogEntry, LogEntryType } from "./log-entry";
 

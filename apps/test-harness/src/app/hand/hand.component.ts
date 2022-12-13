@@ -9,8 +9,8 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TileComponent } from '@riichi/components';
-import { DECK_SIZE, GameService, PlayerIndex, TileIndex } from '@riichi/game-core';
+import { TileComponent } from '@tenfanchombo/components';
+import { DECK_SIZE, GameService, PlayerIndex, TileIndex } from '@tenfanchombo/game-core';
 import { BehaviorSubject } from 'rxjs';
 import { TileClickBehaviour, TILE_CLICK_BEHAVIOUR } from '../state/state';
 import { PadPipe } from '../pipes/pad.pipe';

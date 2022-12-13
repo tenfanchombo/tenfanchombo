@@ -6,8 +6,8 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TileComponent } from '@riichi/components';
-import { GameService, PlayerIndex } from '@riichi/game-core';
+import { TileComponent } from '@tenfanchombo/components';
+import { GameService, PlayerIndex } from '@tenfanchombo/game-core';
 import { PadPipe } from '../pipes/pad.pipe';
 
 @Component({
