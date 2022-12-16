@@ -14,12 +14,22 @@ export interface PlayerInfo {
     readonly avatarUrl: string;
     readonly seatWind: Wind;
     readonly points: number;
-    readonly hand: readonly TileIndex[];
-    readonly discards: readonly TileIndex[];
-    readonly melds: {
-        readonly tiles: readonly TileIndex[];
-        readonly claimedTile?: TileIndex;
-    }[];
+}
+
+export const enum TilePosition {
+    Wall = 'wall',
+    Hand = 'hand',
+    Discards = 'discards',
+    Palm = 'palm',
+    Melds = 'melds',
+}
+
+export interface TileInfo {
+    readonly position: TilePosition;
+    readonly seat: PlayerIndex;
+    readonly index: number;
+    readonly rotated: boolean;
+    readonly tile: Tile | null;
 }
 
 /**
@@ -28,6 +38,6 @@ export interface PlayerInfo {
 export interface GameDocument {
     readonly prevelantWind: Wind;
     readonly players: readonly PlayerInfo[];
-    readonly knownTiles: readonly (Tile | null)[];
+    readonly tiles: readonly TileInfo[];
     readonly ledger: readonly LogEntry[];
 }

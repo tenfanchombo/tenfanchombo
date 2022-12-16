@@ -1,28 +1,22 @@
-import { Tile, Wind } from "@tenfanchombo/common";
-import { LogEntry, TileIndex } from '@tenfanchombo/game-core';
+import { Tile, Wind } from '@tenfanchombo/common';
+import { GameDocument, LogEntry, PlayerIndex, PlayerInfo, TilePosition } from '@tenfanchombo/game-core';
 
 // These interfaces are very similar to the public ones with only a couple 
 // properties different. The big difference comes in it's mutability
 
-export interface InternalPlayerInfo {
-    readonly name: string;
-    readonly id: string;
-    readonly avatarUrl: string;
-    seatWind: Wind;
-    points: number;
-    hand: TileIndex[];
-    discards: TileIndex[];
-    melds: {
-        tiles: TileIndex[];
-        claimedTile?: TileIndex;
-    }[];
-    knownTiles: TileIndex[];
+export interface InternalTileInfo {
+    position: TilePosition;
+    seat: PlayerIndex;
+    index: number;
+    rotated: boolean;
+    readonly tile: Tile;
+    seenBy: readonly PlayerIndex[];
 }
 
 /** The internal state of a game that should never be seen by the client */
-export interface InternalGameDocument {
-    readonly deck: readonly Tile[];
+export interface InternalGameDocument extends GameDocument {
     prevelantWind: Wind;
-    players: readonly InternalPlayerInfo[];
+    readonly players: readonly PlayerInfo[];
+    tiles: InternalTileInfo[];
     ledger: LogEntry[];
 }

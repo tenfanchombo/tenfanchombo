@@ -1,14 +1,29 @@
-<rth-seat
-    *ngFor="let index of seatIndexes"
-    [seat]="index"
-    [gameService]="gameService"
-></rth-seat>
 
-<div style="
-    aspect-ratio: 1/1;
-    place-self: center center;
-    display: flex;
-    align-items: center;
-    justify-content: center;">
-    <ng-content></ng-content>
+<div *ngFor="let index of seatIndexes"
+    style="place-self: stretch; display: flex; align-items: flex-end; padding: 45px 25px"
+    [style.transform]="'rotate(' + index * -90 + 'deg)'"
+    >
+    <ng-container *ngIf="(gameService.players$[index] | async) as playerInfo">
+        {{windChars[playerInfo.seatWind]}}
+        {{playerInfo.name}}
+    </ng-container>
 </div>
+
+<ng-container *ngFor="let placeHolder of placeHolders; let index = index">
+    <tfc-tile
+        [style.pointer-events]="'none'"
+        [style.transform]="placeHolder | tileTransform:index:[]">
+    </tfc-tile>
+</ng-container>
+
+<ng-container *ngFor="let tile$ of gameService.tiles$array; let index = index">
+    <ng-container *ngIf="tile$ | async as tile">
+        <tfc-tile
+            [tile]="tile.tile ?? 'xx'"
+            [attr.data-tile-position]="tile.position"
+            [attr.data-tile-index]="index"
+            [style.transform]="tile | tileTransform:index:((gameService.wallSplits$ | async) ?? [])"
+            (click)="clickTile(index)">
+        </tfc-tile>
+    </ng-container>
+</ng-container>

@@ -1,56 +1,40 @@
 import { createNewDeck, randomNumberGenerator, Wind } from "@tenfanchombo/common";
-import { GameDocument, MoveFunctions } from "@tenfanchombo/game-core";
-import { InternalGameDocument, InternalPlayerInfo } from "./internal/documents";
+import { GameDocument, MoveFunctions, PlayerIndex, PlayerInfo, TilePosition, WALL_SIZE } from "@tenfanchombo/game-core";
+import { InternalGameDocument } from "./internal/documents";
 import { moveHandlers } from "./move-handler";
 import { DocumentStore } from "./stores";
 
-export function serverCore(): string {
-    return 'server-core';
-}
-
-export function createNewGameDocument(players: {name: string, id: string, avatarUrl: string}[], rng: Iterator<number> = randomNumberGenerator()): InternalGameDocument {
-    const startingInfo: Omit<InternalPlayerInfo, 'name'|'id'|'avatarUrl'|'seatWind'> = {
-        points: 1000,
-        hand: [],
-        discards: [],
-        melds: [],
-        knownTiles: [],
-    };
-
+export function createNewGameDocument(players: readonly PlayerInfo[], rng: Iterator<number> = randomNumberGenerator()): InternalGameDocument {
     return {
+        players,
         prevelantWind: Wind.East,
-        players: [
-            {...players[0], ...startingInfo, seatWind: Wind.East},
-            {...players[1], ...startingInfo, seatWind: Wind.South},
-            {...players[2], ...startingInfo, seatWind: Wind.West},
-            {...players[3], ...startingInfo, seatWind: Wind.North},
-        ],
         ledger: [],
-        deck: createNewDeck(rng)
+        tiles: createNewDeck(rng).map((tile, index) => ({
+            position: TilePosition.Wall,
+            seat: Math.floor(index / WALL_SIZE) as PlayerIndex,
+            index: index % WALL_SIZE,
+            rotated: false,
+            tile,
+            seenBy: []
+        }))
     };
 }
 
 export function createPlayerGameDocument(game: InternalGameDocument, playerId: string): GameDocument {
-    const playerIndex = game.players.findIndex(p => p.id === playerId);
-    const knownTiles = game.players[playerIndex].knownTiles;
+    const playerIndex = game.players.findIndex(p => p.id === playerId) as PlayerIndex;
+
     // InternalGameDocument is mutable and also contains properties that we don't want to accidentally store
     // so explicitly copy each property
     return {
         prevelantWind: game.prevelantWind,
-        players: game.players.map(p => ({
-            name: p.name,
-            id: p.id,
-            avatarUrl: p.avatarUrl,
-            seatWind: p.seatWind,
-            points: p.points,
-            hand: [...p.hand],
-            discards: [...p.discards],
-            melds: p.melds.map(m => ({
-                tiles: [...m.tiles],
-                claimedTile: m.claimedTile
-            }))
+        players: game.players,
+        tiles: game.tiles.map(tile => ({
+            position: tile.position,
+            seat: tile.seat,
+            index: tile.index,
+            rotated: tile.rotated,
+            tile: tile.seenBy.includes(playerIndex) ? tile.tile : null
         })),
-        knownTiles:  game.deck.map((tile, index) => knownTiles.includes(index) ? tile : null),
         ledger: [...game.ledger]
     };
 }

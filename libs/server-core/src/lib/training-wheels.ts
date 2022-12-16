@@ -10,9 +10,9 @@ import {
     MoveFunctions,
     PlayerIndex,
     TileIndex,
-    findLastInLedger,
     findAllInLedger,
-    CallType
+    CallType,
+    TilePosition
  } from "@tenfanchombo/game-core";
 
 export const moveValidators: {[K in keyof MoveFunctions]: MoveFunctions[K] extends (...args: infer P) => void ? (game: GameDocument, callingPlayer: PlayerIndex, ...args: P) => (true | string) : never } = {
@@ -68,13 +68,13 @@ export const moveValidators: {[K in keyof MoveFunctions]: MoveFunctions[K] exten
             return 'Please wait until after the dice have been rolled and the wall has been split before taking tiles';
         }
 
-        if (game.players.some(p => p.hand.length < 13 && p.melds.length == 0)) {
-            // we are still dealing, so apply some special handling
-        }
+        // if (game.players.some(p => p.hand.length < 13 && p.melds.length == 0)) {
+        //     // we are still dealing, so apply some special handling
+        // }
 
         const nextTileInWall = nextDrawableTile(game);
         if (tileIndex !== nextTileInWall) {
-            return 'Wrong tile to take';
+            return 'Wrong tile to take: ' + nextTileInWall;
         }
 
         return true;
@@ -96,10 +96,11 @@ export const moveValidators: {[K in keyof MoveFunctions]: MoveFunctions[K] exten
     },
 
     discard(game: GameDocument, callingPlayer: PlayerIndex, tileIndex: TileIndex) {
-        if (!game.players[callingPlayer].hand.includes(tileIndex)) {
+        if (game.tiles[tileIndex].position !== TilePosition.Hand || game.tiles[tileIndex].seat !== callingPlayer) {
             return 'Cannot discard a tile you don\'t have';
         }
-        if (game.players[callingPlayer].hand.length + game.players[callingPlayer].melds.length != 14) {
+        // TODO: consider KAN
+        if (game.tiles.filter(t => t.position !== TilePosition.Wall && t.seat === callingPlayer).length !== 14) {
             return 'Not your turn to discard';
         }
         return true;
@@ -123,15 +124,10 @@ export const moveValidators: {[K in keyof MoveFunctions]: MoveFunctions[K] exten
 }
 
 function nextDrawableTile(game: GameDocument): TileIndex {
-    const takenTiles = Object.values(game.players).map(p => [p.hand, p.discards, p.melds.map(m => m.tiles)]).flat(3);
-
     const firstTile = calculateStartOfWall(getDiceValue(game));
-    if (takenTiles.length === 0) {
-        return firstTile;
-    }
 
     let drawingOrder = new Array(DECK_SIZE).fill(1).map((_, i) => i ^ 1);
-    drawingOrder = [...drawingOrder.slice(firstTile, DECK_SIZE), ...drawingOrder.slice(0, firstTile)];
+    drawingOrder = [...drawingOrder.slice(firstTile ^ 1, DECK_SIZE), ...drawingOrder.slice(0, firstTile ^ 1)];
 
-    return drawingOrder.find(t => !takenTiles.includes(t))!; // TODO: handle empty
+    return drawingOrder.find(t => game.tiles[t].position === TilePosition.Wall)!; // TODO: handle empty
 }

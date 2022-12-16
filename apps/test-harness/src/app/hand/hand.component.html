@@ -1,8 +1,0 @@
-<ng-container *ngIf="gameService.players$[seat] | async as player">
-    <tfc-tile
-        *ngFor="let tile of player.hand | pad:14"
-        [attr.data-tile-index]="tile"
-        [tile]="tile === undefined ? undefined : (gameService.tileValues$[tile] | async) ?? 'xx'"
-        (click)="tile !== undefined && clickTile(tile)"
-    ></tfc-tile>
-</ng-container>

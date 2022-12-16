@@ -1,20 +1,16 @@
 import {
-    calculateStartOfWall,
-    calculateWallFromDiceValue,
     CallType,
-    DECK_SIZE,
-    getDiceValue,
-    LogEntry,
     LogEntryType,
     MoveFunctions,
     PlayerIndex,
-    PlayerInfo,
-    TileIndex
+    TileIndex,
+    TilePosition
 } from '@tenfanchombo/game-core';
-import { InternalGameDocument, InternalPlayerInfo } from "./internal/documents";
+import { InternalGameDocument } from "./internal/documents";
+
+const allPlayers: readonly PlayerIndex[] = [0, 1, 2, 3];
 
 export const moveHandlers: {[K in keyof MoveFunctions]: MoveFunctions[K] extends (...args: infer P) => void ? (game: InternalGameDocument, callingPlayer: PlayerIndex, ...args: P) => void : never } = {
-
     rollDice(game: InternalGameDocument, callingPlayer: PlayerIndex) {
         // TODO: should we store the seed or current w/x in the InternalGameDocument so this is deterministic?
         game.ledger.push({
@@ -37,9 +33,16 @@ export const moveHandlers: {[K in keyof MoveFunctions]: MoveFunctions[K] extends
     },
 
     takeTile(game: InternalGameDocument, callingPlayer: PlayerIndex, tileIndex: TileIndex) {
-        // TODO: ensure tile exists nowhere else
-        game.players[callingPlayer].hand.push(tileIndex);
-        game.players[callingPlayer].knownTiles.push(tileIndex);
+        game.tiles[tileIndex] = {
+            position: TilePosition.Hand,
+            seat: callingPlayer,
+            index: nextIndex(game, TilePosition.Hand, callingPlayer),
+            rotated: false,
+            tile: game.tiles[tileIndex].tile,
+            seenBy: includePlayer(game.tiles[tileIndex].seenBy, callingPlayer)
+        };
+
+        // TODO: reindex player hand if needed
 
         game.ledger.push({
             type: LogEntryType.TookTile,
@@ -50,11 +53,7 @@ export const moveHandlers: {[K in keyof MoveFunctions]: MoveFunctions[K] extends
 
     flipTileInWall(game: InternalGameDocument, callingPlayer: PlayerIndex, tileIndex: TileIndex) {
         // TODO: handle flipping after kan
-        game.players[0].knownTiles.push(tileIndex);
-        game.players[1].knownTiles.push(tileIndex);
-        game.players[2].knownTiles.push(tileIndex);
-        game.players[3].knownTiles.push(tileIndex);
-
+        game.tiles[tileIndex].seenBy = allPlayers;
         // TODO: handle flipping after kan
         game.ledger.push({
             type: LogEntryType.FlippedTileInWall,
@@ -64,18 +63,14 @@ export const moveHandlers: {[K in keyof MoveFunctions]: MoveFunctions[K] extends
     },
 
     discard(game: InternalGameDocument, callingPlayer: PlayerIndex, tileIndex: TileIndex) {
-        // TODO: ensure tile exists nowhere
-        game.players[0].hand = game.players[0].hand.filter(t => t !== tileIndex);
-        game.players[1].hand = game.players[1].hand.filter(t => t !== tileIndex);
-        game.players[2].hand = game.players[2].hand.filter(t => t !== tileIndex);
-        game.players[3].hand = game.players[3].hand.filter(t => t !== tileIndex);
-
-        game.players[callingPlayer].discards.push(tileIndex);
-
-        game.players[0].knownTiles.push(tileIndex);
-        game.players[1].knownTiles.push(tileIndex);
-        game.players[2].knownTiles.push(tileIndex);
-        game.players[3].knownTiles.push(tileIndex);
+        game.tiles[tileIndex] = {
+            position: TilePosition.Discards,
+            seat: callingPlayer,
+            index: nextIndex(game, TilePosition.Discards, callingPlayer),
+            rotated: false,
+            tile: game.tiles[tileIndex].tile,
+            seenBy: allPlayers
+        };
 
         game.ledger.push({
             type: LogEntryType.DiscardedTile,
@@ -101,3 +96,11 @@ export const moveHandlers: {[K in keyof MoveFunctions]: MoveFunctions[K] extends
     },
 }
 
+function includePlayer(players: readonly PlayerIndex[], player: PlayerIndex) {
+    return allPlayers.filter(p => p === player || players.includes(p));
+}
+
+function nextIndex(game: InternalGameDocument, position: TilePosition, seat: PlayerIndex) {
+    const indexes = game.tiles.filter(t => t.position === position && t.seat === seat).map(t => t.index);
+    return indexes.map((_, i) => i).find(i => !indexes.includes(i)) ?? indexes.length
+}

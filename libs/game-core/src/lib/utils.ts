@@ -2,7 +2,8 @@ import { Wind } from "@tenfanchombo/common";
 import { TileIndex } from "./documents";
 import { findLastInLedger, LogEntry, LogEntryType } from "./log-entry";
 
-export const DECK_SIZE = (9 + 9 + 9 + 4 + 3) * 4;
+export const WALL_SIZE = (9 + 9 + 9 + 4 + 3);
+export const DECK_SIZE = WALL_SIZE * 4;
 
 export function calculateWallFromDiceValue(value: number): Wind {
     switch ((value % 4) as 0 | 1 | 2 | 3) {

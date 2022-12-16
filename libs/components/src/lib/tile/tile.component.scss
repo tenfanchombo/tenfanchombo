@@ -21,6 +21,7 @@ tfc-tile {
 
     &:not([data-tile]){
         background-color: transparent;
+        border-color: rgba(255, 255, 255, 0.3);
     }
 
     &[data-tile="xx"] { 

@@ -1,6 +1,5 @@
-import { Tile, UnknownTile } from "@tenfanchombo/common";
-import { distinctUntilChanged, map, Observable, ReplaySubject, shareReplay } from "rxjs";
-import { GameDocument, PlayerInfo } from "./documents";
+import { BehaviorSubject, distinctUntilChanged, map, Observable, ReplaySubject, shareReplay } from "rxjs";
+import { GameDocument, PlayerInfo, TileIndex, TileInfo } from "./documents";
 import { filterLogType, LogEntry, LogEntryType } from "./log-entry";
 import { MoveFunctions } from "./moves";
 import { DECK_SIZE } from "./utils";
@@ -13,53 +12,55 @@ export class GameService {
         public readonly move: MoveFunctions) {
 
         let logSize = 0;
-        const tileValueSubjects$ = new Array(DECK_SIZE).fill(1).map(() => new ReplaySubject<Tile>());
-        this.tileValues$ = tileValueSubjects$.map(s => s.pipe(distinctUntilChanged(), shareReplay(1)));
-        const wallSubjects$ = new Array(DECK_SIZE).fill(1).map(() => new ReplaySubject<Tile | UnknownTile | null>());
-        this.wall$ = wallSubjects$.map(s => s.pipe(distinctUntilChanged(), shareReplay(1)));
+        const tileSubjects$ = new Array(DECK_SIZE).fill(1).map(() => new ReplaySubject<TileInfo>());
+        this.tiles$array = tileSubjects$.map(s => s.pipe(distinctUntilChanged(this.compareTiles), shareReplay(1)));
 
         const playerSubjects$ = new Array(4).fill(1).map(() => new ReplaySubject<PlayerInfo>(1));
         this.players$ = playerSubjects$.map(s => s.pipe(distinctUntilChanged(/* TODO */), shareReplay(1)));
-
+        
+        const wallSplitsSubject$ = new BehaviorSubject<TileIndex[]>([]);
+        this.wallSplits$ = wallSplitsSubject$.asObservable();
 
         gameDocument$.subscribe(doc => {
-            const takenTiles = doc.players.map(p => [p.hand, p.discards, p.melds.map(m => m.tiles)]).flat(3);
-
             for (let i = 0; i < 4; i++) {
                 playerSubjects$[i].next(doc.players[i]);
             }
 
             for (let i = 0; i < DECK_SIZE; i++) {
-                wallSubjects$[i].next(takenTiles.includes(i) ? null : (doc.knownTiles[i] ?? 'xx'))
+                tileSubjects$[i].next(doc.tiles[i]);
             }
 
-            for (let i = 0; i < doc.knownTiles.length; i++) {
-                const tile = doc.knownTiles[i];
-                if (tile !== null) {
-                    tileValueSubjects$[i].next(tile);
-                }
-            }
-    
             for (; logSize < doc.ledger.length; logSize++) {
-                this.logSubject$.next(doc.ledger[logSize]);
+                const lastEntry = doc.ledger[logSize];
+                this.logSubject$.next(lastEntry);
+                if (lastEntry.type === LogEntryType.WallSplit) {
+                    wallSplitsSubject$.next([...wallSplitsSubject$.value, lastEntry.afterTile]);
+                }
             }
         })
     }
 
+    compareTiles(tileInfoA: TileInfo, tileInfoB: TileInfo) {
+        return tileInfoA.position === tileInfoB.position
+            && tileInfoA.seat     === tileInfoB.seat
+            && tileInfoA.index    === tileInfoB.index
+            && tileInfoA.rotated  === tileInfoB.rotated
+            && tileInfoA.tile     === tileInfoB.tile
+    }
+
     private readonly logSubject$ = new ReplaySubject<LogEntry>();
     readonly log$ = this.logSubject$.asObservable();
-
-    readonly wall$: Observable<Tile | UnknownTile | null>[];
     readonly players$: Observable<PlayerInfo>[];
+
+    /**
+     * Array of observables with tile info.
+     * Each entry in the array represents a single tile
+     * */
+    readonly tiles$array: Observable<TileInfo>[];
+    readonly wallSplits$: Observable<TileIndex[]>;
 
     readonly diceValues$: Observable<readonly [number, number]> = this.log$.pipe(
         filterLogType(LogEntryType.DiceRolled),
         map(le => le.values)
     );
-
-    /**
-     * Array of observables with known tile values.
-     * Each entry in the array represents a single tile and will only emit once the tile value is known
-     * */
-    readonly tileValues$: Observable<Tile>[];
 }
