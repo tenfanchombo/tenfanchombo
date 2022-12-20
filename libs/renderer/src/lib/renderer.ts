@@ -221,6 +221,10 @@ export class RiichiRenderer {
         this.camera.aspect = canvas.clientWidth / canvas.clientHeight;
         this.camera.updateProjectionMatrix();
 
+        for (const tile of this.tiles) {
+            tile.animateIfNeeded();
+        }
+
         this.renderer.render(this.scene, this.camera);
 
         requestAnimationFrame(this.render);

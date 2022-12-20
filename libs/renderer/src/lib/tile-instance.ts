@@ -56,7 +56,45 @@ export class TileInstace {
 
     private readonly tile: THREE.Group;
     private readonly texture: THREE.Texture;
-    private readonly normalMap: THREE.Texture
+    private readonly normalMap: THREE.Texture;
+
+    private animationClock?: THREE.Clock;
+    private animationAction?: THREE.AnimationAction;
+
+    private animate(target: THREE.Matrix4) {
+        const position = new THREE.Vector3();
+        const quaternion = new THREE.Quaternion();
+        const scale = new THREE.Vector3();
+        target.decompose(position, quaternion, scale);
+        
+        const animationMixer = new THREE.AnimationMixer(this.tile);
+        animationMixer.timeScale = 3;
+        const positionTrack = new THREE.VectorKeyframeTrack('.position', [0, 1], [
+            ...this.tile.position.toArray(),
+            ...position.toArray(),
+        ]);
+        const quaternionTrack = new THREE.QuaternionKeyframeTrack('.quaternion', [0, 1], [
+            ...this.tile.quaternion.toArray(),
+            ...quaternion.toArray(),
+        ]);
+
+        const animationClip = new THREE.AnimationClip(undefined, 1, [positionTrack, quaternionTrack]);
+        this.animationAction = animationMixer.clipAction(animationClip);
+        this.animationAction.setLoop(THREE.LoopOnce, 1);
+        this.animationAction.clampWhenFinished = true;
+        this.animationAction.play();
+        this.animationClock = new THREE.Clock();
+    }
+
+    animateIfNeeded() {
+        if (this.animationClock && this.animationAction) {
+            this.animationAction.getMixer().update(this.animationClock.getDelta());
+            if (!this.animationAction.enabled) {
+                this.animationAction = undefined;
+                this.animationClock = undefined;
+            }
+        }
+    }
 
     update(info: TileInfo, tileIndex: TileIndex, wallSplits: TileIndex[]) {
         const m = new THREE.Matrix4();
@@ -95,16 +133,7 @@ export class TileInstace {
             }
         }
 
-        this.tile.matrix.identity().decompose(this.tile.position, this.tile.quaternion, this.tile.scale);
-        this.tile.applyMatrix4(m);
-        // m.tra
-
-        // this.tile.matrix.set()
-        // tile2.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), (Math.PI / 2) * x);
-        // tile2.translateZ(200);
-        // tile2.translateX((i - 8.5) * 19);
-        // tile2.position.y = 8.2 + 16;
-        // tile2.rotateX(Math.PI / -2);
+        this.animate(m);
 
         if (info.tile === null) {
             this.texture.offset.set(.9, 0);
@@ -120,11 +149,6 @@ export class TileInstace {
             this.texture.offset.set(v, k);
             this.normalMap.offset.set(v, k);
         }
-
-        // bumpTexture.offset.set((i % 10) * .1, x * .25);
-        // bumpTexture.repeat.set(.1, .25);
-        // text.offset.set((i % 10) * .1, x * .25);
-        // text.repeat.set(.1, .25);
     }
 
     addToScene(scene: THREE.Scene) {
