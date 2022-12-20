@@ -10,7 +10,7 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": ["es2019", "dom"],
+    "lib": ["es2022", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
@@ -19,6 +19,7 @@
       "@tenfanchombo/common": ["libs/common/src/index.ts"],
       "@tenfanchombo/components": ["libs/components/src/index.ts"],
       "@tenfanchombo/game-core": ["libs/game-core/src/index.ts"],
+      "@tenfanchombo/renderer": ["libs/renderer/src/index.ts"],
       "@tenfanchombo/server-core": ["libs/server-core/src/index.ts"]
     }
   },

@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, ViewEncapsulation } from '@angular/core';
-import { Wind } from '@tenfanchombo/common';
 import { TestServer } from './test-server';
 import { TableComponent } from './table/table.component';
 import { filterLogType, GameService, LogEntry, LogEntryType, PlayerIndex } from '@tenfanchombo/game-core';
@@ -8,6 +7,7 @@ import { PlayerSelectComponent } from './player-select/player-select.component';
 import { BehaviorSubject, skip, take } from 'rxjs';
 import { TileClickBehaviour, TILE_CLICK_BEHAVIOUR } from './state/state';
 import { TileClickBehaviourSelectComponent } from './tile-click-behaviour-select/tile-click-behaviour-select.component';
+import { RendererHostComponent } from './renderer-host/renderer-host.component';
 
 
 @Component({
@@ -16,7 +16,8 @@ import { TileClickBehaviourSelectComponent } from './tile-click-behaviour-select
         CommonModule,
         PlayerSelectComponent,
         TileClickBehaviourSelectComponent,
-        TableComponent
+        TableComponent,
+        RendererHostComponent
     ],
     providers: [
         TestServer,
