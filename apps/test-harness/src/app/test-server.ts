@@ -28,7 +28,7 @@ export class TestServer {
             name: 'Player 2',
             id: 'test-p2',
             avatarUrl: '2.png',
-            seatWind: Wind.South,
+            seatWind: Wind.North,
             points: 1000
         }, {
             name: 'Player 3',
@@ -40,7 +40,7 @@ export class TestServer {
             name: 'Player 4',
             id: 'test-p4',
             avatarUrl: '4.png',
-            seatWind: Wind.North,
+            seatWind: Wind.South,
             points: 1000
         }
     ];

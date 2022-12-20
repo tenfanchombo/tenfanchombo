@@ -111,10 +111,21 @@ export class TileInstace {
 
     private lastTileInfo?: TileInfo;
 
+    private shouldLift(info: TileInfo) {
+        if (!this.lastTileInfo) return false;
+        if (info.position === TilePosition.Wall) {
+            return this.lastTileInfo.position !== info.position
+                || this.lastTileInfo.index    !== info.index
+                || this.lastTileInfo.tile     !== info.tile
+        }
+        return this.lastTileInfo.position !== info.position
+            || this.lastTileInfo.index    !== info.index;
+    }
+
     update(info: TileInfo, wallSplits: TileIndex[]) {
         const matrix = this.matrixFromInfo(info, wallSplits);
 
-        this.animate(matrix, !this.lastTileInfo || this.lastTileInfo.position !== info.position || this.lastTileInfo.index !== info.index || this.lastTileInfo.tile !== info.tile ? TILE_HEIGHT * 2 : 0);
+        this.animate(matrix, this.shouldLift(info) ? TILE_HEIGHT * 2 : 0);
 
         this.lastTileInfo = {...info};
 

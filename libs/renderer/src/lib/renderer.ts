@@ -1,11 +1,17 @@
-import { DECK_SIZE, TileIndex, TileInfo } from '@tenfanchombo/game-core';
+import { DECK_SIZE, PlayerIndex, TileIndex, TileInfo } from '@tenfanchombo/game-core';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { TileInstace } from './tile-instance';
 
 export class RiichiRenderer {
-    constructor(private readonly canvas: HTMLCanvasElement) {
+    static async create(canvas: HTMLCanvasElement) {
+        const renderer = new RiichiRenderer(canvas);
+        await renderer.loadScene();
+        return renderer;
+    }
+
+    private constructor(private readonly canvas: HTMLCanvasElement) {
         this.renderer = new THREE.WebGLRenderer({
             canvas: canvas,
             antialias: true
@@ -90,28 +96,50 @@ export class RiichiRenderer {
         light.shadow.camera.top = -600;
         light.shadow.camera.bottom = 600;
 
+        /*
         const helper = new THREE.DirectionalLightHelper(light);
         this.scene.add(helper);
 
         const cameraHelper = new THREE.CameraHelper(light.shadow.camera);
         this.scene.add(cameraHelper);
+        */
 
         const fov = 45;
         const near = 0.1;
         const far = 100000000;
 
-
         this.camera = new THREE.PerspectiveCamera(fov, canvas.clientWidth / canvas.clientHeight, near, far);
         this.camera.updateProjectionMatrix();
         this.camera.position.set(0, 650, 450);
 
-        const controls = new OrbitControls(this.camera, canvas);
-        controls.target.set(0, 0, 0);
-        controls.update();
+        this.controls = new OrbitControls(this.camera, canvas);
+        this.controls.target.set(0, 0, 0);
+        this.controls.update();
+
+        this.moveToSeat(0);
 
         this.render();
+    }
 
-        this.loadScene();
+    moveToSeat(seat: PlayerIndex) {
+        // this.controls.reset();
+
+        // this.controls.set
+        switch (seat) {
+            case 0: this.camera.position.set(0, 650, 450); break;
+            case 1: this.camera.position.set(-450, 650, 0); break;
+            case 2: this.camera.position.set(0, 650, -450); break;
+            case 3: this.camera.position.set(450, 650, 0); break;
+        }
+        
+        this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+/*
+        this.camera.position.set(0, 650, 450);
+        this.camera.quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), seat * Math.PI / -2);
+        this.camera.updateProjectionMatrix();
+
+        this.controls.target.set(0, 0, 0);
+        this.controls.update();*/
     }
 
     updateTile(index: number, tileInfo: TileInfo, splits: TileIndex[]) {
@@ -133,6 +161,7 @@ export class RiichiRenderer {
     }
 
     private readonly objLoader = new OBJLoader();
+    private readonly controls: OrbitControls;
     private readonly textureLoader = new THREE.TextureLoader();
     private readonly renderer: THREE.WebGLRenderer;
     private readonly camera: THREE.PerspectiveCamera;

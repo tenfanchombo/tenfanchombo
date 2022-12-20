@@ -1,7 +1,7 @@
 
 <div *ngFor="let index of seatIndexes"
-    style="place-self: stretch; display: flex; align-items: flex-end; padding: 45px 25px"
-    [style.transform]="'rotate(' + index * -90 + 'deg)'"
+    style="place-self: stretch; display: flex; align-items: flex-end; padding: 45px 25px; color:white"
+    [style.transform]="'rotate(' + index * 90 + 'deg)'"
     >
     <ng-container *ngIf="(gameService.players$[index] | async) as playerInfo">
         {{windChars[playerInfo.seatWind]}}

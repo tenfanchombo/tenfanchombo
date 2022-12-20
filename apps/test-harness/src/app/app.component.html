@@ -1,6 +1,6 @@
-<rth-renderer-host [gameService]="activeConnection"></rth-renderer-host>
+<rth-renderer-host [gameService]="activeConnection" [activeSeat]="activePlayerIndex"></rth-renderer-host>
 
-<div style="margin: 10px 0; position:relative; z-index:10000">
+<div style="margin: 10px 0; position:relative; z-index:10000; color: white">
     <input type="checkbox" id="training_wheels" #inputTrainingWheels [checked]="testServer.useTrainingWheels"
     (input)="testServer.useTrainingWheels = inputTrainingWheels.checked" />
     <label for="training_wheels">Training wheels</label>
@@ -13,7 +13,7 @@
 </div>
 
 <rth-table [gameService]="activeConnection" [attr.data-tile-click-behaviour]="tileClickBehaviour$ | async">
-    <span style="font-size: 2em; line-height: 0.1em; vertical-align: middle;cursor: pointer;" (click)="activeConnection.move.rollDice()">
+    <span style="font-size: 2em; line-height: 0.1em; vertical-align: middle;cursor: pointer;color:white" (click)="activeConnection.move.rollDice()">
         {{die((activeConnection.diceValues$ | async)?.[0])}}
         {{die((activeConnection.diceValues$ | async)?.[1])}}
     </span>
