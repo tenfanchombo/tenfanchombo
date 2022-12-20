@@ -15,7 +15,6 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@tenfanchombo/ai": ["libs/ai/src/index.ts"],
       "@tenfanchombo/common": ["libs/common/src/index.ts"],
       "@tenfanchombo/components": ["libs/components/src/index.ts"],
       "@tenfanchombo/game-core": ["libs/game-core/src/index.ts"],
