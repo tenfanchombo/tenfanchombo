@@ -4,7 +4,7 @@ import { TestServer } from './test-server';
 import { TableComponent } from './table/table.component';
 import { filterLogType, GameService, LogEntry, LogEntryType, PlayerIndex } from '@tenfanchombo/game-core';
 import { PlayerSelectComponent } from './player-select/player-select.component';
-import { BehaviorSubject, skip, take } from 'rxjs';
+import { BehaviorSubject, filter, skip, take } from 'rxjs';
 import { TileClickBehaviour, TILE_CLICK_BEHAVIOUR } from './state/state';
 import { TileClickBehaviourSelectComponent } from './tile-click-behaviour-select/tile-click-behaviour-select.component';
 import { RendererHostComponent } from './renderer-host/renderer-host.component';
@@ -49,9 +49,9 @@ export class AppComponent {
 
     constructor() {
         const splits$ = this.playerConnections[0].log$.pipe(filterLogType(LogEntryType.WallSplit));
-        splits$.pipe(take(1)).subscribe(() => this.tileClickBehaviour$.next(TileClickBehaviour.SplitBefore));
-        splits$.pipe(skip(1), take(1)).subscribe(() => this.tileClickBehaviour$.next(TileClickBehaviour.Flip));
-        this.playerConnections[0].log$.pipe(filterLogType(LogEntryType.FlippedTileInWall)).subscribe(() => this.tileClickBehaviour$.next(TileClickBehaviour.Take));
+        splits$.pipe(take(1), filter(() => this.testServer.useTrainingWheels)).subscribe(() => this.tileClickBehaviour$.next(TileClickBehaviour.SplitBefore));
+        splits$.pipe(skip(1), take(1), filter(() => this.testServer.useTrainingWheels)).subscribe(() => this.tileClickBehaviour$.next(TileClickBehaviour.Flip));
+        this.playerConnections[0].log$.pipe(filterLogType(LogEntryType.FlippedTileInWall), filter(() => this.testServer.useTrainingWheels)).subscribe(() => this.tileClickBehaviour$.next(TileClickBehaviour.Take));
     }
 
 
