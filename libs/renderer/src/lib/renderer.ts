@@ -115,7 +115,7 @@ export class RiichiRenderer {
     }
 
     updateTile(index: number, tileInfo: TileInfo, splits: TileIndex[]) {
-        this.tiles[index].update(tileInfo, index, splits);
+        this.tiles[index].update(tileInfo, splits);
     }
 
     private tiles: TileInstace[] = [];
@@ -126,86 +126,10 @@ export class RiichiRenderer {
         const tileTextureNormals = await this.textureLoader.loadAsync('assets/tiles_normals.png');
 
         this.tiles = new Array(DECK_SIZE).fill(1).map((_, i) => {
-            const tile = new TileInstace(tileObj, tileTexture, tileTextureNormals);
+            const tile = new TileInstace(i, tileObj, tileTexture, tileTextureNormals);
             tile.addToScene(this.scene);
             return tile;
         });
-        /*
-        for (let x = 0; x < 4; x++) {
-            for (let i = 0; i < 17; i++) {
-                const tile = tileObj.clone();
-                tile.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), (Math.PI / 2) * x);
-                tile.translateZ(200);
-                tile.translateX((i - 8.5) * 19);
-                tile.position.y = 8.2;
-                tile.rotateX(Math.PI / 2);
-                tile.castShadow = true;
-                tile.receiveShadow = true;
-                tile.traverse(child => {
-                    if (child instanceof THREE.Mesh) {
-                        // child.material.map = texture;
-                        child.castShadow = true;
-                    }
-                });
-                this.scene.add(tile);
-
-
-                // const mesh = new THREE.InstancedMesh( geometry, material, count );
-
-                const tile2 = tileObj.clone();
-                tile2.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), (Math.PI / 2) * x);
-                tile2.translateZ(200);
-                tile2.translateX((i - 8.5) * 19);
-                tile2.position.y = 8.2 + 16;
-                tile2.rotateX(Math.PI / -2);
-                tile2.castShadow = true;
-                tile2.receiveShadow = true;
-                const bumpTexture = tileTextureNormals.clone();
-                tile2.traverse(child => {
-                    if (child instanceof THREE.Mesh) {
-                        const text = tileTexture.clone();
-                        // text.repeat.set(0.5, 0.5);
-
-                        const material = new THREE.MeshPhongMaterial({
-                            color: 0xFFFFFF,
-                            vertexColors: true,
-                            map: text
-                            // blending
-                        });
-
-                        material.normalMap = bumpTexture;
-                        material.normalScale = new THREE.Vector2(1, 1);
-                        // material.bumpScale = 0.5;//0.015;
-                        //text.generateMipmaps = true;
-                        //text.anisotropy = 29;
-                        text.magFilter = THREE.LinearFilter;
-                        //
-                        bumpTexture.offset.set((i % 10) * .1, x * .25);
-                        bumpTexture.repeat.set(.1, .25);
-                        text.offset.set((i % 10) * .1, x * .25);
-                        text.repeat.set(.1, .25);
-
-                        material.onBeforeCompile = function (shader) {
-                            const custom_map_fragment = THREE.ShaderChunk.map_fragment.replace(
-                                `diffuseColor *= sampledDiffuseColor;`,
-                                `diffuseColor = vec4( mix( diffuse, sampledDiffuseColor.rgb, sampledDiffuseColor.a ), opacity );`
-                            );
-
-                            shader.fragmentShader = shader.fragmentShader.replace('#include <map_fragment>', custom_map_fragment);
-                        };
-
-                        // child.material.map = texture;
-                        // child.material.bumpMap
-                        child.material = material;
-
-                        // child.material.map = texture;
-                        child.castShadow = true;
-                    }
-                });
-                this.scene.add(tile2);
-            }
-        }
-        */
     }
 
     private readonly objLoader = new OBJLoader();

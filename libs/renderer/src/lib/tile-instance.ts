@@ -1,5 +1,5 @@
 import { TileKind, tileKind, tileValue } from '@tenfanchombo/common';
-import { TileIndex, TileInfo, TilePosition, WALL_SIZE } from '@tenfanchombo/game-core';
+import { PlayerIndex, TileIndex, TileInfo, TilePosition, WALL_SIZE } from '@tenfanchombo/game-core';
 import * as THREE from 'three';
 
 const TILE_HEIGHT = 26;
@@ -11,7 +11,7 @@ const TILE_WIDTH_2  = TILE_WIDTH  / 2;
 const TILE_DEPTH_2  = TILE_DEPTH  / 2;
 
 export class TileInstace {
-    constructor(tile: THREE.Group, texture: THREE.Texture, normalMap: THREE.Texture) {
+    constructor(private readonly tileIndex: TileIndex, tile: THREE.Group, texture: THREE.Texture, normalMap: THREE.Texture) {
         this.tile = tile.clone();
         this.texture = texture.clone();
         this.normalMap = normalMap.clone();
@@ -52,6 +52,15 @@ export class TileInstace {
             }
         });
 
+        const position = this.matrixFromInfo({
+            position: TilePosition.Wall,
+            seat: Math.floor(tileIndex / WALL_SIZE) as PlayerIndex,
+            index: tileIndex % WALL_SIZE,
+            rotated: false,
+            tile: null
+        }, []);
+        position.decompose(this.tile.position, this.tile.quaternion, this.tile.scale);
+        this.tile.position.setY(this.tile.position.y - TILE_HEIGHT * 3);
     }
 
     private readonly tile: THREE.Group;
@@ -61,7 +70,7 @@ export class TileInstace {
     private animationClock?: THREE.Clock;
     private animationAction?: THREE.AnimationAction;
 
-    private animate(target: THREE.Matrix4) {
+    private animate(target: THREE.Matrix4, liftBy?: number) {
         const position = new THREE.Vector3();
         const quaternion = new THREE.Quaternion();
         const scale = new THREE.Vector3();
@@ -69,8 +78,12 @@ export class TileInstace {
         
         const animationMixer = new THREE.AnimationMixer(this.tile);
         animationMixer.timeScale = 3;
-        const positionTrack = new THREE.VectorKeyframeTrack('.position', [0, 1], [
+        const positionTrack = !liftBy ? new THREE.VectorKeyframeTrack('.position', [0, 1], [
             ...this.tile.position.toArray(),
+            ...position.toArray(),
+        ]) : new THREE.VectorKeyframeTrack('.position', [0, 0.25, 1], [
+            ...this.tile.position.toArray(),
+            this.tile.position.x, this.tile.position.y + liftBy, this.tile.position.z,
             ...position.toArray(),
         ]);
         const quaternionTrack = new THREE.QuaternionKeyframeTrack('.quaternion', [0, 1], [
@@ -96,7 +109,36 @@ export class TileInstace {
         }
     }
 
-    update(info: TileInfo, tileIndex: TileIndex, wallSplits: TileIndex[]) {
+    private lastTileInfo?: TileInfo;
+
+    update(info: TileInfo, wallSplits: TileIndex[]) {
+        const matrix = this.matrixFromInfo(info, wallSplits);
+
+        this.animate(matrix, !this.lastTileInfo || this.lastTileInfo.position !== info.position || this.lastTileInfo.index !== info.index || this.lastTileInfo.tile !== info.tile ? TILE_HEIGHT * 2 : 0);
+
+        this.lastTileInfo = {...info};
+
+        if (info.tile === null) {
+            this.texture.offset.set(.9, 0);
+            this.normalMap.offset.set(.9, 0);
+        } else {
+            const v = (tileValue(info.tile) - 1) / 10;
+            const k = ({
+                [TileKind.Man]: .75,
+                [TileKind.Pin]: .5,
+                [TileKind.Sou]: .25,
+                [TileKind.Honor]: 0,
+            } as Record<TileKind, number>)[tileKind(info.tile)];
+            this.texture.offset.set(v, k);
+            this.normalMap.offset.set(v, k);
+        }
+    }
+
+    addToScene(scene: THREE.Scene) {
+        scene.add(this.tile);
+    }
+
+    private matrixFromInfo(info: TileInfo, wallSplits: TileIndex[]) {
         const m = new THREE.Matrix4();
         m.identity();
         m.multiply(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 1, 0), (Math.PI / -2) * info.seat));
@@ -104,14 +146,14 @@ export class TileInstace {
             case TilePosition.Wall: {
                 const y = info.index % 2 ? TILE_DEPTH_2 + TILE_DEPTH : TILE_DEPTH_2;
                 let x = (Math.ceil(info.index / -2) + 8) * TILE_WIDTH;
-                const sideStart = Math.floor(tileIndex / WALL_SIZE) * WALL_SIZE;
+                const sideStart = Math.floor(this.tileIndex / WALL_SIZE) * WALL_SIZE;
                 const sideEnd = sideStart + WALL_SIZE;
                 const splitsOnThisSide = wallSplits.filter(ti => ti >= sideStart && ti <= sideEnd);
                 
                 if (splitsOnThisSide.length > 1) {
                     x += TILE_WIDTH_2;
                 }
-                const afterSplits = splitsOnThisSide.filter(ti => ti < tileIndex).length;
+                const afterSplits = splitsOnThisSide.filter(ti => ti < this.tileIndex).length;
                 x += afterSplits * -TILE_WIDTH_2;
 
                 m.multiply(new THREE.Matrix4().makeTranslation(x, y, 200));
@@ -132,26 +174,6 @@ export class TileInstace {
                 break;
             }
         }
-
-        this.animate(m);
-
-        if (info.tile === null) {
-            this.texture.offset.set(.9, 0);
-            this.normalMap.offset.set(.9, 0);
-        } else {
-            const v = (tileValue(info.tile) - 1) / 10;
-            const k = ({
-                [TileKind.Man]: .75,
-                [TileKind.Pin]: .5,
-                [TileKind.Sou]: .25,
-                [TileKind.Honor]: 0,
-            } as Record<TileKind, number>)[tileKind(info.tile)];
-            this.texture.offset.set(v, k);
-            this.normalMap.offset.set(v, k);
-        }
-    }
-
-    addToScene(scene: THREE.Scene) {
-        scene.add(this.tile);
+        return m;
     }
 }
