@@ -5,6 +5,7 @@ rth-table {
     border-style: solid;
     border-width: 4px;
     border-radius: 4px;
+    pointer-events: none;
 
     grid-template-columns: 700px;
     grid-template-rows:  700px;
@@ -19,6 +20,7 @@ rth-table {
         cursor: pointer;
         z-index: 10;
         transition: transform 300ms ease-in-out;
+        pointer-events: all;
     }
 
     > tfc-tile[data-tile-position="wall"] {
