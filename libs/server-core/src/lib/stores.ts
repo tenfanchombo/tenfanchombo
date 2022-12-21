@@ -9,9 +9,6 @@ export interface DocumentStore {
     create(gameDocument: InternalGameDocument): GameId;
     get$(gameId: string, playerId: string): Observable<GameDocument>;
     update(gameId: GameId, updater: (internalGameDocument: InternalGameDocument) => void): Promise<void>;
-
-    // this is temp and will need removing
-    get(gameId: string, playerId: string): GameDocument;
 }
 
 /**
@@ -38,11 +35,6 @@ export class InMemoryDocumentStore implements DocumentStore {
             map(s => JSON.parse(s)),
             map(doc => createPlayerGameDocument(doc, playerId))
         );
-    }
-
-    // this is temp and will need removing
-    get(gameId: string, playerId: string): GameDocument {
-        return createPlayerGameDocument(JSON.parse(this.document$(gameId).value), playerId);
     }
 
     update(gameId: GameId, updater: (internalGameDocument: InternalGameDocument) => void): Promise<void> {

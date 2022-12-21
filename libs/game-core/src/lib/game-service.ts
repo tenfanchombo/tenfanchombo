@@ -1,5 +1,5 @@
 import { BehaviorSubject, distinctUntilChanged, map, Observable, ReplaySubject, shareReplay } from "rxjs";
-import { GameDocument, PlayerInfo, TileIndex, TileInfo } from "./documents";
+import { GameDocument, PlayerIndex, PlayerInfo, TileIndex, TileInfo } from "./documents";
 import { filterLogType, LogEntry, LogEntryType } from "./log-entry";
 import { MoveFunctions } from "./moves";
 import { DECK_SIZE } from "./utils";
@@ -7,6 +7,7 @@ import { DECK_SIZE } from "./utils";
 export class GameService {
     constructor(
         public readonly gameId: string,
+        public readonly playerIndex: PlayerIndex,
         protected readonly playerId: string,
         protected readonly gameDocument$: Observable<GameDocument>,
         public readonly move: MoveFunctions) {

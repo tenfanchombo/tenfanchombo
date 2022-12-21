@@ -3,18 +3,19 @@ import { Component, inject, ViewEncapsulation } from '@angular/core';
 import { TestServer } from './test-server';
 import { TableComponent } from './table/table.component';
 import { filterLogType, GameService, LogEntry, LogEntryType, PlayerIndex } from '@tenfanchombo/game-core';
-import { PlayerSelectComponent } from './player-select/player-select.component';
 import { BehaviorSubject, filter, skip, take } from 'rxjs';
 import { TileClickBehaviour, TILE_CLICK_BEHAVIOUR } from './state/state';
 import { TileClickBehaviourSelectComponent } from './tile-click-behaviour-select/tile-click-behaviour-select.component';
 import { RendererHostComponent } from './renderer-host/renderer-host.component';
+import { TileComponent } from '@tenfanchombo/components';
+import { Tile, Wind } from '@tenfanchombo/common';
 
 
 @Component({
     standalone: true,
     imports: [
         CommonModule,
-        PlayerSelectComponent,
+        TileComponent,
         TileClickBehaviourSelectComponent,
         TableComponent,
         RendererHostComponent
@@ -32,39 +33,32 @@ import { RendererHostComponent } from './renderer-host/renderer-host.component';
     encapsulation: ViewEncapsulation.None,
 })
 export class AppComponent {
-
-    protected activePlayerIndex: PlayerIndex = 0;
+    protected gameId = 'test-game-1';
+    protected joiningPlayer = 0;
 
     protected readonly testServer = inject(TestServer);
     protected readonly tileClickBehaviour$ = inject<BehaviorSubject<TileClickBehaviour>>(TILE_CLICK_BEHAVIOUR);
 
-    protected readonly playerConnections: GameService[] = [
-        this.testServer.connect(0),
-        this.testServer.connect(1),
-        this.testServer.connect(2),
-        this.testServer.connect(3),
-    ];
+    protected gameService: GameService | undefined;
 
-    protected get activeConnection() { return this.playerConnections[this.activePlayerIndex]; }
+    protected async joinGame() {
+        this.gameService = await this.testServer.connect(this.gameId, this.joiningPlayer as PlayerIndex);
 
-    constructor() {
-        const splits$ = this.playerConnections[0].log$.pipe(filterLogType(LogEntryType.WallSplit));
+        const splits$ = this.gameService.log$.pipe(filterLogType(LogEntryType.WallSplit));
         splits$.pipe(take(1), filter(() => this.testServer.useTrainingWheels)).subscribe(() => this.tileClickBehaviour$.next(TileClickBehaviour.SplitBefore));
         splits$.pipe(skip(1), take(1), filter(() => this.testServer.useTrainingWheels)).subscribe(() => this.tileClickBehaviour$.next(TileClickBehaviour.Flip));
-        this.playerConnections[0].log$.pipe(filterLogType(LogEntryType.FlippedTile), filter(() => this.testServer.useTrainingWheels)).subscribe(() => this.tileClickBehaviour$.next(TileClickBehaviour.Take));
+        this.gameService.log$.pipe(filterLogType(LogEntryType.FlippedTile), filter(() => this.testServer.useTrainingWheels)).subscribe(() => this.tileClickBehaviour$.next(TileClickBehaviour.Take));
     }
-
-
-    // protected readonly aiPlayers = [Wind.East, Wind.South, Wind.West, Wind.North]
-    //     .filter (w => w !== this.playerWind)
-    //     .map(wind => new SimpleAi(wind, this.testServer.connect(wind)));
 
     protected findDiceRoll(ledger: LogEntry[]) {
         return ledger.filter(le => le.type === LogEntryType.DiceRolled).at(-1) as (LogEntry & {type: LogEntryType.DiceRolled});
     }
 
     protected die(index: number | undefined | null) {
-        // const roll = findInLedger(gameState, LogEntryType.DiceRolled);
         return index == undefined ? '🎲' : String.fromCodePoint(0x267F + index);
+    }
+
+    protected makeWindTile(wind: Wind): Tile {
+        return `z${wind}`;
     }
 }

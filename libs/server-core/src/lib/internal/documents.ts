@@ -1,5 +1,5 @@
 import { Tile, Wind } from '@tenfanchombo/common';
-import { GameDocument, LogEntry, PlayerIndex, PlayerInfo, TilePosition } from '@tenfanchombo/game-core';
+import { LogEntry, PlayerIndex, PlayerInfo, TilePosition } from '@tenfanchombo/game-core';
 
 // These interfaces are very similar to the public ones with only a couple 
 // properties different. The big difference comes in it's mutability

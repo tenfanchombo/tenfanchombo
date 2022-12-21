@@ -1,20 +1,36 @@
-<rth-renderer-host [gameService]="activeConnection" [activeSeat]="activePlayerIndex"></rth-renderer-host>
 
-<div style="margin: 10px 0; position:relative; z-index:10000; color: white">
-    <input type="checkbox" id="training_wheels" #inputTrainingWheels [checked]="testServer.useTrainingWheels"
-    (input)="testServer.useTrainingWheels = inputTrainingWheels.checked" />
-    <label for="training_wheels">Training wheels</label>
+<div *ngIf="!gameService" style="position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%); border: 1px solid silver; border-radius: 10px; padding: 10px; background-color: #eaeaea; width:300px; height: 300px;">
+    Game ID:
+    <input #gameIdInput [value]="gameId" (input)="gameId = gameIdInput.value" />
+    
+    <div *ngFor="let player of testServer.playerData; let index = index" style="display:flex; align-items: center;margin-left:18px">
+        <input type="radio" name="selectedPlayer" id="selectedPlayer{{player.id}}" [value]="player.id" [checked]="joiningPlayer === index" (click)="joiningPlayer = index">
+        <label for="selectedPlayer{{player.id}}" style="display: contents">
+            <tfc-tile [tile]="makeWindTile(player.seatWind)"></tfc-tile>
+            <img [src]="player.avatarUrl" width="50px" height="50px" style="vertical-align: middle;border: 1px solid black; border-radius: 5px;margin: 5px;" />
+            {{player.name}}
+        </label>
+    </div>
+    <button style="width:100%;margin-top:5px" (click)="joinGame()">Join</button>
 </div>
-<div style="display:flex;justify-content: space-between; width: 648px; position:relative; z-index:10000">
-    <rth-player-select [(playerIndex)]="activePlayerIndex">
-    </rth-player-select>
 
-    <rth-tile-click-behaviour-select></rth-tile-click-behaviour-select>
-</div>
+<ng-container *ngIf="gameService">
+    <rth-renderer-host [gameService]="gameService" [activeSeat]="gameService.playerIndex"></rth-renderer-host>
 
-<rth-table [gameService]="activeConnection" [attr.data-tile-click-behaviour]="tileClickBehaviour$ | async">
-    <span style="font-size: 2em; line-height: 0.1em; vertical-align: middle;cursor: pointer;color:white" (click)="activeConnection.move.rollDice()">
-        {{die((activeConnection.diceValues$ | async)?.[0])}}
-        {{die((activeConnection.diceValues$ | async)?.[1])}}
-    </span>
-</rth-table>
+    <div style="margin: 10px 0; position:relative; z-index:10000; color: white">
+        <input type="checkbox" id="training_wheels" #inputTrainingWheels [checked]="testServer.useTrainingWheels"
+        (input)="testServer.useTrainingWheels = inputTrainingWheels.checked" />
+        <label for="training_wheels">Training wheels</label>
+    </div>
+    <div style="display:flex;justify-content: space-between; width: 648px; position:relative; z-index:10000">
+        <rth-tile-click-behaviour-select></rth-tile-click-behaviour-select>
+    </div>
+
+    <rth-table [gameService]="gameService" [attr.data-tile-click-behaviour]="tileClickBehaviour$ | async">
+        <span style="font-size: 2em; line-height: 0.1em; vertical-align: middle;cursor: pointer;color:white" (click)="gameService.move.rollDice()">
+            {{die((gameService.diceValues$ | async)?.[0])}}
+            {{die((gameService.diceValues$ | async)?.[1])}}
+        </span>
+    </rth-table>
+
+</ng-container>
