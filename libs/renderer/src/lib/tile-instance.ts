@@ -57,7 +57,8 @@ export class TileInstace {
             seat: Math.floor(tileIndex / WALL_SIZE) as PlayerIndex,
             index: tileIndex % WALL_SIZE,
             rotated: false,
-            tile: null
+            tile: null,
+            public: false
         }, []);
         position.decompose(this.tile.position, this.tile.quaternion, this.tile.scale);
         this.tile.position.setY(this.tile.position.y - TILE_HEIGHT * 3);
@@ -119,7 +120,8 @@ export class TileInstace {
                 || this.lastTileInfo.tile     !== info.tile
         }
         return this.lastTileInfo.position !== info.position
-            || this.lastTileInfo.index    !== info.index;
+            || this.lastTileInfo.index    !== info.index
+            || this.lastTileInfo.public   !== info.public;
     }
 
     update(info: TileInfo, wallSplits: TileIndex[]) {
@@ -176,7 +178,11 @@ export class TileInstace {
                 break;
             }
             case TilePosition.Hand: {
-                m.multiply(new THREE.Matrix4().makeTranslation((info.index - 8) * TILE_WIDTH, TILE_HEIGHT_2, 250));
+                m.multiply(new THREE.Matrix4().makeTranslation((info.index - 8) * TILE_WIDTH, info.public ? TILE_DEPTH_2 : TILE_HEIGHT_2, 250));
+                if (info.public) {
+                    m.multiply(new THREE.Matrix4().makeRotationX(Math.PI / -2));
+                    // m.multiply(new THREE.Matrix4().makeRotationX(Math.PI / -2));
+                }
                 break;
             }
             case TilePosition.Discards: {

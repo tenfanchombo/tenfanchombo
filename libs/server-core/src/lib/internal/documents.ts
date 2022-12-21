@@ -14,7 +14,7 @@ export interface InternalTileInfo {
 }
 
 /** The internal state of a game that should never be seen by the client */
-export interface InternalGameDocument extends GameDocument {
+export interface InternalGameDocument {
     prevelantWind: Wind;
     readonly players: readonly PlayerInfo[];
     tiles: InternalTileInfo[];

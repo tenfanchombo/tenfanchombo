@@ -30,6 +30,7 @@ export interface TileInfo {
     readonly index: number;
     readonly rotated: boolean;
     readonly tile: Tile | null;
+    readonly public: boolean;
 }
 
 /**

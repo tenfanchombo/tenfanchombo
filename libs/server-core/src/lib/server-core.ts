@@ -33,7 +33,8 @@ export function createPlayerGameDocument(game: InternalGameDocument, playerId: s
             seat: tile.seat,
             index: tile.index,
             rotated: tile.rotated,
-            tile: tile.seenBy.includes(playerIndex) ? tile.tile : null
+            tile: tile.seenBy.includes(playerIndex) ? tile.tile : null,
+            public: tile.seenBy.length === 4
         })),
         ledger: [...game.ledger]
     };

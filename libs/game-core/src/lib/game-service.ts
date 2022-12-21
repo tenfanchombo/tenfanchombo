@@ -46,6 +46,7 @@ export class GameService {
             && tileInfoA.index    === tileInfoB.index
             && tileInfoA.rotated  === tileInfoB.rotated
             && tileInfoA.tile     === tileInfoB.tile
+            && tileInfoA.public   === tileInfoB.public;
     }
 
     private readonly logSubject$ = new ReplaySubject<LogEntry>();

@@ -18,7 +18,7 @@ export interface MoveFunctions {
     /** Called when taking a tile, this could be either from the wall, or from a player's discard pile */
     takeTile(tileIndex: TileIndex): void;
 
-    flipTileInWall(tileIndex: TileIndex): void;
+    flipTile(tileIndex: TileIndex): void;
 
     /** Called when discarding a tile */
     discard(tileIndex: TileIndex): void;

@@ -80,7 +80,7 @@ export const moveValidators: {[K in keyof MoveFunctions]: MoveFunctions[K] exten
         return true;
     },
 
-    flipTileInWall(game: GameDocument, callingPlayer: PlayerIndex, tileIndex: TileIndex) {
+    flipTile(game: GameDocument, callingPlayer: PlayerIndex, tileIndex: TileIndex) {
         const personToFlip = calculateWallFromDiceValue(getDiceValue(game));
         const playerOnSplittingSide = game.players.find(p => p.seatWind === personToFlip)!;
         if (game.players[callingPlayer].seatWind !== personToFlip) {

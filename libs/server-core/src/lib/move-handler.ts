@@ -51,12 +51,11 @@ export const moveHandlers: {[K in keyof MoveFunctions]: MoveFunctions[K] extends
         });
     },
 
-    flipTileInWall(game: InternalGameDocument, callingPlayer: PlayerIndex, tileIndex: TileIndex) {
+    flipTile(game: InternalGameDocument, callingPlayer: PlayerIndex, tileIndex: TileIndex) {
         // TODO: handle flipping after kan
         game.tiles[tileIndex].seenBy = allPlayers;
-        // TODO: handle flipping after kan
         game.ledger.push({
-            type: LogEntryType.FlippedTileInWall,
+            type: LogEntryType.FlippedTile,
             callingPlayer,
             tileIndex
         });

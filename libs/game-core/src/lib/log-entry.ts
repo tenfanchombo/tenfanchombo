@@ -4,7 +4,7 @@ import { CallType } from "./moves";
 
 export const enum LogEntryType {
     // TellingOff, // used to react to a player doing something they shouldn't: taking wrong tile, making wrong call, not waiting for turn, etc...
-    FlippedTileInWall,
+    FlippedTile,
     DiceRolled,
     WallSplit,
 
@@ -27,7 +27,7 @@ export type LogEntry = {
     readonly callingPlayer: PlayerIndex,
     readonly afterTile: TileIndex
 } | {
-    readonly type: LogEntryType.FlippedTileInWall,
+    readonly type: LogEntryType.FlippedTile,
     readonly callingPlayer: PlayerIndex,
     readonly tileIndex: TileIndex
 } | {

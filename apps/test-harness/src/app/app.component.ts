@@ -51,7 +51,7 @@ export class AppComponent {
         const splits$ = this.playerConnections[0].log$.pipe(filterLogType(LogEntryType.WallSplit));
         splits$.pipe(take(1), filter(() => this.testServer.useTrainingWheels)).subscribe(() => this.tileClickBehaviour$.next(TileClickBehaviour.SplitBefore));
         splits$.pipe(skip(1), take(1), filter(() => this.testServer.useTrainingWheels)).subscribe(() => this.tileClickBehaviour$.next(TileClickBehaviour.Flip));
-        this.playerConnections[0].log$.pipe(filterLogType(LogEntryType.FlippedTileInWall), filter(() => this.testServer.useTrainingWheels)).subscribe(() => this.tileClickBehaviour$.next(TileClickBehaviour.Take));
+        this.playerConnections[0].log$.pipe(filterLogType(LogEntryType.FlippedTile), filter(() => this.testServer.useTrainingWheels)).subscribe(() => this.tileClickBehaviour$.next(TileClickBehaviour.Take));
     }
 
 
