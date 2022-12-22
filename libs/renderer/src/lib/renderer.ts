@@ -1,7 +1,9 @@
 import { DECK_SIZE, PlayerIndex, TileIndex, TileInfo } from '@tenfanchombo/game-core';
 import * as THREE from 'three';
+import * as CANNON from "cannon-es";
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
+import { TestDice } from './dice';
 import { TileInstace } from './tile-instance';
 
 export class RiichiRenderer {
@@ -104,6 +106,8 @@ export class RiichiRenderer {
         this.scene.add(cameraHelper);
         */
 
+        this.dice = new TestDice(this.world, this.scene);
+
         const fov = 45;
         const near = 0.1;
         const far = 100000000;
@@ -118,8 +122,11 @@ export class RiichiRenderer {
 
         this.moveToSeat(0);
 
+        this.clock.getDelta();
         this.render();
     }
+
+    private readonly dice: TestDice;
 
     moveToSeat(seat: PlayerIndex) {
         // this.controls.reset();
@@ -146,6 +153,7 @@ export class RiichiRenderer {
         this.tiles[index].update(tileInfo, splits);
     }
 
+    private readonly world = new CANNON.World();
     private tiles: TileInstace[] = [];
 
     private async loadScene() {
@@ -156,6 +164,7 @@ export class RiichiRenderer {
         this.tiles = new Array(DECK_SIZE).fill(1).map((_, i) => {
             const tile = new TileInstace(i, tileObj, tileTexture, tileTextureNormals);
             tile.addToScene(this.scene);
+            this.world.addBody(tile.body);
             return tile;
         });
     }
@@ -167,9 +176,13 @@ export class RiichiRenderer {
     private readonly camera: THREE.PerspectiveCamera;
     private readonly scene: THREE.Scene;
 
+
+    private readonly clock = new THREE.Clock();
+
     private render = () => {
         this.resizeRendererToDisplaySize();
 
+        const delta = this.clock.getDelta();
         const canvas = this.renderer.domElement;
         this.camera.aspect = canvas.clientWidth / canvas.clientHeight;
         this.camera.updateProjectionMatrix();
@@ -177,6 +190,8 @@ export class RiichiRenderer {
         for (const tile of this.tiles) {
             tile.animateIfNeeded();
         }
+
+        this.dice.updatePhysics(delta);
 
         this.renderer.render(this.scene, this.camera);
 
