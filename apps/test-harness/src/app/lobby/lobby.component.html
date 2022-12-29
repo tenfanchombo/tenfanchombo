@@ -1,0 +1,14 @@
+<form (ngSubmit)="onSubmit()">
+    <label for="gameId">Game ID:</label>
+    <input id="gameId" name="game" [(ngModel)]="gameId" />
+
+    <div *ngFor="let player of players; let index = index" style="display:flex; align-items: center;margin-left:18px">
+        <input type="radio" name="selectedPlayer" id="selectedPlayer{{player.id}}" [value]="player.id" [checked]="playerIndex === index" (click)="playerIndex = index">
+        <label for="selectedPlayer{{player.id}}" style="display: contents">
+            <tfc-tile [tile]="makeWindTile(player.seatWind)"></tfc-tile>
+            <img [src]="player.avatarUrl" width="50px" height="50px" style="vertical-align: middle;border: 1px solid black; border-radius: 5px;margin: 5px;" />
+            {{player.name}}
+        </label>
+    </div>
+    <button style="width:100%;margin-top:5px">Join</button>
+</form>
