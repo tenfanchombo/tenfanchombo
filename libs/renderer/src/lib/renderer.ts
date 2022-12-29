@@ -1,10 +1,9 @@
 import { DECK_SIZE, PlayerIndex, TileIndex, TileInfo } from '@tenfanchombo/game-core';
 import * as THREE from 'three';
-import * as CANNON from "cannon-es";
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { TestDice } from './dice';
-import { TileInstace } from './tile-instance';
+import { TileInstance } from './tile-instance';
 
 export class RiichiRenderer {
     static async create(canvas: HTMLCanvasElement) {
@@ -92,6 +91,7 @@ export class RiichiRenderer {
         this.scene.add(light.target);
         light.shadow.mapSize.width = 1024;
         light.shadow.mapSize.height = 1024;
+        light.shadow.bias = -0.01; // TODO: review this value. it is needed as it prevents the striping caused by self-casting shadows
         light.shadow.camera.far = 1000;
         light.shadow.camera.left = -600;
         light.shadow.camera.right = 600;
@@ -105,8 +105,6 @@ export class RiichiRenderer {
         const cameraHelper = new THREE.CameraHelper(light.shadow.camera);
         this.scene.add(cameraHelper);
         */
-
-        this.dice = new TestDice(this.world, this.scene);
 
         const fov = 45;
         const near = 0.1;
@@ -122,11 +120,10 @@ export class RiichiRenderer {
 
         this.moveToSeat(0);
 
-        this.clock.getDelta();
         this.render();
     }
 
-    private readonly dice: TestDice;
+    private dice: TestDice | undefined;
 
     moveToSeat(seat: PlayerIndex) {
         // this.controls.reset();
@@ -153,8 +150,11 @@ export class RiichiRenderer {
         this.tiles[index].update(tileInfo, splits);
     }
 
-    private readonly world = new CANNON.World();
-    private tiles: TileInstace[] = [];
+    updateDice(values: readonly number[]) {
+        this.dice?.roll(values);
+    }
+
+    private tiles: TileInstance[] = [];
 
     private async loadScene() {
         const tileObj = await this.objLoader.loadAsync("assets/tile.obj");
@@ -162,11 +162,11 @@ export class RiichiRenderer {
         const tileTextureNormals = await this.textureLoader.loadAsync('assets/tiles_normals.png');
 
         this.tiles = new Array(DECK_SIZE).fill(1).map((_, i) => {
-            const tile = new TileInstace(i, tileObj, tileTexture, tileTextureNormals);
+            const tile = new TileInstance(i, tileObj, tileTexture, tileTextureNormals);
             tile.addToScene(this.scene);
-            this.world.addBody(tile.body);
             return tile;
         });
+        this.dice = new TestDice(this.scene, this.tiles);
     }
 
     private readonly objLoader = new OBJLoader();
@@ -176,13 +176,9 @@ export class RiichiRenderer {
     private readonly camera: THREE.PerspectiveCamera;
     private readonly scene: THREE.Scene;
 
-
-    private readonly clock = new THREE.Clock();
-
     private render = () => {
         this.resizeRendererToDisplaySize();
 
-        const delta = this.clock.getDelta();
         const canvas = this.renderer.domElement;
         this.camera.aspect = canvas.clientWidth / canvas.clientHeight;
         this.camera.updateProjectionMatrix();
@@ -191,7 +187,7 @@ export class RiichiRenderer {
             tile.animateIfNeeded();
         }
 
-        this.dice.updatePhysics(delta);
+        this.dice?.animateIfNeeded();
 
         this.renderer.render(this.scene, this.camera);
 

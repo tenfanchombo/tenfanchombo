@@ -30,19 +30,22 @@ export class RendererHostComponent implements OnChanges, AfterViewInit, OnDestro
     @Input() activeSeat: PlayerIndex = 0;
     
     private renderer: RiichiRenderer | undefined;
-    private tilesSourceChange$ = new Subject<void>();
+    private gameServiceChange$ = new Subject<void>();
     private viewReady$ = new BehaviorSubject(false);
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes['gameService']) {
-            this.tilesSourceChange$.next();
+            this.gameServiceChange$.next();
             for (let i = 0; i < this.gameService.tiles$array.length; i++) {
                 combineLatest([this.gameService.tiles$array[i], this.gameService.wallSplits$, this.viewReady$.pipe(filter(ready => ready))])
-                    .pipe(takeUntil(this.tilesSourceChange$))
+                    .pipe(takeUntil(this.gameServiceChange$))
                     .subscribe(([ti, splits]) => {
                         this.renderer?.updateTile(i, ti, splits);
                     });
             }
+            this.gameService.diceValues$
+                .pipe(takeUntil(this.gameServiceChange$))
+                .subscribe((values) => this.renderer?.updateDice(values))
         }
         if (changes['activeSeat'] && this.renderer) {
             this.renderer.moveToSeat(this.activeSeat);
@@ -57,12 +60,12 @@ export class RendererHostComponent implements OnChanges, AfterViewInit, OnDestro
         RiichiRenderer.create(this.canvasElement.nativeElement).then(renderer => {
             this.renderer = renderer;
             this.renderer.moveToSeat(this.activeSeat);
-            setTimeout(() => this.viewReady$.next(true), 1000);
+            this.viewReady$.next(true);
         });
     }
 
     ngOnDestroy() {
-        this.tilesSourceChange$.next();
-        this.tilesSourceChange$.complete();
+        this.gameServiceChange$.next();
+        this.gameServiceChange$.complete();
     }
 }

@@ -1,17 +1,16 @@
 import { TileKind, tileKind, tileValue } from '@tenfanchombo/common';
 import { PlayerIndex, TileIndex, TileInfo, TilePosition, WALL_SIZE } from '@tenfanchombo/game-core';
 import * as THREE from 'three';
-import * as CANNON from 'cannon-es';
 
-const TILE_HEIGHT = 26;
-const TILE_WIDTH  = 19;
-const TILE_DEPTH  = 16;
+export const TILE_HEIGHT = 26;
+export const TILE_WIDTH  = 19;
+export const TILE_DEPTH  = 16;
 
-const TILE_HEIGHT_2 = TILE_HEIGHT / 2;
-const TILE_WIDTH_2  = TILE_WIDTH  / 2;
-const TILE_DEPTH_2  = TILE_DEPTH  / 2;
+export const TILE_HEIGHT_2 = TILE_HEIGHT / 2;
+export const TILE_WIDTH_2  = TILE_WIDTH  / 2;
+export const TILE_DEPTH_2  = TILE_DEPTH  / 2;
 
-export class TileInstace {
+export class TileInstance {
     constructor(private readonly tileIndex: TileIndex, tile: THREE.Group, texture: THREE.Texture, normalMap: THREE.Texture) {
         this.tile = tile.clone();
         this.texture = texture.clone();
@@ -25,24 +24,15 @@ export class TileInstace {
         this.texture.offset.set(.9, 0);
         this.normalMap.offset.set(.9, 0);
 
-        this.body = new CANNON.Body({
-            mass: 0,
-            shape: TileInstace.bodyShape,
-            material: TileInstace.bodyMaterial
-        });
-
         this.tile.castShadow = true;
         this.tile.receiveShadow = true;
         this.tile.traverse(child => {
             if (child instanceof THREE.Mesh) {
-                child.castShadow = true;
-
                 const material = new THREE.MeshPhongMaterial({
                     color: 0xFFFFFF,
                     vertexColors: true,
                     map: this.texture,
-                    normalMap: this.normalMap,
-                    // normalScale: new THREE.Vector2(1, 1),
+                    normalMap: this.normalMap
                 });
 
                 material.onBeforeCompile = function (shader) {
@@ -56,6 +46,7 @@ export class TileInstace {
 
                 child.material = material;
                 child.castShadow = true;
+                child.receiveShadow = true;
             }
         });
 
@@ -71,11 +62,7 @@ export class TileInstace {
         this.tile.position.setY(this.tile.position.y - TILE_HEIGHT * 3);
     }
 
-    public static readonly bodyShape = new CANNON.Box(new CANNON.Vec3(TILE_WIDTH_2, TILE_HEIGHT_2, TILE_DEPTH_2));
-    public static readonly bodyMaterial = new CANNON.Material();
-    public readonly body: CANNON.Body;
-
-    private readonly tile: THREE.Group;
+    public readonly tile: THREE.Group;
     private readonly texture: THREE.Texture;
     private readonly normalMap: THREE.Texture;
 
@@ -87,9 +74,6 @@ export class TileInstace {
         const quaternion = new THREE.Quaternion();
         const scale = new THREE.Vector3();
         target.decompose(position, quaternion, scale);
-
-        this.body.position.set(position.x, position.y, position.z);
-        this.body.quaternion.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 
         const animationMixer = new THREE.AnimationMixer(this.tile);
         animationMixer.timeScale = 3;
