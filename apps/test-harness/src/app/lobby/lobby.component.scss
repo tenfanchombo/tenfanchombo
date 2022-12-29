@@ -1,0 +1,17 @@
+rth-lobby {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    > form {
+        display: block;
+        border: 1px solid silver;
+        border-radius: 10px;
+        padding: 10px;
+        background-color: #eaeaea;
+        width:300px;
+        height: 300px;
+    }
+}

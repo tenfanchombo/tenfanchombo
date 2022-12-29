@@ -1,0 +1,19 @@
+<ng-container *ngIf="gameService">
+    <rth-renderer-host [gameService]="gameService" [activeSeat]="gameService.playerIndex"></rth-renderer-host>
+
+    <div style="margin: 10px 0; position:relative; z-index:10000; color: white">
+        <input type="checkbox" id="training_wheels" #inputTrainingWheels [checked]="testServer.useTrainingWheels"
+        (input)="testServer.useTrainingWheels = inputTrainingWheels.checked" />
+        <label for="training_wheels">Training wheels</label>
+    </div>
+    <div style="display:flex;justify-content: space-between; width: 648px; position:relative; z-index:10000">
+        <rth-tile-click-behaviour-select></rth-tile-click-behaviour-select>
+    </div>
+
+    <rth-table [gameService]="gameService" [attr.data-tile-click-behaviour]="tileClickBehaviour$ | async">
+        <span style="font-size: 2em; line-height: 0.1em; vertical-align: middle;cursor: pointer;color:white" (click)="gameService.move.rollDice()">
+            {{die((gameService.diceValues$ | async)?.[0])}}
+            {{die((gameService.diceValues$ | async)?.[1])}}
+        </span>
+    </rth-table>
+</ng-container>
