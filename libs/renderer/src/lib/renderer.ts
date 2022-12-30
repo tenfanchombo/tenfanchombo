@@ -1,6 +1,7 @@
 import { DECK_SIZE, PlayerIndex, TileIndex, TileInfo } from '@tenfanchombo/game-core';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { TestDice } from './dice';
 import { TileInstance } from './tile-instance';
@@ -158,7 +159,6 @@ export class RiichiRenderer {
 
     private async loadScene() {
         const tileObj = await this.objLoader.loadAsync("assets/tile.obj");
-        const dieObj = await this.objLoader.loadAsync("assets/die.obj");
         const tileTexture = await this.textureLoader.loadAsync('assets/tiles_texture.png');
         const tileTextureNormals = await this.textureLoader.loadAsync('assets/tiles_normals.png');
 
@@ -167,10 +167,15 @@ export class RiichiRenderer {
             tile.addToScene(this.scene);
             return tile;
         });
+        const dieMaterials = await this.mtlLoader.loadAsync("assets/die.mtl");
+        dieMaterials.preload();
+        this.objLoader.setMaterials(dieMaterials)
+        const dieObj = await this.objLoader.loadAsync("assets/die.obj");
         this.dice = new TestDice(this.scene, this.tiles, dieObj);
     }
 
     private readonly objLoader = new OBJLoader();
+    private readonly mtlLoader = new MTLLoader();
     private readonly controls: OrbitControls;
     private readonly textureLoader = new THREE.TextureLoader();
     private readonly renderer: THREE.WebGLRenderer;
