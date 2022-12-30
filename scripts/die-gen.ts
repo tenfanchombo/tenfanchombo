@@ -4,8 +4,8 @@ const vertices: string[] = [];
 const faces: string[] = [];
 
 const DIE_SIZE = 16;
-const BEVEL = 0.5;
-const MARGIN = 1;
+const BEVEL = 0;// 0.5;
+const MARGIN = 0;//1;
 const PADDING = 0.5;
 const SPOT = (DIE_SIZE - (BEVEL + MARGIN) * 2) / 3;
 const SPOT_SEGS = 32;
@@ -46,7 +46,7 @@ const ringOffsets = [0, 0.016331178, 0.073401936, 0.166086451, 0.290815401, 0.44
 
 function drawBlankOrSpot(x: number, y: number, vert: (x: number, y: number, z: number) => string, value: number, spot: boolean, size = SPOT, radius = (SPOT - PADDING) / 2) {
     if (!spot) {
-        faces.push(`f ${vert(x - size / 2, y + size / 2, z)} ${vert(x + size / 2, y + size / 2, z)} ${vert(x + size / 2, y - size / 2, z)} ${vert(x - size / 2, y - size / 2, z)}`);
+        faces.push(`f ${vert(x - size / 2, y - size / 2, z)} ${vert(x + size / 2, y - size / 2, z)} ${vert(x + size / 2, y + size / 2, z)} ${vert(x - size / 2, y + size / 2, z)}`);
         return;
     }
 
@@ -84,12 +84,12 @@ function drawBlankOrSpot(x: number, y: number, vert: (x: number, y: number, z: n
         const sx = Math.sin(angle);
         const ny = Math.cos(nextAngle);
         const nx = Math.sin(nextAngle);
-        faces.push(`f ${vert(x + sx * radius, y + sy * radius, z)} ${vert(x + size / 2 * Math.sign(sx + nx), y + size / 2 * Math.sign(sy + ny), z)} ${vert(x + nx * radius, y + ny * radius, z)}`);
+        faces.push(`f ${vert(x + sx * radius, y + sy * radius, z)} ${vert(x + nx * radius, y + ny * radius, z)} ${vert(x + size / 2 * Math.sign(sx + nx), y + size / 2 * Math.sign(sy + ny), z)}`);
     }
 
-    faces.push(`f ${vert(x - size / 2, y + size / 2, z)} ${vert(x + size / 2, y + size / 2, z)} ${vert(x, y + radius, z)}`);
-    faces.push(`f ${vert(x + size / 2, y + size / 2, z)} ${vert(x + size / 2, y - size / 2, z)} ${vert(x + radius, y, z)}`);
-    faces.push(`f ${vert(x + size / 2, y - size / 2, z)} ${vert(x - size / 2, y - size / 2, z)} ${vert(x, y - radius, z)}`);
+    faces.push(`f ${vert(x + size / 2, y + size / 2, z)} ${vert(x - size / 2, y + size / 2, z)} ${vert(x, y + radius, z)}`);
+    faces.push(`f ${vert(x + size / 2, y - size / 2, z)} ${vert(x + size / 2, y + size / 2, z)} ${vert(x + radius, y, z)}`);
+    faces.push(`f ${vert(x - size / 2, y - size / 2, z)} ${vert(x + size / 2, y - size / 2, z)} ${vert(x, y - radius, z)}`);
     faces.push(`f ${vert(x - size / 2, y + size / 2, z)} ${vert(x - size / 2, y - size / 2, z)} ${vert(x - radius, y, z)}`);
 }
 

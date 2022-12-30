@@ -136,9 +136,9 @@ export class Die {
     readonly mass = 300;
     readonly inertia = 13;
 
-    constructor(private readonly labelColor = '#000000', private readonly diceColor = '#ffffff') {
-        const box = new THREE.BoxGeometry(DIE_SIZE, DIE_SIZE, DIE_SIZE);
-        this.object = new THREE.Mesh(box, this.getMaterials());
+    constructor(private readonly labelColor = '#000000', private readonly diceColor = '#ffffff', dieMesh: THREE.Group) {
+        /// const box = new THREE.BoxGeometry(DIE_SIZE, DIE_SIZE, DIE_SIZE);
+        this.object = dieMesh.clone(); // new THREE.Mesh(box, this.getMaterials());
 
         this.object.receiveShadow = true;
         this.object.castShadow = true;
@@ -182,7 +182,7 @@ export class Die {
         return materials;
     }
 
-    readonly object: THREE.Mesh;
+    readonly object: THREE.Group;
 }
 
 

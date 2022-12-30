@@ -158,6 +158,7 @@ export class RiichiRenderer {
 
     private async loadScene() {
         const tileObj = await this.objLoader.loadAsync("assets/tile.obj");
+        const dieObj = await this.objLoader.loadAsync("assets/die.obj");
         const tileTexture = await this.textureLoader.loadAsync('assets/tiles_texture.png');
         const tileTextureNormals = await this.textureLoader.loadAsync('assets/tiles_normals.png');
 
@@ -166,7 +167,7 @@ export class RiichiRenderer {
             tile.addToScene(this.scene);
             return tile;
         });
-        this.dice = new TestDice(this.scene, this.tiles);
+        this.dice = new TestDice(this.scene, this.tiles, dieObj);
     }
 
     private readonly objLoader = new OBJLoader();
