@@ -2,13 +2,16 @@ import { TileKind, tileKind, tileValue } from '@tenfanchombo/common';
 import { PlayerIndex, TileIndex, TileInfo, TilePosition, WALL_SIZE } from '@tenfanchombo/game-core';
 import * as THREE from 'three';
 
-const TILE_HEIGHT = 26;
-const TILE_WIDTH  = 19;
-const TILE_DEPTH  = 16;
+const TILE_HEIGHT = 0.026;
+const TILE_WIDTH  = 0.019;
+const TILE_DEPTH  = 0.016;
 
 const TILE_HEIGHT_2 = TILE_HEIGHT / 2;
 const TILE_WIDTH_2  = TILE_WIDTH  / 2;
 const TILE_DEPTH_2  = TILE_DEPTH  / 2;
+
+const WALL_FROM_CENTER = 0.2;
+const HAND_FROM_CENTER = 0.25;
 
 export class TileInstace {
     constructor(private readonly tileIndex: TileIndex, tile: THREE.Group, texture: THREE.Texture, normalMap: THREE.Texture) {
@@ -28,8 +31,6 @@ export class TileInstace {
         this.tile.receiveShadow = true;
         this.tile.traverse(child => {
             if (child instanceof THREE.Mesh) {
-                child.castShadow = true;
-
                 const material = new THREE.MeshPhongMaterial({
                     color: 0xFFFFFF,
                     vertexColors: true,
@@ -49,6 +50,7 @@ export class TileInstace {
 
                 child.material = material;
                 child.castShadow = true;
+                child.receiveShadow = true;
             }
         });
 
@@ -169,7 +171,7 @@ export class TileInstace {
                 const afterSplits = splitsOnThisSide.filter(ti => ti < this.tileIndex).length;
                 x += afterSplits * -TILE_WIDTH_2;
 
-                m.multiply(new THREE.Matrix4().makeTranslation(x, y, 200));
+                m.multiply(new THREE.Matrix4().makeTranslation(x, y, WALL_FROM_CENTER));
                 if (info.tile === null) {
                     m.multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2));
                 } else {
@@ -178,7 +180,7 @@ export class TileInstace {
                 break;
             }
             case TilePosition.Hand: {
-                m.multiply(new THREE.Matrix4().makeTranslation((info.index - 8) * TILE_WIDTH, info.public ? TILE_DEPTH_2 : TILE_HEIGHT_2, 250));
+                m.multiply(new THREE.Matrix4().makeTranslation((info.index - 8) * TILE_WIDTH, info.public ? TILE_DEPTH_2 : TILE_HEIGHT_2, HAND_FROM_CENTER));
                 if (info.public) {
                     m.multiply(new THREE.Matrix4().makeRotationX(Math.PI / -2));
                     // m.multiply(new THREE.Matrix4().makeRotationX(Math.PI / -2));
@@ -186,7 +188,7 @@ export class TileInstace {
                 break;
             }
             case TilePosition.Discards: {
-                m.multiply(new THREE.Matrix4().makeTranslation(Math.floor(TILE_WIDTH * ((info.index % 6) - 2.5)), TILE_DEPTH_2, Math.floor(TILE_HEIGHT * (2.75 + Math.floor(info.index / 6)))));
+                m.multiply(new THREE.Matrix4().makeTranslation(TILE_WIDTH * ((info.index % 6) - 2.5), TILE_DEPTH_2, TILE_HEIGHT * (2.75 + Math.floor(info.index / 6))));
                 m.multiply(new THREE.Matrix4().makeRotationX(Math.PI / -2));
                 break;
             }
