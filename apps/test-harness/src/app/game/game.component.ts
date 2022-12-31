@@ -5,7 +5,7 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { filterLogType, GameService, LogEntry, LogEntryType } from '@tenfanchombo/game-core';
 import { take, filter, skip, BehaviorSubject } from 'rxjs';
 import { TileClickBehaviour, TILE_CLICK_BEHAVIOUR } from '../state/state';
@@ -19,6 +19,7 @@ import { TableComponent } from '../table/table.component';
     standalone: true,
     imports: [
         CommonModule,
+        RouterModule,
         RendererHostComponent,
         TileClickBehaviourSelectComponent,
         TableComponent

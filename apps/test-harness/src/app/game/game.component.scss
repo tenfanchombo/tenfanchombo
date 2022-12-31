@@ -1,0 +1,10 @@
+rth-game {
+    .rth-game__return-to-lobby {
+        position: fixed;
+        top: 0;
+        right: 0;
+        cursor: pointer;
+        pointer-events: all;
+        z-index: 20000;
+    }
+}
