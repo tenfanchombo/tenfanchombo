@@ -21,11 +21,7 @@ export function createDiceAnimation(dice: readonly Die[], values: readonly numbe
         gravity: new CANNON.Vec3(0, -9.82, 0),
         broadphase: new CANNON.NaiveBroadphase(),
         allowSleep: true,
-        
     });
-    (world.solver as CANNON.GSSolver).iterations = 1000;
-    (world.solver as CANNON.GSSolver).tolerance = 1000;
-    console.log(world.solver);
 
     const floorBody = new CANNON.Body({
         mass: 0,
@@ -79,18 +75,18 @@ export function createDiceAnimation(dice: readonly Die[], values: readonly numbe
             linearDamping: 0.1,
             angularDamping: 0.1
         });
-        
+
         dieBody.position.set(ds.position.x, ds.position.y, ds.position.z);
         dieBody.quaternion.set(ds.quaternion.x, ds.quaternion.y, ds.quaternion.z, ds.quaternion.w);
-        const xRand = 0; // Math.random() * 20;
-        const yRand = 0; // Math.random() * 20;
-        const zRand = 0; // Math.random() * 20;
+        const xRand = Math.random() * 0.02;
+        const yRand = Math.random() * 0.2;
+        const zRand = Math.random() * 0.1;
         dieBody.velocity.set(0.025 + xRand, 0.040 + yRand, -1.50 + zRand);
-        // dieBody.angularVelocity.set(
-        //         20 * Math.random() - 10,
-        //         20 * Math.random() - 10,
-        //         20 * Math.random() - 10
-        //     );
+        dieBody.angularVelocity.set(
+            20 * Math.random() - 10,
+            20 * Math.random() - 10,
+            20 * Math.random() - 10
+        );
         world.addBody(dieBody);
         return dieBody;
     });
@@ -115,8 +111,6 @@ export function createDiceAnimation(dice: readonly Die[], values: readonly numbe
         for (let sf = 0; sf < STEPS_PER_FRAME; sf++) {
             world.step(world.default_dt / STEPS_PER_FRAME);
         }
-
-        // world.step(world.default_dt);
         time += world.default_dt * 4;
         times.push(time);
         for (let di = 0; di < dice.length; di++) {
@@ -125,7 +119,8 @@ export function createDiceAnimation(dice: readonly Die[], values: readonly numbe
             quaternionTracks[di].push(db.quaternion.x, db.quaternion.y, db.quaternion.z, db.quaternion.w);
         }
     }
-    console.log(`simulated whole world in ${performance.now() - p}, using ${positionTracks[0].length / 3} frames`);
+
+    console.info(`simulated die roll in ${Math.ceil(performance.now() - p)}ms, taking ${positionTracks[0].length / 3} frames`);
 
     return dice.map((d, i) => {
         const mixer = new THREE.AnimationMixer(d.object);
@@ -143,16 +138,8 @@ export function createDiceAnimation(dice: readonly Die[], values: readonly numbe
 }
 
 export class Die {
-    //readonly faceTexts = ['0', '1', '2', '3', '4', '5', '6'];
-    readonly faceTexts = ['px', 'nx', 'py', 'ny', 'pz', 'nz'];
-
-    readonly textMargin = 1.0;
-    readonly mass = 300;
-    readonly inertia = 13;
-
-    constructor(private readonly labelColor = '#000000', private readonly diceColor = '#ffffff', dieMesh: THREE.Group) {
-        /// const box = new THREE.BoxGeometry(DIE_SIZE, DIE_SIZE, DIE_SIZE);
-        this.object = dieMesh.clone(); // new THREE.Mesh(box, this.getMaterials());
+    constructor(dieMesh: THREE.Group) {
+        this.object = dieMesh.clone();
 
         this.object.receiveShadow = true;
         this.object.castShadow = true;
@@ -163,91 +150,5 @@ export class Die {
         this.object.position.set(0, DIE_SIZE / 2, 0);
     }
 
-    createTextTexture(text: string) {
-        const canvas = document.createElement("canvas");
-        const context = canvas.getContext("2d");
-        const ts = 64;
-        canvas.width = canvas.height = ts;
-        if (context) {
-            context.font = ts / (1 + 2 * this.textMargin) + "pt Arial";
-            context.fillStyle = this.diceColor;
-            context.fillRect(0, 0, canvas.width, canvas.height);
-            context.textAlign = "center";
-            context.textBaseline = "middle";
-            context.fillStyle = this.labelColor;
-            context.fillText(text, canvas.width / 2, canvas.height / 2);
-        }
-        const texture = new THREE.Texture(canvas);
-        texture.needsUpdate = true;
-        return texture;
-    }
-
-    getMaterials() {
-        const materials = [];
-        for (let i = 0; i < this.faceTexts.length; ++i) {
-            const texture = this.createTextTexture(this.faceTexts[i]);
-
-            materials.push(new THREE.MeshPhongMaterial({
-                specular: 0x172022,
-                color: 0xf0f0f0,
-                shininess: 40,
-                flatShading: true,
-                //shading: THREE.FlatShading,
-                map: texture
-            }));
-        }
-        return materials;
-    }
-
     readonly object: THREE.Group;
 }
-
-
-/*
-resetBody() {
-    this.body.vlambda = new CANNON.Vec3();
-    //this.body.collisionResponse = true;
-    this.body.position = new CANNON.Vec3();
-    this.body.previousPosition = new CANNON.Vec3();
-    this.body.initPosition = new CANNON.Vec3();
-    this.body.velocity = new CANNON.Vec3();
-    this.body.initVelocity = new CANNON.Vec3();
-    this.body.force = new CANNON.Vec3();
-    //this.body.sleepState = 0;
-    //this.body.timeLastSleepy = 0;
-    //this.body._wakeUpAfterNarrowphase = false;
-    this.body.torque = new CANNON.Vec3();
-    this.body.quaternion = new CANNON.Quaternion();
-    this.body.initQuaternion = new CANNON.Quaternion();
-    this.body.angularVelocity = new CANNON.Vec3();
-    this.body.initAngularVelocity = new CANNON.Vec3();
-    this.body.interpolatedPosition = new CANNON.Vec3();
-    this.body.interpolatedQuaternion = new CANNON.Quaternion();
-    this.body.inertia = new CANNON.Vec3();
-    this.body.invInertia = new CANNON.Vec3();
-    this.body.invInertiaWorld = new CANNON.Mat3();
-    //this.body.invMassSolve = 0;
-    this.body.invInertiaSolve = new CANNON.Vec3();
-    this.body.invInertiaWorldSolve = new CANNON.Mat3();
-    //this.body.aabb = new CANNON.AABB();
-    //this.body.aabbNeedsUpdate = true;
-    this.body.wlambda = new CANNON.Vec3();
-
-    this.body.updateMassProperties();
-}
-
-    getUpsideValue() {
-        const points = [
-            new CANNON.Vec3( 1,  0,  0),
-            new CANNON.Vec3(-1,  0,  0),
-            new CANNON.Vec3( 0,  1,  0),
-            new CANNON.Vec3( 0, -1,  0),
-            new CANNON.Vec3( 0,  0,  1),
-            new CANNON.Vec3( 0,  0, -1),
-        ]
-
-        const translatedPoints = points.map(p => Math.round(this.body.pointToWorldFrame(p).y));
-        return translatedPoints.indexOf(Math.max(...translatedPoints));
-    }
-
-*/

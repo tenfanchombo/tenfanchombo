@@ -4,9 +4,8 @@ import { TileInstance } from "./tile-instance";
 
 export class TestDice {
     constructor(scene: THREE.Scene, private readonly tiles: TileInstance[], dieMesh: THREE.Group) {
-        const colors = ["#ff0000", "#ffff00", "#00ff00", "#0000ff", "#ff00ff"];
         for (let i = 0; i < 2; i++) {
-            const die = new Die('#000000', colors[i], dieMesh);
+            const die = new Die(dieMesh);
             scene.add(die.object);
             this.dice.push(die);
         }
