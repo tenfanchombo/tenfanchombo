@@ -169,22 +169,32 @@ for (let bi = 0; bi < BEVEL_STEPS; bi++) {
     face(bv(-bcA, +bsA, -inO), bv(-bcA, +bsA, +inO), bv(-bcB, +bsB, +inO), bv(-bcB, +bsB, -inO));
 }
 
-function discoPoint(m: number, n: number) {
+function discoPoint(m: number, n: number, sx: 1 | -1, sy: 1 | -1, sz: 1 | -1) {
     const x = Math.sin(Math.PI / 2 * m / BEVEL_STEPS) * Math.cos(Math.PI / 2 * n / BEVEL_STEPS);
     const y = Math.sin(Math.PI / 2 * m / BEVEL_STEPS) * Math.sin(Math.PI / 2 * n / BEVEL_STEPS);
     const z = Math.cos(Math.PI / 2 * m / BEVEL_STEPS);
-    return `${vertex(innerOffset + BEVEL * x, innerOffset + BEVEL * y, innerOffset + BEVEL * z)}//${normal(x, y, z)}`;
+    return `${vertex((innerOffset + BEVEL * x) * sx, (innerOffset + BEVEL * y) * sy, (innerOffset + BEVEL * z) * sz)}//${normal(x * sx, y * sy, z * sz)}`;
 }
 
+
 // corners 
-for (let m = 0; m < BEVEL_STEPS; m++)
-{
-    for (var n = 0; n < BEVEL_STEPS; n++)
-    {
-        face(discoPoint(m + 0, n + 0),
-             discoPoint(m + 1, n + 0),
-             discoPoint(m + 1, n + 1),
-             discoPoint(m + 0, n + 1));
+for (let c = 0; c < 8; c++) {
+    for (let m = 0; m < BEVEL_STEPS; m++) {
+        for (let n = 0; n < BEVEL_STEPS; n++) {
+            const sx = (c & 1) ? -1 : 1, sy = (c & 2) ? -1 : 1, sz = (c & 4) ? -1 : 1;
+            const points = [
+                discoPoint(m + 0, n + 0, sx, sy, sz),
+                discoPoint(m + 1, n + 0, sx, sy, sz),
+                discoPoint(m + 1, n + 1, sx, sy, sz),
+                discoPoint(m + 0, n + 1, sx, sy, sz),
+            ];
+            if (c == 1 || c == 2 || c == 4 || c == 7) { // has odd number of inverts
+                face(points[0], points[3], points[2], points[1]);
+            } else {
+                face(...points);
+            }
+            
+        };
     }
 }
 
