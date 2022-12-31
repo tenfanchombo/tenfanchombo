@@ -138,87 +138,54 @@ const bevelAngles = new Array(BEVEL_STEPS + 1).fill(1).map((_, i) => ({
     s: Math.sin(Math.PI * i / 2 / BEVEL_STEPS) * BEVEL
 }))
 
-// bevels
 const innerOffset = (DIE_SIZE / 2) - BEVEL;
+
+function bv(x: number, y: number, z: number) {
+    return `${vertex(x, y, z)}//${normal(x - innerOffset * Math.sign(x), y - innerOffset * Math.sign(y), z - innerOffset * Math.sign(z))}}`;
+}
+
+// bevels
 for (let bi = 0; bi < BEVEL_STEPS; bi++) {
-    face(
-        vertex(innerOffset + bevelAngles[bi + 0].c, -innerOffset, innerOffset + bevelAngles[bi + 0].s),
-        vertex(innerOffset + bevelAngles[bi + 0].c, +innerOffset, innerOffset + bevelAngles[bi + 0].s),
-        vertex(innerOffset + bevelAngles[bi + 1].c, +innerOffset, innerOffset + bevelAngles[bi + 1].s),
-        vertex(innerOffset + bevelAngles[bi + 1].c, -innerOffset, innerOffset + bevelAngles[bi + 1].s),
-    );
-    face(
-        vertex(+innerOffset, innerOffset + bevelAngles[bi + 0].c, innerOffset + bevelAngles[bi + 0].s),
-        vertex(-innerOffset, innerOffset + bevelAngles[bi + 0].c, innerOffset + bevelAngles[bi + 0].s),
-        vertex(-innerOffset, innerOffset + bevelAngles[bi + 1].c, innerOffset + bevelAngles[bi + 1].s),
-        vertex(+innerOffset, innerOffset + bevelAngles[bi + 1].c, innerOffset + bevelAngles[bi + 1].s),
-    );
-    face(
-        vertex(innerOffset + bevelAngles[bi + 0].c, innerOffset + bevelAngles[bi + 0].s, +innerOffset),
-        vertex(innerOffset + bevelAngles[bi + 0].c, innerOffset + bevelAngles[bi + 0].s, -innerOffset),
-        vertex(innerOffset + bevelAngles[bi + 1].c, innerOffset + bevelAngles[bi + 1].s, -innerOffset),
-        vertex(innerOffset + bevelAngles[bi + 1].c, innerOffset + bevelAngles[bi + 1].s, +innerOffset),
-    );
+    const inO = innerOffset;
+    const bcA = inO + Math.cos(Math.PI * (bi + 0) / 2 / BEVEL_STEPS) * BEVEL;
+    const bcB = inO + Math.cos(Math.PI * (bi + 1) / 2 / BEVEL_STEPS) * BEVEL;
+    const bsA = inO + Math.sin(Math.PI * (bi + 0) / 2 / BEVEL_STEPS) * BEVEL;
+    const bsB = inO + Math.sin(Math.PI * (bi + 1) / 2 / BEVEL_STEPS) * BEVEL;
 
+    face(bv(+bcA, -inO, +bsA), bv(+bcA, +inO, +bsA), bv(+bcB, +inO, +bsB), bv(+bcB, -inO, +bsB));
+    face(bv(+inO, +bcA, +bsA), bv(-inO, +bcA, +bsA), bv(-inO, +bcB, +bsB), bv(+inO, +bcB, +bsB));
+    face(bv(+bcA, +bsA, +inO), bv(+bcA, +bsA, -inO), bv(+bcB, +bsB, -inO), bv(+bcB, +bsB, +inO));
 
-    face(
-        vertex(-innerOffset - bevelAngles[bi + 0].c, -innerOffset, -innerOffset - bevelAngles[bi + 0].s),
-        vertex(-innerOffset - bevelAngles[bi + 0].c, +innerOffset, -innerOffset - bevelAngles[bi + 0].s),
-        vertex(-innerOffset - bevelAngles[bi + 1].c, +innerOffset, -innerOffset - bevelAngles[bi + 1].s),
-        vertex(-innerOffset - bevelAngles[bi + 1].c, -innerOffset, -innerOffset - bevelAngles[bi + 1].s),
-    );
-    face(
-        vertex(+innerOffset, -innerOffset - bevelAngles[bi + 0].c, -innerOffset - bevelAngles[bi + 0].s),
-        vertex(-innerOffset, -innerOffset - bevelAngles[bi + 0].c, -innerOffset - bevelAngles[bi + 0].s),
-        vertex(-innerOffset, -innerOffset - bevelAngles[bi + 1].c, -innerOffset - bevelAngles[bi + 1].s),
-        vertex(+innerOffset, -innerOffset - bevelAngles[bi + 1].c, -innerOffset - bevelAngles[bi + 1].s),
-    );
-    face(
-        vertex(-innerOffset - bevelAngles[bi + 0].c, -innerOffset - bevelAngles[bi + 0].s, +innerOffset),
-        vertex(-innerOffset - bevelAngles[bi + 0].c, -innerOffset - bevelAngles[bi + 0].s, -innerOffset),
-        vertex(-innerOffset - bevelAngles[bi + 1].c, -innerOffset - bevelAngles[bi + 1].s, -innerOffset),
-        vertex(-innerOffset - bevelAngles[bi + 1].c, -innerOffset - bevelAngles[bi + 1].s, +innerOffset),
-    );
+    face(bv(-bcA, -inO, -bsA), bv(-bcA, +inO, -bsA), bv(-bcB, +inO, -bsB), bv(-bcB, -inO, -bsB));
+    face(bv(+inO, -bcA, -bsA), bv(-inO, -bcA, -bsA), bv(-inO, -bcB, -bsB), bv(+inO, -bcB, -bsB));
+    face(bv(-bcA, -bsA, +inO), bv(-bcA, -bsA, -inO), bv(-bcB, -bsB, -inO), bv(-bcB, -bsB, +inO));
 
+    face(bv(+bcA, +inO, -bsA), bv(+bcA, -inO, -bsA), bv(+bcB, -inO, -bsB), bv(+bcB, +inO, -bsB));
+    face(bv(-inO, +bcA, -bsA), bv(+inO, +bcA, -bsA), bv(+inO, +bcB, -bsB), bv(-inO, +bcB, -bsB));
+    face(bv(+bcA, -bsA, -inO), bv(+bcA, -bsA, +inO), bv(+bcB, -bsB, +inO), bv(+bcB, -bsB, -inO));
 
-    face(
-        vertex(innerOffset + bevelAngles[bi + 0].c, +innerOffset, -innerOffset - bevelAngles[bi + 0].s),
-        vertex(innerOffset + bevelAngles[bi + 0].c, -innerOffset, -innerOffset - bevelAngles[bi + 0].s),
-        vertex(innerOffset + bevelAngles[bi + 1].c, -innerOffset, -innerOffset - bevelAngles[bi + 1].s),
-        vertex(innerOffset + bevelAngles[bi + 1].c, +innerOffset, -innerOffset - bevelAngles[bi + 1].s),
-    );
-    face(
-        vertex(-innerOffset, innerOffset + bevelAngles[bi + 0].c, -innerOffset - bevelAngles[bi + 0].s),
-        vertex(+innerOffset, innerOffset + bevelAngles[bi + 0].c, -innerOffset - bevelAngles[bi + 0].s),
-        vertex(+innerOffset, innerOffset + bevelAngles[bi + 1].c, -innerOffset - bevelAngles[bi + 1].s),
-        vertex(-innerOffset, innerOffset + bevelAngles[bi + 1].c, -innerOffset - bevelAngles[bi + 1].s),
-    );
-    face(
-        vertex(innerOffset + bevelAngles[bi + 0].c, -innerOffset - bevelAngles[bi + 0].s, -innerOffset),
-        vertex(innerOffset + bevelAngles[bi + 0].c, -innerOffset - bevelAngles[bi + 0].s, +innerOffset),
-        vertex(innerOffset + bevelAngles[bi + 1].c, -innerOffset - bevelAngles[bi + 1].s, +innerOffset),
-        vertex(innerOffset + bevelAngles[bi + 1].c, -innerOffset - bevelAngles[bi + 1].s, -innerOffset),
-    );
+    face(bv(-bcA, +inO, +bsA), bv(-bcA, -inO, +bsA), bv(-bcB, -inO, +bsB), bv(-bcB, +inO, +bsB));
+    face(bv(-inO, -bcA, +bsA), bv(+inO, -bcA, +bsA), bv(+inO, -bcB, +bsB), bv(-inO, -bcB, +bsB));
+    face(bv(-bcA, +bsA, -inO), bv(-bcA, +bsA, +inO), bv(-bcB, +bsB, +inO), bv(-bcB, +bsB, -inO));
+}
 
+function discoPoint(m: number, n: number) {
+    const x = Math.sin(Math.PI / 2 * m / BEVEL_STEPS) * Math.cos(Math.PI / 2 * n / BEVEL_STEPS);
+    const y = Math.sin(Math.PI / 2 * m / BEVEL_STEPS) * Math.sin(Math.PI / 2 * n / BEVEL_STEPS);
+    const z = Math.cos(Math.PI / 2 * m / BEVEL_STEPS);
+    return `${vertex(innerOffset + BEVEL * x, innerOffset + BEVEL * y, innerOffset + BEVEL * z)}//${normal(x, y, z)}`;
+}
 
-    face(
-        vertex(-innerOffset - bevelAngles[bi + 0].c, +innerOffset, innerOffset + bevelAngles[bi + 0].s),
-        vertex(-innerOffset - bevelAngles[bi + 0].c, -innerOffset, innerOffset + bevelAngles[bi + 0].s),
-        vertex(-innerOffset - bevelAngles[bi + 1].c, -innerOffset, innerOffset + bevelAngles[bi + 1].s),
-        vertex(-innerOffset - bevelAngles[bi + 1].c, +innerOffset, innerOffset + bevelAngles[bi + 1].s),
-    );
-    face(
-        vertex(-innerOffset, -innerOffset - bevelAngles[bi + 0].c, innerOffset + bevelAngles[bi + 0].s),
-        vertex(+innerOffset, -innerOffset - bevelAngles[bi + 0].c, innerOffset + bevelAngles[bi + 0].s),
-        vertex(+innerOffset, -innerOffset - bevelAngles[bi + 1].c, innerOffset + bevelAngles[bi + 1].s),
-        vertex(-innerOffset, -innerOffset - bevelAngles[bi + 1].c, innerOffset + bevelAngles[bi + 1].s),
-    );
-    face(
-        vertex(-innerOffset - bevelAngles[bi + 0].c, innerOffset + bevelAngles[bi + 0].s, -innerOffset),
-        vertex(-innerOffset - bevelAngles[bi + 0].c, innerOffset + bevelAngles[bi + 0].s, +innerOffset),
-        vertex(-innerOffset - bevelAngles[bi + 1].c, innerOffset + bevelAngles[bi + 1].s, +innerOffset),
-        vertex(-innerOffset - bevelAngles[bi + 1].c, innerOffset + bevelAngles[bi + 1].s, -innerOffset),
-    );
+// corners 
+for (let m = 0; m < BEVEL_STEPS; m++)
+{
+    for (var n = 0; n < BEVEL_STEPS; n++)
+    {
+        face(discoPoint(m + 0, n + 0),
+             discoPoint(m + 1, n + 0),
+             discoPoint(m + 1, n + 1),
+             discoPoint(m + 0, n + 1));
+    }
 }
 
 const content = 'mtllib die.mtl\n\n'
