@@ -3,10 +3,15 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
+import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper'
+
+import Stats from 'three/examples/jsm/libs/stats.module'
+
+
 import { TestDice } from './dice';
 import { TileInstance } from './tile-instance';
 
-const AMBIENT_LIGHT_INTENSITY = 0.2;
+const AMBIENT_LIGHT_INTENSITY = 0.3;
 const TABLE_SIZE = 0.7;
 
 export class RiichiRenderer {
@@ -21,6 +26,9 @@ export class RiichiRenderer {
             canvas: canvas,
             antialias: true
         });
+
+        this.stats = Stats();
+        document.body.append(this.stats.dom);
 
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.shadowMap.enabled = true;
@@ -64,7 +72,7 @@ export class RiichiRenderer {
         this.scene.add(light);
         light.shadow.mapSize.width = 2048;
         light.shadow.mapSize.height = 2048;
-        light.shadow.bias = -0.01; // TODO: review this value. it is needed as it prevents the striping caused by self-casting shadows
+        light.shadow.bias = -0.001; // TODO: review this value. it is needed as it prevents the striping caused by self-casting shadows
         light.shadow.radius = 3;
         light.shadow.camera.near = 1;
         light.shadow.camera.far = 2;
@@ -120,6 +128,7 @@ export class RiichiRenderer {
     }
 
     private tiles: TileInstance[] = [];
+    private readonly stats: Stats;
 
     private async loadScene() {
         const tileObj = await this.objLoader.loadAsync("assets/tile.obj");
@@ -136,7 +145,12 @@ export class RiichiRenderer {
         this.objLoader.setMaterials(dieMaterials)
         const dieObj = await this.objLoader.loadAsync("assets/die.obj");
         this.dice = new TestDice(this.scene, this.tiles, dieObj);
+
+        this.normalHelper = new VertexNormalsHelper( this.dice.dice[0].object.children[0], 0.0001, 0xff8000 );
+        // this.scene.add(this.normalHelper);
     }
+
+    private normalHelper?: VertexNormalsHelper;
 
     private readonly objLoader = new OBJLoader();
     private readonly mtlLoader = new MTLLoader();
@@ -147,6 +161,7 @@ export class RiichiRenderer {
     private readonly scene: THREE.Scene;
 
     private render = () => {
+        requestAnimationFrame(this.render);
         this.resizeRendererToDisplaySize();
 
         const canvas = this.renderer.domElement;
@@ -158,10 +173,11 @@ export class RiichiRenderer {
         }
 
         this.dice?.animateIfNeeded();
+        this.normalHelper?.update();
 
         this.renderer.render(this.scene, this.camera);
 
-        requestAnimationFrame(this.render);
+        this.stats.update();
     }
 
     private resizeRendererToDisplaySize() {

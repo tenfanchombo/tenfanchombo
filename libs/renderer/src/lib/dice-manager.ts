@@ -6,25 +6,31 @@ import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
 import { TileInstance, TILE_DEPTH_2, TILE_HEIGHT_2, TILE_WIDTH_2 } from './tile-instance';
 
-const DIE_SIZE = 20;
-const DIE_MASS = 300;
+const DIE_SIZE = 0.016;
+const DIE_MASS = 0.0041;
 
 export function createDiceAnimation(dice: readonly Die[], values: readonly number[], tiles: readonly TileInstance[]): THREE.AnimationAction[] {
-    const diceBodyMaterial = new CANNON.Material();
-    const floorBodyMaterial = new CANNON.Material();
-    const barrierBodyMaterial = new CANNON.Material();
+    //const diceBodyMaterial = new CANNON.Material();
+    //const floorBodyMaterial = new CANNON.Material();
+    //const barrierBodyMaterial = new CANNON.Material();
     const tileShape = new CANNON.Box(new CANNON.Vec3(TILE_WIDTH_2, TILE_HEIGHT_2, TILE_DEPTH_2));
-    const tileMaterial = new CANNON.Material();
+    //const tileMaterial = new CANNON.Material();
 
     const p = performance.now();
-    const world = new CANNON.World();
-    world.gravity.set(0, -9.82 * 20, 0);
-    world.broadphase = new CANNON.NaiveBroadphase();
-    world.allowSleep = true;
+    const world = new CANNON.World({
+        gravity: new CANNON.Vec3(0, -9.82, 0),
+        broadphase: new CANNON.NaiveBroadphase(),
+        allowSleep: true,
+        
+    });
+    (world.solver as CANNON.GSSolver).iterations = 1000;
+    (world.solver as CANNON.GSSolver).tolerance = 1000;
+    console.log(world.solver);
+
     const floorBody = new CANNON.Body({
         mass: 0,
         shape: new CANNON.Plane(),
-        material: floorBodyMaterial,
+        //material: floorBodyMaterial,
         type: CANNON.BODY_TYPES.STATIC
     });
 
@@ -34,22 +40,22 @@ export function createDiceAnimation(dice: readonly Die[], values: readonly numbe
     );
     world.addBody(floorBody);
 
-    world.addContactMaterial(
-        new CANNON.ContactMaterial(floorBodyMaterial, diceBodyMaterial, { friction: 0.01, restitution: 0.5 })
-    );
-    world.addContactMaterial(
-        new CANNON.ContactMaterial(barrierBodyMaterial, diceBodyMaterial, { friction: 0, restitution: 1.0 })
-    );
-    world.addContactMaterial(
-        new CANNON.ContactMaterial(diceBodyMaterial, diceBodyMaterial, { friction: 0, restitution: 0.5 })
-    );
+    // world.addContactMaterial(
+    //     new CANNON.ContactMaterial(floorBodyMaterial, diceBodyMaterial, { /* friction: 0.01, restitution: 0 .5 */})
+    // );
+    // world.addContactMaterial(
+    //     new CANNON.ContactMaterial(barrierBodyMaterial, diceBodyMaterial, { /* friction: 0, restitution: 1.0  */})
+    // );
+    // world.addContactMaterial(
+    //     new CANNON.ContactMaterial(diceBodyMaterial, diceBodyMaterial, { /* friction: 0, restitution: 0.5  */})
+    // );
 
     for (const tile of tiles) {
         const tileBody = new CANNON.Body({
             mass: 0,
             shape: tileShape,
-            material: tileMaterial,
-            type: CANNON.BODY_TYPES.STATIC
+            //material: tileMaterial,
+            // type: CANNON.BODY_TYPES.STATIC
         });
 
         tileBody.position.set(tile.tile.position.x, tile.tile.position.y, tile.tile.position.z);
@@ -59,7 +65,7 @@ export function createDiceAnimation(dice: readonly Die[], values: readonly numbe
     }
 
     const dieStartingPoints = dice.map((d, i) => ({
-        position: new THREE.Vector3(15 + i * 40, 40 + Math.random() * 15, 250 + Math.random() * 40),
+        position: new THREE.Vector3(0.015 + i * 0.040, 0.10 + Math.random() * 0.015, 0.250 + Math.random() * 0.040),
         quaternion: new THREE.Quaternion().random()
     }));
 
@@ -67,31 +73,32 @@ export function createDiceAnimation(dice: readonly Die[], values: readonly numbe
         const dieBody = new CANNON.Body({
             mass: DIE_MASS,
             shape: new CANNON.Box(new CANNON.Vec3(DIE_SIZE / 2, DIE_SIZE / 2, DIE_SIZE / 2)),
-            material: diceBodyMaterial,
-            allowSleep: true
-            // type: CANNON.BODY_TYPES.
+            // material: diceBodyMaterial,
+            allowSleep: true,
+            type: CANNON.BODY_TYPES.DYNAMIC,
+            linearDamping: 0.1,
+            angularDamping: 0.1
         });
-        dieBody.linearDamping = 0.1;
-        dieBody.angularDamping = 0.1;
+        
         dieBody.position.set(ds.position.x, ds.position.y, ds.position.z);
         dieBody.quaternion.set(ds.quaternion.x, ds.quaternion.y, ds.quaternion.z, ds.quaternion.w);
         const xRand = 0; // Math.random() * 20;
         const yRand = 0; // Math.random() * 20;
         const zRand = 0; // Math.random() * 20;
-        dieBody.velocity.set(25 + xRand, 40 + yRand, -150 + zRand);
-        dieBody.angularVelocity.set(
-                20 * Math.random() - 10,
-                20 * Math.random() - 10,
-                20 * Math.random() - 10
-            );
+        dieBody.velocity.set(0.025 + xRand, 0.040 + yRand, -1.50 + zRand);
+        // dieBody.angularVelocity.set(
+        //         20 * Math.random() - 10,
+        //         20 * Math.random() - 10,
+        //         20 * Math.random() - 10
+        //     );
         world.addBody(dieBody);
         return dieBody;
     });
 
     world.hasActiveBodies = true;
     
-    let time = 1;
-    const times = [0, 0.6];
+    let time = 0.6;
+    const times = [0, time];
     const positionTracks: number[][] = dice.map((d, i) => [
         ...d.object.position.toArray(),
         ...dieBodies[i].position.toArray()
@@ -102,9 +109,15 @@ export function createDiceAnimation(dice: readonly Die[], values: readonly numbe
     ]);
     
     const MAX_FRAMES = 500;
+    const STEPS_PER_FRAME = 10;
+    console.log(world.default_dt);
     for (let frame = 0; frame < MAX_FRAMES && world.hasActiveBodies; frame++) {
-        world.step(world.default_dt);
-        time += world.default_dt;
+        for (let sf = 0; sf < STEPS_PER_FRAME; sf++) {
+            world.step(world.default_dt / STEPS_PER_FRAME);
+        }
+
+        // world.step(world.default_dt);
+        time += world.default_dt * 4;
         times.push(time);
         for (let di = 0; di < dice.length; di++) {
             const db = dieBodies[di];
@@ -112,7 +125,7 @@ export function createDiceAnimation(dice: readonly Die[], values: readonly numbe
             quaternionTracks[di].push(db.quaternion.x, db.quaternion.y, db.quaternion.z, db.quaternion.w);
         }
     }
-    console.log('simulated whole world in', performance.now() - p);
+    console.log(`simulated whole world in ${performance.now() - p}, using ${positionTracks[0].length / 3} frames`);
 
     return dice.map((d, i) => {
         const mixer = new THREE.AnimationMixer(d.object);
@@ -122,6 +135,7 @@ export function createDiceAnimation(dice: readonly Die[], values: readonly numbe
         const animationClip = new THREE.AnimationClip(undefined, time, [positionTrack, quaternionTrack]);
         const action = mixer.clipAction(animationClip);
         action.setLoop(THREE.LoopOnce, 1);
+        mixer.timeScale = 1;
         action.clampWhenFinished = true;
         action.play();
         return action;
@@ -142,6 +156,9 @@ export class Die {
 
         this.object.receiveShadow = true;
         this.object.castShadow = true;
+        
+        this.object.children[0].receiveShadow = true;
+        this.object.children[0].castShadow = true;
 
         this.object.position.set(0, DIE_SIZE / 2, 0);
     }

@@ -17,7 +17,7 @@ export class TestDice {
         this.animationClock = new THREE.Clock();
     }
 
-    private readonly dice: Die[] = [];
+    readonly dice: Die[] = [];
     private animations: THREE.AnimationAction[] | undefined;
     private animationClock: THREE.Clock | undefined;
 
