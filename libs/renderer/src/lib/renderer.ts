@@ -47,7 +47,7 @@ export class RiichiRenderer {
         const texture = loader.load('assets/table.png');
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
-        texture.magFilter = THREE.NearestFilter;
+        texture.magFilter = THREE.LinearFilter;
         const repeats = 7; // tableSize / 100;
         texture.repeat.set(repeats, repeats);
 
