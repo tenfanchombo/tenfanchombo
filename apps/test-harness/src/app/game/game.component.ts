@@ -30,7 +30,7 @@ import { TileClickBehaviourSelectComponent } from '../tile-click-behaviour-selec
     providers: [
         {
             provide: TILE_CLICK_BEHAVIOUR,
-            useValue: new BehaviorSubject<TileClickBehaviour>(TileClickBehaviour.SplitAfter)
+            useValue: new BehaviorSubject<TileClickBehaviour>(TileClickBehaviour.Take)
         }
     ],
     templateUrl: './game.component.html',
