@@ -1,7 +1,3 @@
-/**
- * Partly inspired by Michael Wolf's threejs-dice: https://github.com/byWulf/threejs-dice
- */
-
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
 
@@ -12,14 +8,26 @@ export const DIE_MASS = 0.0041;
 
 const PROFILE_SIMULATION = false;
 
+const P = +1;
+const N = -1;
+const rotateValueToSide: (number[] | undefined)[][] = [
+    [], //  x       1          2          3          4          5          6
+    /* 1 */[[], undefined, [0, 0, P], [N, 0, 0], [P, 0, 0], [0, 0, N], [P, 0, 0]],
+    /* 2 */[[], [0, 0, N], undefined, [0, N, 0], [0, P, 0], [0, 0, N], [0, 0, 1]],
+    /* 3 */[[], [P, 0, 0], [0, P, 0], undefined, [P, 0, 0], [0, N, 0], [N, 0, 0]],
+    /* 4 */[[], [N, 0, 0], [0, N, 0], [0, P, 0], undefined, [0, P, 0], [P, 0, 0]],
+    /* 5 */[[], [0, 0, 1], [0, P, 0], [0, P, 0], [0, N, 0], undefined, [0, 0, N]],
+    /* 6 */[[], [0, 0, N], [0, 0, N], [P, 0, 0], [N, 0, 0], [0, 0, P], undefined],
+];
+
 function getDisplayedValue(dieBody: CANNON.Body) {
     const points = [
-        /* 1 */ new CANNON.Vec3(0, -1, 0),
-        /* 2 */ new CANNON.Vec3(1, 0, 0),
-        /* 3 */ new CANNON.Vec3(0, 0, 1),
-        /* 4 */ new CANNON.Vec3(0, 0, -1),
-        /* 5 */ new CANNON.Vec3(-1, 0, 0),
-        /* 6 */ new CANNON.Vec3(0, 1, 0),
+        /* 1 */ new CANNON.Vec3(0, N, 0),
+        /* 2 */ new CANNON.Vec3(P, 0, 0),
+        /* 3 */ new CANNON.Vec3(0, 0, P),
+        /* 4 */ new CANNON.Vec3(0, 0, N),
+        /* 5 */ new CANNON.Vec3(N, 0, 0),
+        /* 6 */ new CANNON.Vec3(0, P, 0),
     ]
 
     const translatedPoints = points.map(p => dieBody.pointToWorldFrame(p).y);
@@ -148,16 +156,6 @@ export function createDiceAnimation(dice: readonly Die[], values: readonly numbe
         const value = values[di];
 
         const displayedValue = getDisplayedValue(dieBody);
-
-        const rotateValueToSide: (number[] | undefined)[][] = [
-            [],  //   x         1             2             3             4             5             6
-            /* 1 */[[], undefined, [0, 0, +1], [-1, 0, 0], [+1, 0, 0], [0, 0, -1], [+1, 0, 0]],
-            /* 2 */[[], [0, 0, -1], undefined, [0, -1, 0], [0, +1, 0], [0, 0, -1], [0, 0, 1]],
-            /* 3 */[[], [+1, 0, 0], [0, +1, 0], undefined, [+1, 0, 0], [0, -1, 0], [-1, 0, 0]],
-            /* 4 */[[], [-1, 0, 0], [0, -1, 0], [0, +1, 0], undefined, [0, +1, 0], [+1, 0, 0]],
-            /* 5 */[[], [0, 0, 1], [0, +1, 0], [0, +1, 0], [0, -1, 0], undefined, [0, 0, -1]],
-            /* 6 */[[], [0, 0, -1], [0, 0, -1], [+1, 0, 0], [-1, 0, 0], [0, 0, +1], undefined],
-        ];
 
         const rotationAxis = rotateValueToSide[value][displayedValue];
         // console.log(`${displayedValue} was rolled, wanted ${value}`);
