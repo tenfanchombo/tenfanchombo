@@ -6,8 +6,23 @@ import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
 import { TileInstance, TILE_DEPTH_2, TILE_HEIGHT_2, TILE_WIDTH_2 } from './tile-instance';
 
-const DIE_SIZE = 0.016;
-const DIE_MASS = 0.0041;
+export const DIE_SIZE = 0.016;
+export const DIE_MASS = 0.0041;
+
+function getDisplayedValue(dieBody: CANNON.Body) {
+    const points = [
+        /* 1 */ new CANNON.Vec3( 0, -1,  0),
+        /* 2 */ new CANNON.Vec3( 1,  0,  0),
+        /* 3 */ new CANNON.Vec3( 0,  0,  1),
+        /* 4 */ new CANNON.Vec3( 0,  0, -1),
+        /* 5 */ new CANNON.Vec3(-1,  0,  0),
+        /* 6 */ new CANNON.Vec3( 0,  1,  0),
+    ]
+
+    const translatedPoints = points.map(p => dieBody.pointToWorldFrame(p).y);
+    return translatedPoints.indexOf(Math.max(...translatedPoints)) + 1;
+}
+
 
 export function createDiceAnimation(dice: readonly Die[], values: readonly number[], tiles: readonly TileInstance[]): THREE.AnimationAction[] {
     //const diceBodyMaterial = new CANNON.Material();
@@ -95,18 +110,18 @@ export function createDiceAnimation(dice: readonly Die[], values: readonly numbe
     
     let time = 0.6;
     const times = [0, time];
-    const positionTracks: number[][] = dice.map((d, i) => [
-        ...d.object.position.toArray(),
-        ...dieBodies[i].position.toArray()
+    const positionTracks: {x: number, y: number, z: number}[][] = dice.map((d, i) => [
+        d.object.position.clone(),
+        dieBodies[i].position.clone()
     ]);
-    const quaternionTracks: number[][] = dice.map((d, i) => [
-        ...d.object.quaternion.toArray(),
-        ...dieBodies[i].quaternion.toArray()
+    const quaternionTracks: CANNON.Quaternion[][] = dice.map((d, i) => [
+        new CANNON.Quaternion(d.object.quaternion.x, d.object.quaternion.y, d.object.quaternion.z, d.object.quaternion.w),
+        dieBodies[i].quaternion.clone()
     ]);
     
     const MAX_FRAMES = 500;
     const STEPS_PER_FRAME = 10;
-    console.log(world.default_dt);
+
     for (let frame = 0; frame < MAX_FRAMES && world.hasActiveBodies; frame++) {
         for (let sf = 0; sf < STEPS_PER_FRAME; sf++) {
             world.step(world.default_dt / STEPS_PER_FRAME);
@@ -115,17 +130,44 @@ export function createDiceAnimation(dice: readonly Die[], values: readonly numbe
         times.push(time);
         for (let di = 0; di < dice.length; di++) {
             const db = dieBodies[di];
-            positionTracks[di].push(db.position.x, db.position.y, db.position.z);
-            quaternionTracks[di].push(db.quaternion.x, db.quaternion.y, db.quaternion.z, db.quaternion.w);
+            positionTracks[di].push(db.position.clone());
+            quaternionTracks[di].push(db.quaternion.clone());
         }
     }
 
-    console.info(`simulated die roll in ${Math.ceil(performance.now() - p)}ms, taking ${positionTracks[0].length / 3} frames`);
+    // console.info(`simulated die roll in ${Math.ceil(performance.now() - p)}ms, taking ${positionTracks[0].length / 3} frames`, dieBodies.map(dieBody => getDisplayedValue(dieBody)));
+
+    for (let di = 0; di < dice.length; di++) {
+        const dieBody = dieBodies[di];
+        const value = values[di];
+        
+        const displayedValue = getDisplayedValue(dieBody);
+
+        const rotateValueToSide: (number[] | undefined)[][] = [
+            [],  //   x         1             2             3             4             5             6
+            /* 1 */ [ [],  undefined,   [ 0,  0, +1], [-1,  0,  0], [+1,  0,  0], [ 0,  0, -1], [+1,  0,  0] ],
+            /* 2 */ [ [], [ 0,  0, -1],  undefined,   [ 0, -1,  0], [ 0, +1,  0], [ 0,  0, -1], [ 0,  0,  1] ],
+            /* 3 */ [ [], [+1,  0,  0], [ 0, +1,  0],  undefined,   [+1,  0,  0], [ 0, -1,  0], [-1,  0,  0] ],
+            /* 4 */ [ [], [-1,  0,  0], [ 0, -1,  0], [ 0, +1,  0],  undefined,   [ 0, +1,  0], [+1,  0,  0] ],
+            /* 5 */ [ [], [ 0,  0,  1], [ 0, +1,  0], [ 0, +1,  0], [ 0, -1,  0],  undefined,   [ 0,  0, -1] ],
+            /* 6 */ [ [], [ 0,  0, -1], [0,  0,  -1], [+1,  0,  0], [-1,  0,  0], [ 0,  0, +1],  undefined   ],
+        ];
+
+        const rotationAxis = rotateValueToSide[value][displayedValue];
+        // console.log(`${displayedValue} was rolled, wanted ${value}`);
+        if (rotationAxis) {
+            const angle = value + displayedValue === 7 ? Math.PI : Math.PI / 2;
+            const rotation = new CANNON.Quaternion().setFromAxisAngle(new CANNON.Vec3(...rotationAxis), angle);
+            for (let ti = 1; ti < quaternionTracks[di].length; ti++) {
+                quaternionTracks[di][ti] = quaternionTracks[di][ti].mult(rotation);
+            }
+        }
+    }
 
     return dice.map((d, i) => {
         const mixer = new THREE.AnimationMixer(d.object);
-        const positionTrack = new THREE.VectorKeyframeTrack('.position', times, positionTracks[i]);
-        const quaternionTrack = new THREE.QuaternionKeyframeTrack('.quaternion', times, quaternionTracks[i]);
+        const positionTrack = new THREE.VectorKeyframeTrack('.position', times, positionTracks[i].map(p => [p.x, p.y, p.z]).flat());
+        const quaternionTrack = new THREE.QuaternionKeyframeTrack('.quaternion', times, quaternionTracks[i].map(q => [q.x, q.y, q.z, q.w]).flat());
 
         const animationClip = new THREE.AnimationClip(undefined, time, [positionTrack, quaternionTrack]);
         const action = mixer.clipAction(animationClip);
@@ -146,8 +188,6 @@ export class Die {
         
         this.object.children[0].receiveShadow = true;
         this.object.children[0].castShadow = true;
-
-        this.object.position.set(0, DIE_SIZE / 2, 0);
     }
 
     readonly object: THREE.Group;

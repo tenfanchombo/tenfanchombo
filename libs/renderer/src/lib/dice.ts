@@ -1,11 +1,12 @@
 import * as THREE from "three";
-import { createDiceAnimation, Die } from "./dice-manager";
+import { createDiceAnimation, Die, DIE_SIZE } from "./dice-manager";
 import { TileInstance } from "./tile-instance";
 
 export class TestDice {
     constructor(scene: THREE.Scene, private readonly tiles: TileInstance[], dieMesh: THREE.Group) {
         for (let i = 0; i < 2; i++) {
             const die = new Die(dieMesh);
+            die.object.position.set((i - 0.5) * DIE_SIZE * 2, DIE_SIZE / 2, 0);
             scene.add(die.object);
             this.dice.push(die);
         }
