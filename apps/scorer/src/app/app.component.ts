@@ -1,6 +1,7 @@
 import { Component, ViewEncapsulation } from '@angular/core';
-import { State } from './state';
 import { handFromNotation } from '@tenfanchombo/common';
+
+import { State } from './state';
 
 @Component({
     selector: 'scorer-root',

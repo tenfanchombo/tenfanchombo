@@ -1,9 +1,9 @@
-import { Tile, TileKind, Wind } from './types/tile';
-import { createNewDeck } from './utils/tile';
-import { sequentialNumberGenerator } from './utils/random';
-import { Hand, MeldKind as MeldKind } from './types/hand';
 import { validHandExpression } from './notation.expression';
-import { relativeSeatToWind, RelativeSeat } from './utils/wind';
+import { Hand, MeldKind as MeldKind } from './types/hand';
+import { Tile, TileKind, Wind } from './types/tile';
+import { sequentialNumberGenerator } from './utils/random';
+import { createNewDeck } from './utils/tile';
+import { RelativeSeat, relativeSeatToWind } from './utils/wind';
 
 /*
 
@@ -37,8 +37,8 @@ export class HandNotationError {
 export function handFromNotation(str: string, forWind: Wind = Wind.East, deck?: Tile[]): Hand {
     const tempDeck = deck ? deck.slice() : createNewDeck(sequentialNumberGenerator());
     str = str.toLowerCase()
-             .replace(/\s/g, '')   // remove all whitespace
-             .replace(/['"]/g, '`'); // convert all chi markers to backtick
+        .replace(/\s/g, '')   // remove all whitespace
+        .replace(/['"]/g, '`'); // convert all chi markers to backtick
 
     const hand: Hand = {
         concealedTiles: [],
@@ -71,7 +71,11 @@ export function handFromNotation(str: string, forWind: Wind = Wind.East, deck?: 
             continue;
         }
 
-        const values = s.match(/[1-9x]`?/g)!.map(t => ({
+        const matches = s.match(/[1-9x]`?/g);
+        if (!matches) {
+            throw new HandNotationError('Internal error');
+        }
+        const values = matches.map(t => ({
             rank: parseInt(t === 'x' ? s.charAt(0) : t, 10),
             claimed: t.length > 1
         }));

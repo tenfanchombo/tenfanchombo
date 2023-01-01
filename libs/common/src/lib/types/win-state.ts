@@ -1,4 +1,4 @@
-import { Wind, Tile } from './tile';
+import { Tile, Wind } from './tile';
 
 export interface WinState {
     readonly firstRound: boolean;

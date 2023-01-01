@@ -1,4 +1,5 @@
 import { Wind } from "@tenfanchombo/common";
+
 import { TileIndex } from "./documents";
 import { findLastInLedger, LogEntry, LogEntryType } from "./log-entry";
 
@@ -17,9 +18,9 @@ export function calculateWallFromDiceValue(value: number): Wind {
 export function calculateStartOfWall(diceValue: number): number {
     const sideStart = ({
         // Note: this is the DRAWING order, not the seating order
-        [Wind.East]:  0,
+        [Wind.East]: 0,
         [Wind.North]: 1,
-        [Wind.West]:  2,
+        [Wind.West]: 2,
         [Wind.South]: 3,
     })[calculateWallFromDiceValue(diceValue)] * (DECK_SIZE / 4);
     return sideStart + (diceValue) * 2 + 1;
@@ -37,7 +38,7 @@ export function rotateTilesBy(tiles: TileIndex[], offset: number) {
     ];
 }
 
-export function getDiceValue(game: {ledger: readonly LogEntry[]}): number {
+export function getDiceValue(game: { ledger: readonly LogEntry[] }): number {
     const lastRoll = findLastInLedger(game, LogEntryType.DiceRolled);
     return lastRoll ? lastRoll.values[0] + lastRoll.values[1] : 0;
 }

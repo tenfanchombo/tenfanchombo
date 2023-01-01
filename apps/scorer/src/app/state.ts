@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
 import {
-    Hand,
-    Tile,
-    handFromNotation,
-    getPossibleMahjongs,
-    ScoredHand,
-    WinState,
-    getWinningScore,
     checkForMahjong,
-    Wind,
+    getPossibleMahjongs,
+    getWinningScore,
+    Hand,
+    handFromNotation,
+    MeldKind,
     RelativeSeat,
     relativeSeatToWind,
-    MeldKind
+    ScoredHand,
+    Tile,
+    Wind,
+    WinState
 } from '@tenfanchombo/common';
 
 export enum AppendStyle {
@@ -23,18 +23,18 @@ export enum AppendStyle {
     ConcealedKan
 }
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class State {
     currentLanguage: 0 | 1 = 0;
     blackTiles = false;
     appendStyle = AppendStyle.Concealed;
     fromSeat = RelativeSeat.Left;
-    possibleWaits: {tile: Tile, result: ScoredHand}[] | undefined;
+    possibleWaits: { tile: Tile, result: ScoredHand }[] | undefined;
     winningTile: Tile | undefined;
-    winningResults: ScoredHand[]| undefined;
+    winningResults: ScoredHand[] | undefined;
     tileId = 1;
 
-    roundInfo: {-readonly[P in keyof WinState]: WinState[P]} = {
+    roundInfo: { -readonly [P in keyof WinState]: WinState[P] } = {
         firstRound: false,
         selfDrawnAfterKan: false,
         robbedFromKan: false,
@@ -48,10 +48,10 @@ export class State {
         winningTileFromWind: Wind.East,
 
         doraIndicator: [],
-        uraDoraIndicator:  []
+        uraDoraIndicator: []
     };
 
-    hand: Hand = {concealedTiles: [], melds: []};
+    hand: Hand = { concealedTiles: [], melds: [] };
 
     appendTile(tile: Tile) {
         if (this.appendStyle === AppendStyle.Concealed) {
@@ -71,9 +71,9 @@ export class State {
             if (this.appendStyle !== AppendStyle.Pon) {
                 tiles.push(tile);
             }
-            const turnedTile = this.fromSeat === RelativeSeat.Left  ? 0
-                             : this.fromSeat === RelativeSeat.Right ? tiles.length - 1
-                             : 1;
+            const turnedTile = this.fromSeat === RelativeSeat.Left ? 0
+                : this.fromSeat === RelativeSeat.Right ? tiles.length - 1
+                    : 1;
             this.hand.melds.push({
                 claimedTile: tiles[turnedTile],
                 from: relativeSeatToWind(this.roundInfo.seatWind, this.fromSeat),

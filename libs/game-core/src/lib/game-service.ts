@@ -1,4 +1,5 @@
 import { BehaviorSubject, distinctUntilChanged, map, Observable, ReplaySubject, shareReplay } from "rxjs";
+
 import { GameDocument, PlayerIndex, PlayerInfo, TileIndex, TileInfo } from "./documents";
 import { filterLogType, LogEntry, LogEntryType } from "./log-entry";
 import { MoveFunctions } from "./moves";
@@ -18,7 +19,7 @@ export class GameService {
 
         const playerSubjects$ = new Array(4).fill(1).map(() => new ReplaySubject<PlayerInfo>(1));
         this.players$ = playerSubjects$.map(s => s.pipe(distinctUntilChanged(/* TODO */), shareReplay(1)));
-        
+
         const wallSplitsSubject$ = new BehaviorSubject<TileIndex[]>([]);
         this.wallSplits$ = wallSplitsSubject$.asObservable();
 
@@ -43,11 +44,11 @@ export class GameService {
 
     compareTiles(tileInfoA: TileInfo, tileInfoB: TileInfo) {
         return tileInfoA.position === tileInfoB.position
-            && tileInfoA.seat     === tileInfoB.seat
-            && tileInfoA.index    === tileInfoB.index
-            && tileInfoA.rotated  === tileInfoB.rotated
-            && tileInfoA.tile     === tileInfoB.tile
-            && tileInfoA.public   === tileInfoB.public;
+            && tileInfoA.seat === tileInfoB.seat
+            && tileInfoA.index === tileInfoB.index
+            && tileInfoA.rotated === tileInfoB.rotated
+            && tileInfoA.tile === tileInfoB.tile
+            && tileInfoA.public === tileInfoB.public;
     }
 
     private readonly logSubject$ = new ReplaySubject<LogEntry>();

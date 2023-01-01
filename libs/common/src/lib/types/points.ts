@@ -1,7 +1,7 @@
 import { HandHelper, TileSet } from '../internal/hand-helper';
-import { FinalMeld } from './hand';
 import { Wind } from '../types/tile';
-import { YakuDefinition, ExtraHan } from './yaku';
+import { FinalMeld } from './hand';
+import { ExtraHan, YakuDefinition } from './yaku';
 
 export interface FuDefinition {
     readonly fu: number;
@@ -19,7 +19,7 @@ export interface CountedYaku {
     readonly abbreviation: string;
     readonly definition: Readonly<YakuDefinition>;
     readonly han: number;
-    readonly extras: readonly (ExtraHan & {abbreviation: string})[];
+    readonly extras: readonly (ExtraHan & { abbreviation: string })[];
 }
 
 export interface PointsLimit {

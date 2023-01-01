@@ -1,18 +1,19 @@
+import { CommonModule } from '@angular/common';
 import {
     ChangeDetectionStrategy,
     Component,
     inject,
     ViewEncapsulation,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { filterLogType, GameService, LogEntry, LogEntryType } from '@tenfanchombo/game-core';
-import { take, filter, skip, BehaviorSubject } from 'rxjs';
-import { TileClickBehaviour, TILE_CLICK_BEHAVIOUR } from '../state/state';
-import { TestServer } from '../test-server';
+import { BehaviorSubject, filter, skip, take } from 'rxjs';
+
 import { RendererHostComponent } from '../renderer-host/renderer-host.component';
-import { TileClickBehaviourSelectComponent } from '../tile-click-behaviour-select/tile-click-behaviour-select.component';
+import { TILE_CLICK_BEHAVIOUR, TileClickBehaviour } from '../state/state';
 import { TableComponent } from '../table/table.component';
+import { TestServer } from '../test-server';
+import { TileClickBehaviourSelectComponent } from '../tile-click-behaviour-select/tile-click-behaviour-select.component';
 
 @Component({
     selector: 'rth-game',
@@ -53,7 +54,7 @@ export class GameComponent {
     protected gameService: GameService | undefined;
 
     protected findDiceRoll(ledger: LogEntry[]) {
-        return ledger.filter(le => le.type === LogEntryType.DiceRolled).at(-1) as (LogEntry & {type: LogEntryType.DiceRolled});
+        return ledger.filter(le => le.type === LogEntryType.DiceRolled).at(-1) as (LogEntry & { type: LogEntryType.DiceRolled });
     }
 
     protected die(index: number | undefined | null) {

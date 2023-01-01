@@ -12,19 +12,19 @@ let id = 0;
         provide: NG_VALUE_ACCESSOR,
         useExisting: forwardRef(() => WindInputComponent),
         multi: true
-      }]
+    }]
 })
 export class WindInputComponent implements ControlValueAccessor {
     wind = {
-        East:  Wind.East,
+        East: Wind.East,
         South: Wind.South,
-        West:  Wind.West,
+        West: Wind.West,
         North: Wind.North,
     };
     value: Wind | undefined;
     id = ++id;
 
-    private onChange: ((value: Wind) => void) | undefined ;
+    private onChange: ((value: Wind) => void) | undefined;
 
     writeValue(wind: Wind): void {
         this.value = wind;
@@ -34,11 +34,11 @@ export class WindInputComponent implements ControlValueAccessor {
         this.onChange = fn;
     }
 
-    registerOnTouched(fn: () => void): void {
+    registerOnTouched(/*fn: () => void*/): void {
         // Nada
     }
 
-    setDisabledState?(isDisabled: boolean): void {
+    setDisabledState?(/*isDisabled: boolean*/): void {
         // Nada
     }
 

@@ -1,7 +1,7 @@
-import { YakuCollection } from './types/yaku';
-import { YAKUMAN_HAN } from './rules/yaku';
 import { HandHelper } from './internal/hand-helper';
+import { YAKUMAN_HAN } from './rules/yaku';
 import { CountedYaku } from './types/points';
+import { YakuCollection } from './types/yaku';
 
 export function countYaku(hand: HandHelper, yakuDefinitions: YakuCollection) {
     const countedYaku: CountedYaku[] = [];
@@ -15,8 +15,8 @@ export function countYaku(hand: HandHelper, yakuDefinitions: YakuCollection) {
                 definition,
                 han,
                 extras: definition.extras
-                      ? Object.entries(definition.extras).filter(p => p[1].check(hand)).map(p => Object.assign({abbreviation: p[0]}, p[1]))
-                      : []
+                    ? Object.entries(definition.extras).filter(p => p[1].check(hand)).map(p => Object.assign({ abbreviation: p[0] }, p[1]))
+                    : []
             });
         }
     }
@@ -28,6 +28,6 @@ export function countYaku(hand: HandHelper, yakuDefinitions: YakuCollection) {
 
     const yakumans = countedYaku.filter(cy => cy.definition.han === YAKUMAN_HAN);
     return yakumans.length
-         ? countedYaku.filter(cy => cy.definition.han === YAKUMAN_HAN) // only return yakuman
-         : countedYaku;
+        ? countedYaku.filter(cy => cy.definition.han === YAKUMAN_HAN) // only return yakuman
+        : countedYaku;
 }

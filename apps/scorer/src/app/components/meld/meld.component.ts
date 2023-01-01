@@ -1,5 +1,6 @@
-import { Component, Input, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
 import { FinalMeld, OpenMeld } from '@tenfanchombo/common';
+
 import { State } from '../../state';
 
 @Component({

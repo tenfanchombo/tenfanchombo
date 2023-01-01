@@ -1,10 +1,11 @@
+import { Wind } from "@tenfanchombo/common";
+import { GameDocument, GameService, PlayerIndex, PlayerInfo } from '@tenfanchombo/game-core';
 import {
-    createNewGameDocument,
     createMoveProxy,
+    createNewGameDocument,
     moveValidators
 } from "@tenfanchombo/server-core";
-import { GameDocument, GameService, PlayerIndex, PlayerInfo } from '@tenfanchombo/game-core';
-import { Wind } from "@tenfanchombo/common";
+
 import { TestFirebaseStore } from "./test-firebase-store";
 
 export const DummyPlayerData: readonly PlayerInfo[] = [
@@ -54,8 +55,7 @@ export class TestServer {
         const trainingProxy = new Proxy(moveProxy, {
             get: (target, prop, reciever) => {
                 return (...args: unknown[]) => {
-                    const valid = !this.useTrainingWheels || !latestDoc || (moveValidators as unknown as Record<string | symbol, (...args: unknown[]) => ReturnType<typeof moveValidators['rollDice']>>)[prop]
-                        (latestDoc, playerIndex, ...args);
+                    const valid = !this.useTrainingWheels || !latestDoc || (moveValidators as unknown as Record<string | symbol, (...args: unknown[]) => ReturnType<typeof moveValidators['rollDice']>>)[prop](latestDoc, playerIndex, ...args);
                     if (valid !== true) {
                         console.warn(valid)
                     } else {

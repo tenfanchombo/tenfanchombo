@@ -1,7 +1,7 @@
-import { initializeApp } from "firebase/app";
-import { doc, Firestore, getFirestore, setDoc, onSnapshot, getDoc } from "firebase/firestore";
-import { InternalGameDocument, createPlayerGameDocument, DocumentStore, GameId } from "@tenfanchombo/server-core";
 import { GameDocument } from "@tenfanchombo/game-core";
+import { createPlayerGameDocument, DocumentStore, GameId, InternalGameDocument } from "@tenfanchombo/server-core";
+import { initializeApp } from "firebase/app";
+import { doc, Firestore, getDoc, getFirestore, onSnapshot, setDoc } from "firebase/firestore";
 import { Observable } from "rxjs";
 
 export class TestFirebaseStore implements DocumentStore {
@@ -23,7 +23,7 @@ export class TestFirebaseStore implements DocumentStore {
 
     private readonly firestore: Firestore;
 
-    create(gameDocument: InternalGameDocument): GameId {
+    create(/*gameDocument: InternalGameDocument*/): GameId {
         throw new Error('not implemented');
     }
 

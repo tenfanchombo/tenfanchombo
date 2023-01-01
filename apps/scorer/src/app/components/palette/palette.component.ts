@@ -1,6 +1,7 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { createDummySetOfTiles, RelativeSeat } from '@tenfanchombo/common';
-import { State, AppendStyle } from '../../state';
+
+import { AppendStyle, State } from '../../state';
 
 @Component({
     selector: 'scorer-palette',
@@ -16,21 +17,21 @@ export class PaletteComponent {
     allTiles = createDummySetOfTiles();
 
     styles = [
-        {caption: 'Concealed',  value: AppendStyle.Concealed},
-        {caption: 'Chi',        value: AppendStyle.Chi},
-        {caption: 'Pon',        value: AppendStyle.Pon},
-        {caption: 'Kan',        value: AppendStyle.Kan},
+        { caption: 'Concealed', value: AppendStyle.Concealed },
+        { caption: 'Chi', value: AppendStyle.Chi },
+        { caption: 'Pon', value: AppendStyle.Pon },
+        { caption: 'Kan', value: AppendStyle.Kan },
         // {caption: 'Added Kan',  value: AppendStyle.AddedKan},
-        {caption: 'Concealed Kan', value: AppendStyle.ConcealedKan}
+        { caption: 'Concealed Kan', value: AppendStyle.ConcealedKan }
     ];
 
     claims = [
-        {caption: 'From left',     value: RelativeSeat.Left},
-        {caption: 'From opposite', value: RelativeSeat.Opposite},
-        {caption: 'From right',    value: RelativeSeat.Right}
+        { caption: 'From left', value: RelativeSeat.Left },
+        { caption: 'From opposite', value: RelativeSeat.Opposite },
+        { caption: 'From right', value: RelativeSeat.Right }
     ];
 
-    updateAppendStyle(event: {target: HTMLInputElement }) {
+    updateAppendStyle(event: { target: HTMLInputElement }) {
         if (event.target.checked) {
             this.state.appendStyle = +event.target.value as AppendStyle;
         }

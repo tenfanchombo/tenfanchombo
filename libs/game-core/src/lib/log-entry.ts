@@ -1,4 +1,5 @@
 import { filter, OperatorFunction } from "rxjs";
+
 import { GameDocument, PlayerIndex, TileIndex } from "./documents";
 import { CallType } from "./moves";
 
@@ -14,7 +15,7 @@ export const enum LogEntryType {
     Call,
     CalledTsumo,
     CancelledCall, // can't cancel a call for Ron or Tsumo, but Pon/Chi/Kan can be canelled before discarding (even after taking the tile and exposing thier own)
-                    // cancelling a call after discarding results in a dead hand
+    // cancelling a call after discarding results in a dead hand
     TookTile,
     DiscardedTile
 }
@@ -44,19 +45,19 @@ export type LogEntry = {
     readonly values: readonly [number, number]
 };
 
-export function findFirstInLedger<T extends LogEntryType>(game: GameDocument, logType: T): (LogEntry & {type: T}) | undefined {
-    return game.ledger.find((le: LogEntry) => le.type === logType) as (LogEntry & {type: T}) | undefined;
+export function findFirstInLedger<T extends LogEntryType>(game: GameDocument, logType: T): (LogEntry & { type: T }) | undefined {
+    return game.ledger.find((le: LogEntry) => le.type === logType) as (LogEntry & { type: T }) | undefined;
 }
 
-export function findLastInLedger<T extends LogEntryType>({ledger}: {ledger: readonly LogEntry[]}, logType: T): (LogEntry & {type: T}) | undefined {
+export function findLastInLedger<T extends LogEntryType>({ ledger }: { ledger: readonly LogEntry[] }, logType: T): (LogEntry & { type: T }) | undefined {
     // return game.ledger.findLast((le: LogEntry) => le.type === logType) as (LogEntry & {type: T}) | undefined;
-    return [...ledger].reverse().find((le: LogEntry) => le.type === logType) as (LogEntry & {type: T}) | undefined;
+    return [...ledger].reverse().find((le: LogEntry) => le.type === logType) as (LogEntry & { type: T }) | undefined;
 }
 
-export function findAllInLedger<T extends LogEntryType>(game: GameDocument, logType: T): (LogEntry & {type: T})[] {
-    return game.ledger.filter((le: LogEntry) => le.type === logType) as (LogEntry & {type: T})[];
+export function findAllInLedger<T extends LogEntryType>(game: GameDocument, logType: T): (LogEntry & { type: T })[] {
+    return game.ledger.filter((le: LogEntry) => le.type === logType) as (LogEntry & { type: T })[];
 }
 
 export function filterLogType<T extends LogEntryType>(type: T) {
-    return filter((logEntry: LogEntry) => logEntry.type === type) as OperatorFunction<LogEntry, LogEntry & {type: T}>;
+    return filter((logEntry: LogEntry) => logEntry.type === type) as OperatorFunction<LogEntry, LogEntry & { type: T }>;
 }

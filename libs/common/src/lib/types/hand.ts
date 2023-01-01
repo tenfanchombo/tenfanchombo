@@ -1,4 +1,4 @@
-import { Wind, Tile } from './tile';
+import { Tile, Wind } from './tile';
 
 export const enum MeldKind {
     /* The order here (and in FinalMeldKind) is used to sort groups when displaying winning hands */
@@ -28,11 +28,11 @@ export interface ReadonlyHand {
 
 export const enum FinalMeldKind {
     ClosedSet,
-    ClosedKan    = MeldKind.ConcealedKan,
-    OpenKan      = MeldKind.Kan,
+    ClosedKan = MeldKind.ConcealedKan,
+    OpenKan = MeldKind.Kan,
     OpenAddedKan = MeldKind.AddedKan,
-    OpenChi      = MeldKind.Chi,
-    OpenPon      = MeldKind.Pon,
+    OpenChi = MeldKind.Chi,
+    OpenPon = MeldKind.Pon,
     ClosedPair,
     OpenPair,
     Orphans

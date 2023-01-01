@@ -30,13 +30,13 @@ export const validHandExpression = new RegExp(
     // Create the monstorous regular expression from our rules except...
     ('^(' + validRuns.join('|') + ')+$')
         // ...strip out white space and the dummy '%' character
-            .replace(/%|\s/g, '')
+        .replace(/%|\s/g, '')
         // ...expand S to valid suit ranks
-            .replace(/S/g, '[1-9]')
+        .replace(/S/g, '[1-9]')
         // ...expand H to valid honor ranks
-            .replace(/H/g, '[1-7]')
+        .replace(/H/g, '[1-7]')
         // ...collapse runs of '#'
-            .replace(/#{2,}/g, (s) => `#{${s.length}}`)
+        .replace(/#{2,}/g, (s) => `#{${s.length}}`)
         // ...replace # with what ever named group precedes it
-            .replace(/#/g, (_, i, s) => '\\k' + s.slice(0, i).match(/(?:\?(<\w+>))/g).pop().slice(1))
+        .replace(/#/g, (_, i, s) => '\\k' + s.slice(0, i).match(/(?:\?(<\w+>))/g).pop().slice(1))
 );

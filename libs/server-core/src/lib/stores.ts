@@ -1,5 +1,6 @@
 import { GameDocument } from "@tenfanchombo/game-core";
 import { BehaviorSubject, map, Observable } from "rxjs";
+
 import { InternalGameDocument } from "./internal/documents";
 import { createPlayerGameDocument } from "./server-core";
 

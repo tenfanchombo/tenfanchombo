@@ -7,9 +7,9 @@ import { Wind } from '@tenfanchombo/common';
 export class WindPipe implements PipeTransform {
     transform(wind: Wind): string {
         switch (wind) {
-            case Wind.East:  return 'East';
+            case Wind.East: return 'East';
             case Wind.South: return 'South';
-            case Wind.West:  return 'West';
+            case Wind.West: return 'West';
             case Wind.North: return 'North';
         }
         console.error('Unknown wind: ', wind);

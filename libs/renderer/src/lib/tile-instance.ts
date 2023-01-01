@@ -3,12 +3,12 @@ import { PlayerIndex, TileIndex, TileInfo, TilePosition, WALL_SIZE } from '@tenf
 import * as THREE from 'three';
 
 export const TILE_HEIGHT = 0.026;
-export const TILE_WIDTH  = 0.019;
-export const TILE_DEPTH  = 0.016;
+export const TILE_WIDTH = 0.019;
+export const TILE_DEPTH = 0.016;
 
 export const TILE_HEIGHT_2 = TILE_HEIGHT / 2;
-export const TILE_WIDTH_2  = TILE_WIDTH  / 2;
-export const TILE_DEPTH_2  = TILE_DEPTH  / 2;
+export const TILE_WIDTH_2 = TILE_WIDTH / 2;
+export const TILE_DEPTH_2 = TILE_DEPTH / 2;
 
 const WALL_FROM_CENTER = 0.2;
 const HAND_FROM_CENTER = 0.25;
@@ -117,12 +117,12 @@ export class TileInstance {
         if (!this.lastTileInfo) return false;
         if (info.position === TilePosition.Wall) {
             return this.lastTileInfo.position !== info.position
-                || this.lastTileInfo.index    !== info.index
-                || this.lastTileInfo.tile     !== info.tile
+                || this.lastTileInfo.index !== info.index
+                || this.lastTileInfo.tile !== info.tile
         }
         return this.lastTileInfo.position !== info.position
-            || this.lastTileInfo.index    !== info.index
-            || this.lastTileInfo.public   !== info.public;
+            || this.lastTileInfo.index !== info.index
+            || this.lastTileInfo.public !== info.public;
     }
 
     update(info: TileInfo, wallSplits: TileIndex[]) {
@@ -130,7 +130,7 @@ export class TileInstance {
 
         this.animate(matrix, this.shouldLift(info) ? TILE_HEIGHT * 2 : 0);
 
-        this.lastTileInfo = {...info};
+        this.lastTileInfo = { ...info };
 
         if (info.tile === null) {
             this.texture.offset.set(.9, 0);
@@ -163,7 +163,7 @@ export class TileInstance {
                 const sideStart = Math.floor(this.tileIndex / WALL_SIZE) * WALL_SIZE;
                 const sideEnd = sideStart + WALL_SIZE;
                 const splitsOnThisSide = wallSplits.filter(ti => ti >= sideStart && ti <= sideEnd);
-                
+
                 if (splitsOnThisSide.length > 1) {
                     x += TILE_WIDTH_2;
                 }

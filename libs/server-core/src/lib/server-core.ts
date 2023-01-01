@@ -1,5 +1,6 @@
 import { createNewDeck, randomNumberGenerator, Wind } from "@tenfanchombo/common";
 import { GameDocument, MoveFunctions, PlayerIndex, PlayerInfo, TilePosition, WALL_SIZE } from "@tenfanchombo/game-core";
+
 import { InternalGameDocument } from "./internal/documents";
 import { moveHandlers } from "./move-handler";
 import { DocumentStore } from "./stores";
@@ -43,6 +44,6 @@ export function createPlayerGameDocument(game: InternalGameDocument, playerId: s
 export function createMoveProxy(gameId: string, playerId: string, store: DocumentStore): MoveFunctions {
     return Object.fromEntries(Object.entries(moveHandlers).map(([name, handler]) => [
         name,
-        (...args: unknown[]) => store.update(gameId, (previous) => (<any>handler)(previous, previous.players.findIndex(p => p.id === playerId), ...args))
+        (...args: unknown[]) => store.update(gameId, (previous) => (<(...args: unknown[]) => void>handler)(previous, previous.players.findIndex(p => p.id === playerId), ...args))
     ])) as unknown as MoveFunctions;
 }

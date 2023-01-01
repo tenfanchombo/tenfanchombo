@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -10,9 +11,8 @@ import {
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RiichiRenderer } from '@tenfanchombo/renderer';
 import { GameService, PlayerIndex } from '@tenfanchombo/game-core';
+import { RiichiRenderer } from '@tenfanchombo/renderer';
 import { BehaviorSubject, combineLatest, filter, Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -28,7 +28,7 @@ export class RendererHostComponent implements OnChanges, AfterViewInit, OnDestro
     @ViewChild('canvas') private readonly canvasElement!: ElementRef<HTMLCanvasElement>;
     @Input() gameService!: GameService;
     @Input() activeSeat: PlayerIndex = 0;
-    
+
     private renderer: RiichiRenderer | undefined;
     private gameServiceChange$ = new Subject<void>();
     private viewReady$ = new BehaviorSubject(false);

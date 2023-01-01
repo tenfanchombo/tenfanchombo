@@ -22,7 +22,7 @@ function vertex(x: number, y: number, z: number) {
         return (index + 1).toString();
     }
     vertices.push(s);
-    return vertices.length.toString();;
+    return vertices.length.toString();
 }
 
 function normal(x: number, y: number, z: number) {
@@ -32,7 +32,7 @@ function normal(x: number, y: number, z: number) {
         return (index + 1).toString();
     }
     normals.push(s);
-    return normals.length.toString();;
+    return normals.length.toString();
 }
 
 function face(...verts: string[]) {
@@ -62,13 +62,17 @@ const ringDepths = [0, 0.19, 0.378795181, 0.552771084, 0.705261044, 0.830401606,
 const ringOffsets = [0, 0.016331178, 0.073401936, 0.166086451, 0.290815401, 0.442796557, 0.61618785, 0.804334352, 1];
 
 function drawBlankOrSpot(x: number, y: number, vert: (x: number, y: number, z: number) => string, norm: (x: number, y: number, z: number) => string, value: number, spot: boolean, size = SPOT, radius = (SPOT - PADDING) / 2) {
+    function vn(ox: number, oy: number, oz: number, od: number) {
+        return `${vert(x + ox * od, y + oy * od, z + oz)}//${norm(ox * od * -1, oy * od * -1, -oz + SPOT_DEPTH)}`;
+    }
+
     if (!spot) {
         faces.push(`f ${vert(x - size / 2, y - size / 2, z)} ${vert(x + size / 2, y - size / 2, z)} ${vert(x + size / 2, y + size / 2, z)} ${vert(x - size / 2, y + size / 2, z)}`);
         return;
     }
 
     const segAngle = Math.PI * 2 / SPOT_SEGS;
-    faces.push( value === 1 ? 'usemtl Die_One' : 'usemtl Die_Spot');
+    faces.push(value === 1 ? 'usemtl Die_One' : 'usemtl Die_Spot');
     for (let r = 0; r < SPOT_RINGS; r++) {
         for (let s = 0; s < SPOT_SEGS; s++) {
             const angle = segAngle * s;
@@ -83,10 +87,6 @@ function drawBlankOrSpot(x: number, y: number, vert: (x: number, y: number, z: n
 
             const sz = -ringDepths[r] * SPOT_DEPTH;
             const nz = -ringDepths[r + 1] * SPOT_DEPTH;
-
-            function vn(ox: number, oy: number, oz: number, od: number) {
-                return `${vert(x + ox * od, y + oy * od, z + oz)}//${norm(ox * od * -1, oy * od * -1 , -oz + SPOT_DEPTH)}`;
-            }
 
             if (r === SPOT_RINGS - 1) {
                 // faces.push(`f ${vert(x + sx * sd, y + sy * sd, z + sz)} ${vert(x, y, z + nz)} ${vert(x + nx * sd, y + ny * sd, z + sz)}`);
@@ -108,8 +108,8 @@ function drawBlankOrSpot(x: number, y: number, vert: (x: number, y: number, z: n
         const ny = Math.cos(nextAngle);
         const nx = Math.sin(nextAngle);
         face(vert(x + sx * radius, y + sy * radius, z),
-             vert(x + nx * radius, y + ny * radius, z),
-             vert(x + size / 2 * Math.sign(sx + nx), y + size / 2 * Math.sign(sy + ny), z));
+            vert(x + nx * radius, y + ny * radius, z),
+            vert(x + size / 2 * Math.sign(sx + nx), y + size / 2 * Math.sign(sy + ny), z));
     }
 
     face(vert(x + size / 2, y + size / 2, z), vert(x - size / 2, y + size / 2, z), vert(x, y + radius, z));
@@ -131,12 +131,6 @@ genSides((value: number, vert: (x: number, y: number, z: number) => string, norm
     drawBlankOrSpot(+1 * SPOT, +0 * SPOT, vert, norm, value, false);
     drawBlankOrSpot(+1 * SPOT, -1 * SPOT, vert, norm, value, value >= 4);
 });
-
-
-const bevelAngles = new Array(BEVEL_STEPS + 1).fill(1).map((_, i) => ({
-    c: Math.cos(Math.PI * i / 2 / BEVEL_STEPS) * BEVEL,
-    s: Math.sin(Math.PI * i / 2 / BEVEL_STEPS) * BEVEL
-}))
 
 const innerOffset = (DIE_SIZE / 2) - BEVEL;
 
@@ -176,7 +170,6 @@ function discoPoint(m: number, n: number, sx: 1 | -1, sy: 1 | -1, sz: 1 | -1) {
     return `${vertex((innerOffset + BEVEL * x) * sx, (innerOffset + BEVEL * y) * sy, (innerOffset + BEVEL * z) * sz)}//${normal(x * sx, y * sy, z * sz)}`;
 }
 
-
 // corners 
 for (let c = 0; c < 8; c++) {
     for (let m = 0; m < BEVEL_STEPS; m++) {
@@ -193,8 +186,8 @@ for (let c = 0; c < 8; c++) {
             } else {
                 face(...points);
             }
-            
-        };
+
+        }
     }
 }
 

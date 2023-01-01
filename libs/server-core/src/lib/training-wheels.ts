@@ -3,25 +3,25 @@ import {
     calculateStartOfWall,
     calculateWallFromDiceValue,
     DECK_SIZE,
+    findAllInLedger,
     findFirstInLedger,
     GameDocument,
     getDiceValue,
     LogEntryType,
     MoveFunctions,
     PlayerIndex,
+    PlayerInfo,
     TileIndex,
-    findAllInLedger,
-    CallType,
     TilePosition
- } from "@tenfanchombo/game-core";
+} from "@tenfanchombo/game-core";
 
-export const moveValidators: {[K in keyof MoveFunctions]: MoveFunctions[K] extends (...args: infer P) => void ? (game: GameDocument, callingPlayer: PlayerIndex, ...args: P) => (true | string) : never } = {
+export const moveValidators: { [K in keyof MoveFunctions]: MoveFunctions[K] extends (...args: infer P) => void ? (game: GameDocument, callingPlayer: PlayerIndex, ...args: P) => (true | string) : never } = {
 
     rollDice(game: GameDocument, callingPlayer: PlayerIndex) {
         if (findFirstInLedger(game, LogEntryType.DiceRolled)) {
             return "Dice have already been roled";
         }
-        
+
         if (game.players[callingPlayer].seatWind !== Wind.East) {
             return "East should roll the dice";
         }
@@ -43,7 +43,7 @@ export const moveValidators: {[K in keyof MoveFunctions]: MoveFunctions[K] exten
         }
 
         const sideToSplit = calculateWallFromDiceValue(diceValue);
-        const playerOnSplittingSide = game.players.find(p => p.seatWind === sideToSplit)!;
+        const playerOnSplittingSide = playerFromWind(game.players, sideToSplit);
         if (playerOnSplittingSide.id !== game.players[callingPlayer].id) {
             return `${playerOnSplittingSide.name} should be splitting the wall`;
         }
@@ -82,7 +82,7 @@ export const moveValidators: {[K in keyof MoveFunctions]: MoveFunctions[K] exten
 
     flipTile(game: GameDocument, callingPlayer: PlayerIndex, tileIndex: TileIndex) {
         const personToFlip = calculateWallFromDiceValue(getDiceValue(game));
-        const playerOnSplittingSide = game.players.find(p => p.seatWind === personToFlip)!;
+        const playerOnSplittingSide = playerFromWind(game.players, personToFlip);
         if (game.players[callingPlayer].seatWind !== personToFlip) {
             return `${playerOnSplittingSide.name} should be flipping the dora`;
         }
@@ -106,28 +106,36 @@ export const moveValidators: {[K in keyof MoveFunctions]: MoveFunctions[K] exten
         return true;
     },
 
-    makeCall(game: GameDocument, callingPlayer: PlayerIndex, call: CallType) {
+    makeCall(/*game: GameDocument, callingPlayer: PlayerIndex, call: CallType*/) {
         throw new Error("Function not implemented.");
     },
 
-    warnPlayer(game: GameDocument, callingPlayer: PlayerIndex, player: PlayerIndex) {
+    warnPlayer(/*game: GameDocument, callingPlayer: PlayerIndex, player: PlayerIndex*/) {
         throw new Error("Function not implemented.");
     },
 
-    returnTileToWall(game: GameDocument, callingPlayer: PlayerIndex, tileIndex: TileIndex) {
+    returnTileToWall(/*game: GameDocument, callingPlayer: PlayerIndex, tileIndex: TileIndex*/) {
         throw new Error("Function not implemented.");
     },
 
-    returnTileToPlayersDiscards(game: GameDocument, callingPlayer: PlayerIndex, tileIndex: TileIndex, player: PlayerIndex) {
+    returnTileToPlayersDiscards(/*game: GameDocument, callingPlayer: PlayerIndex, tileIndex: TileIndex, player: PlayerIndex*/) {
         throw new Error("Function not implemented.");
     },
 }
 
-function nextDrawableTile(game: GameDocument): TileIndex {
+function nextDrawableTile(game: GameDocument): TileIndex | undefined {
     const firstTile = calculateStartOfWall(getDiceValue(game));
 
     let drawingOrder = new Array(DECK_SIZE).fill(1).map((_, i) => i ^ 1);
     drawingOrder = [...drawingOrder.slice(firstTile ^ 1, DECK_SIZE), ...drawingOrder.slice(0, firstTile ^ 1)];
 
-    return drawingOrder.find(t => game.tiles[t].position === TilePosition.Wall)!; // TODO: handle empty
+    return drawingOrder.find(t => game.tiles[t].position === TilePosition.Wall); // TODO: handle empty
+}
+
+function playerFromWind(players: readonly PlayerInfo[], wind: Wind): PlayerInfo {
+    const playerInfo = players.find(p => p.seatWind === wind)
+    if (!playerInfo) {
+        throw new Error(`Cannot find a player with that wind: ${wind}`);
+    }
+    return playerInfo;
 }

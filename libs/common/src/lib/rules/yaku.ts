@@ -1,13 +1,13 @@
+import { Dragon, TileKind, Wind } from '../types/tile';
 import { ExtraHan, YakuCollection } from '../types/yaku';
-import { getDoraFromIndicator, allSuitsPresent, tileRank, tileKind } from '../utils/tile';
 import { distinct } from '../utils/array';
-import { Wind, TileKind, Dragon } from '../types/tile';
-import { areSimilarTiles, isSimple, isDragon, isHonor, isTerminalOrHonor, isTerminal, isSuited, isWind } from '../utils/tile-checks';
+import { allSuitsPresent, getDoraFromIndicator, tileKind, tileRank } from '../utils/tile';
+import { areSimilarTiles, isDragon, isHonor, isSimple, isSuited, isTerminal, isTerminalOrHonor, isWind } from '../utils/tile-checks';
 
 export const YAKUMAN_HAN = -1;
 
 const extraIfConcealed = {
-    'MEN' : {
+    'MEN': {
         name: ['Concealed', 'Menzin', 'Menzin'],
         description: 'Extra han for concealed',
         check: hand => !hand.isOpen
@@ -88,8 +88,8 @@ export const defaultYakuCollection: YakuCollection = {
         canBeOpen: true,
         extras: extraIfConcealed,
         check: hand => hand.chis.some(t1 => tileRank(t1[0]) === '1'
-                                         && hand.chis.some(t2 => tileRank(t2[0]) === '4' && t2.kind === t1.kind)
-                                         && hand.chis.some(t3 => tileRank(t3[0]) === '7' && t3.kind === t1.kind))
+            && hand.chis.some(t2 => tileRank(t2[0]) === '4' && t2.kind === t1.kind)
+            && hand.chis.some(t3 => tileRank(t3[0]) === '7' && t3.kind === t1.kind))
     },
     'YAK': {
         han: 1,
@@ -97,8 +97,8 @@ export const defaultYakuCollection: YakuCollection = {
         description: 'Any triplets or quads of dragons, the player\'s wind and the prevailing wind. If a wind is both the player\'s wind and the prevailing wind, it is worth two han per group.',
         canBeOpen: true,
         check: hand => hand.pons.filter(p => isDragon(p[0])).length
-                     + hand.pons.filter(p => hand.isSeatWind(p[0])).length
-                     + hand.pons.filter(p => hand.isPrevalentWind(p[0])).length
+            + hand.pons.filter(p => hand.isSeatWind(p[0])).length
+            + hand.pons.filter(p => hand.isPrevalentWind(p[0])).length
     },
     'CHA': {
         han: 1,
@@ -106,9 +106,9 @@ export const defaultYakuCollection: YakuCollection = {
         description: 'The sequences in the hand must be 1-2-3 and 7-8-9, and triplets and the pair must be 1\'s, 9\'s and honor tiles. The hand contains at least one sequence.',
         canBeOpen: true,
         check: hand => hand.chis.length
-                    && hand.allTiles.some(isHonor) // sets containing terminals but no honors is Junchan
-                    && hand.sets.every(s => isTerminalOrHonor(s[0]) || isTerminal(s[s.length - 1]))
-                    && !!hand.pair && isTerminalOrHonor(hand.pair[0]),
+            && hand.allTiles.some(isHonor) // sets containing terminals but no honors is Junchan
+            && hand.sets.every(s => isTerminalOrHonor(s[0]) || isTerminal(s[s.length - 1]))
+            && !!hand.pair && isTerminalOrHonor(hand.pair[0]),
         extras: extraIfConcealed
     },
     'RIN': {
@@ -131,7 +131,7 @@ export const defaultYakuCollection: YakuCollection = {
         description: 'Mahjong on the last tile',
         canBeOpen: true,
         check: hand => hand.state.lastTile
-                    && hand.selfDrawn
+            && hand.selfDrawn
     },
     'HOU': {
         han: 1,
@@ -139,7 +139,7 @@ export const defaultYakuCollection: YakuCollection = {
         description: 'Mahjong on the last tile following discard',
         canBeOpen: true,
         check: hand => hand.state.lastTile
-                   && !hand.selfDrawn
+            && !hand.selfDrawn
     },
 
     // ================== 2 han ==================
@@ -184,8 +184,8 @@ export const defaultYakuCollection: YakuCollection = {
         description: 'One suit including honours',
         canBeOpen: true,
         check: hand => hand.allTiles.some(isHonor)
-                    && hand.allTiles.some(isSuited)
-                    && hand.allTiles.filter(isSuited).map(t => tileKind(t)).filter(distinct).length === 1,
+            && hand.allTiles.some(isSuited)
+            && hand.allTiles.filter(isSuited).map(t => tileKind(t)).filter(distinct).length === 1,
         extras: extraIfConcealed
     },
     'SSG': {
@@ -194,7 +194,7 @@ export const defaultYakuCollection: YakuCollection = {
         description: 'Two triplets or quads of dragons, plus a pair of dragons',
         canBeOpen: true,
         check: hand => !!hand.pair && isDragon(hand.pair[0])
-                    && hand.pons.filter(p => isDragon(p[0])).length === 2
+            && hand.pons.filter(p => isDragon(p[0])).length === 2
     },
     'HRO': {
         han: 2,
@@ -209,9 +209,9 @@ export const defaultYakuCollection: YakuCollection = {
         description: 'All sets contain terminals. At least one sequence and no honors',
         canBeOpen: true,
         check: hand => hand.chis.length
-                    && hand.allTiles.every(isSuited) // anything with an honour is Chanta
-                    && !!hand.pair && isTerminal(hand.pair[0])
-                    && hand.sets.every(s => isTerminal(s[0]) || isTerminal(s[2])),
+            && hand.allTiles.every(isSuited) // anything with an honour is Chanta
+            && !!hand.pair && isTerminal(hand.pair[0])
+            && hand.sets.every(s => isTerminal(s[0]) || isTerminal(s[2])),
         extras: extraIfConcealed
     },
 
@@ -231,7 +231,7 @@ export const defaultYakuCollection: YakuCollection = {
         description: 'All tiles are of the same suit and no honours',
         canBeOpen: true,
         check: hand => hand.allTiles.every(isSuited)
-                    && hand.allTiles.map(t => tileKind(t)).filter(distinct).length === 1,
+            && hand.allTiles.map(t => tileKind(t)).filter(distinct).length === 1,
         extras: extraIfConcealed
     },
     'REN': {
@@ -256,8 +256,8 @@ export const defaultYakuCollection: YakuCollection = {
         description: '1112345678999 of the same suit, plus one other tile of the same suit',
         canBeOpen: false,
         check: hand => hand.allTiles.every(isSuited)
-                    && hand.allTiles.map(t => tileKind(t)).filter(distinct).length === 1
-                    && ['1', '2', '3', '4', '5', '6', '7', '8', '9'].every(v => hand.allTiles.some(t => tileRank(t) === v))
+            && hand.allTiles.map(t => tileKind(t)).filter(distinct).length === 1
+            && ['1', '2', '3', '4', '5', '6', '7', '8', '9'].every(v => hand.allTiles.some(t => tileRank(t) === v))
     },
     'TEN': {
         han: YAKUMAN_HAN,
@@ -265,8 +265,8 @@ export const defaultYakuCollection: YakuCollection = {
         description: 'East mahjong on initial fourteen tiles',
         canBeOpen: false,
         check: hand => hand.state.firstRound
-                    && hand.selfDrawn
-                    && hand.state.seatWind === Wind.East
+            && hand.selfDrawn
+            && hand.state.seatWind === Wind.East
     },
     'CHH': {
         han: YAKUMAN_HAN,
@@ -274,8 +274,8 @@ export const defaultYakuCollection: YakuCollection = {
         description: 'Mahjong on self-draw in the first round',
         canBeOpen: false,
         check: hand => hand.state.firstRound
-                    && hand.selfDrawn
-                    && hand.state.seatWind !== Wind.East
+            && hand.selfDrawn
+            && hand.state.seatWind !== Wind.East
     },
     'SUA': {
         han: YAKUMAN_HAN,
@@ -325,7 +325,7 @@ export const defaultYakuCollection: YakuCollection = {
         description: 'Three triplets or quads of winds and a pair of winds',
         canBeOpen: true,
         check: hand => hand.pons.filter(p => isWind(p[0])).length === 3
-                    && !!hand.pair && isWind(hand.pair[0])
+            && !!hand.pair && isWind(hand.pair[0])
     },
     'DSS': {
         han: YAKUMAN_HAN,

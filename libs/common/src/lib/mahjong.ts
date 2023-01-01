@@ -1,8 +1,8 @@
-import { createDummySetOfTiles, tileKind, tileValue } from './utils/tile';
-import { Mahjong, FinalMeld, FinalMeldKind, ReadonlyHand } from './types/hand';
-import { distinct, groupBy, exclude } from './utils/array';
+import { FinalMeld, FinalMeldKind, Mahjong, ReadonlyHand } from './types/hand';
 import { Tile, Wind } from './types/tile';
-import { isTerminalOrHonor, isSuited } from './utils/tile-checks';
+import { distinct, exclude, groupBy } from './utils/array';
+import { createDummySetOfTiles, tileKind, tileValue } from './utils/tile';
+import { isSuited, isTerminalOrHonor } from './utils/tile-checks';
 
 export function calculateWaits(hand: ReadonlyHand) {
     return getPossibleMahjongs(hand, Wind.East).map(result => result.tile);
@@ -39,7 +39,7 @@ export function checkForMahjong(hand: ReadonlyHand, seatWind: Wind, discardWind:
     if (!melds.length) {
         // manual check for 13 orphans
         if (distinctTiles.length === 13 && tiles.every(isTerminalOrHonor)) {
-            return [{melds: [formMeld(tiles, FinalMeldKind.Orphans)], finalTile: winningTile}];
+            return [{ melds: [formMeld(tiles, FinalMeldKind.Orphans)], finalTile: winningTile }];
         }
         // manual check for 7 pairs
         if (tilesGroupedByName.length === 7 && tilesGroupedByName.every(s => s.length === 2)) {
@@ -90,7 +90,10 @@ export function checkForMahjong(hand: ReadonlyHand, seatWind: Wind, discardWind:
             throw new Error('unexpected number of tiles left in hand');
         }
 
-        const tile = remainingTiles.shift()!;
+        const tile = remainingTiles.shift();
+        if (!tile) {
+            throw new Error('unexpectedly reached end of tiles');
+        }
         if (isSuited(tile) && tileValue(tile) <= 7) {
             const tile1 = remainingTiles.find(t => tileKind(t) === tileKind(tile) && tileValue(t) === tileValue(tile) + 1);
             const tile2 = remainingTiles.find(t => tileKind(t) === tileKind(tile) && tileValue(t) === tileValue(tile) + 2);

@@ -1,5 +1,5 @@
 import { HandHelper } from './internal/hand-helper';
-import { PointsLimit, CountedFu, PaymentInfo, FuDefinition } from './types/points';
+import { CountedFu, FuDefinition, PaymentInfo, PointsLimit } from './types/points';
 import { Wind } from './types/tile';
 
 export function countFu(hand: HandHelper, fuDefinitions: readonly FuDefinition[]): CountedFu[] {

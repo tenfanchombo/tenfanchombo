@@ -1,4 +1,4 @@
-import { TileKind, Dragon, Wind, Tile, TileRank } from '../types/tile';
+import { Dragon, Tile, TileKind, TileRank, Wind } from '../types/tile';
 import { randomNumberGenerator } from './random';
 
 export function createDummySetOfTiles(): Tile[] {
@@ -26,13 +26,13 @@ export function tileValue(tile: Tile): number {
 export function getDoraFromIndicator(indicator: Tile): Tile {
     if (indicator[0] === TileKind.Honor) {
         switch (indicator[1]) {
-            case Wind.East:    return `${TileKind.Honor}${Wind.South}`;
-            case Wind.South:   return `${TileKind.Honor}${Wind.West}`;
-            case Wind.West:    return `${TileKind.Honor}${Wind.North}`;
-            case Wind.North:   return `${TileKind.Honor}${Wind.East}`;
-            case Dragon.Haku:  return `${TileKind.Honor}${Dragon.Hatsu}`;
+            case Wind.East: return `${TileKind.Honor}${Wind.South}`;
+            case Wind.South: return `${TileKind.Honor}${Wind.West}`;
+            case Wind.West: return `${TileKind.Honor}${Wind.North}`;
+            case Wind.North: return `${TileKind.Honor}${Wind.East}`;
+            case Dragon.Haku: return `${TileKind.Honor}${Dragon.Hatsu}`;
             case Dragon.Hatsu: return `${TileKind.Honor}${Dragon.Chun}`;
-            case Dragon.Chun:  return `${TileKind.Honor}${Dragon.Haku}`;
+            case Dragon.Chun: return `${TileKind.Honor}${Dragon.Haku}`;
         }
     }
 
@@ -45,7 +45,7 @@ export function createNewDeck(rng?: Iterator<number>): Tile[] {
     rng ??= randomNumberGenerator();
 
     return deck
-        .map(tile => ({tile, v: rng?.next().value}))
+        .map(tile => ({ tile, v: rng?.next().value }))
         .sort((t1, t2) => t1.v - t2.v)
         .map(t => t.tile);
 }
@@ -58,14 +58,14 @@ export function allSuitsPresent(tiles: readonly Tile[]) {
 export function tileToUnicode(tile: Tile | null | '--') {
     if (tile && tile !== '--') {
         switch (tileKind(tile)) {
-            case TileKind.Man:    return String.fromCodePoint(0x1F006 + tileValue(tile));
-            case TileKind.Sou:    return String.fromCodePoint(0x1F00F + tileValue(tile));
-            case TileKind.Pin:    return String.fromCodePoint(0x1F018 + tileValue(tile));
+            case TileKind.Man: return String.fromCodePoint(0x1F006 + tileValue(tile));
+            case TileKind.Sou: return String.fromCodePoint(0x1F00F + tileValue(tile));
+            case TileKind.Pin: return String.fromCodePoint(0x1F018 + tileValue(tile));
             case TileKind.Honor:
                 switch (tileRank(tile)) {
-                    case Dragon.Haku:  return String.fromCodePoint(0x1F006);
+                    case Dragon.Haku: return String.fromCodePoint(0x1F006);
                     case Dragon.Hatsu: return String.fromCodePoint(0x1F005);
-                    case Dragon.Chun:  return String.fromCodePoint(0x1F004);
+                    case Dragon.Chun: return String.fromCodePoint(0x1F004);
                     default: return String.fromCodePoint(0x1EFFF + tileValue(tile));
                 }
         }
@@ -76,4 +76,3 @@ export function tileToUnicode(tile: Tile | null | '--') {
 // export function handToUnicode(tiles: TileDef[]) {
 //     return tiles.map(tileToUnicode).join(' ');
 // }
-

@@ -1,8 +1,8 @@
+import { FinalMeld, FinalMeldKind, Mahjong } from '../types/hand';
 import { Tile, TileKind, TileRank } from '../types/tile';
-import { Mahjong, FinalMeld, FinalMeldKind } from '../types/hand';
-import { isDragon } from '../utils/tile-checks';
 import { WinState } from '../types/win-state';
 import { tileKind, tileRank, tileValue } from '../utils/tile';
+import { isDragon } from '../utils/tile-checks';
 
 function isClosedMeld(meld: FinalMeld) {
     return meld.kind === FinalMeldKind.ClosedSet
@@ -62,10 +62,10 @@ export class HandHelper {
         this.pons = sets.filter(s => s[0] === s[1]);
 
         this.isPinfu = !this.isOpen
-                    && !this.pons.length
-                    &&  this.chis.some(s => (s[0] === mahjong.finalTile && tileValue(s[0]) !== 7)
-                                         || (s[2] === mahjong.finalTile && tileValue(s[2]) !== 3))
-                    &&  this.valuelessPair;
+            && !this.pons.length
+            && this.chis.some(s => (s[0] === mahjong.finalTile && tileValue(s[0]) !== 7)
+                || (s[2] === mahjong.finalTile && tileValue(s[2]) !== 3))
+            && this.valuelessPair;
     }
 
     readonly allTiles: readonly Tile[];
@@ -90,6 +90,5 @@ export class HandHelper {
     isSeatWind = (tile: Tile) => {
         return tileKind(tile) === TileKind.Honor && tileRank(tile) === this.state.seatWind;
     }
-
 
 }

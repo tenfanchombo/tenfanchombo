@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import {
     ChangeDetectionStrategy,
     Component,
@@ -5,14 +6,13 @@ import {
     Input,
     ViewEncapsulation,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { DECK_SIZE, GameService, PlayerIndex, TileIndex, TileInfo, TilePosition } from '@tenfanchombo/game-core';
-import { TileComponent } from '@tenfanchombo/components';
-import { BehaviorSubject } from 'rxjs';
-import { TileClickBehaviour, TILE_CLICK_BEHAVIOUR } from '../state/state';
-import { TileTransformPipe } from '../pipes/tile-transform.pipe';
 import { Wind } from '@tenfanchombo/common';
+import { TileComponent } from '@tenfanchombo/components';
+import { DECK_SIZE, GameService, PlayerIndex, TileIndex, TileInfo, TilePosition } from '@tenfanchombo/game-core';
+import { BehaviorSubject } from 'rxjs';
 
+import { TileTransformPipe } from '../pipes/tile-transform.pipe';
+import { TILE_CLICK_BEHAVIOUR, TileClickBehaviour } from '../state/state';
 
 @Component({
     selector: 'rth-table',
@@ -30,31 +30,31 @@ export class TableComponent {
     protected readonly tileClickBehaviour$ = inject<BehaviorSubject<TileClickBehaviour>>(TILE_CLICK_BEHAVIOUR);
 
     protected readonly windChars: Record<Wind, string> = {
-        [Wind.East]:  '東',
+        [Wind.East]: '東',
         [Wind.South]: '南',
-        [Wind.West]:  '西',
+        [Wind.West]: '西',
         [Wind.North]: '北',
     };
 
     protected readonly placeHolders: TileInfo[] =
-    new Array(4).fill(1).map((_, seat) =>[
-        ...new Array(14).fill(1).map((_, hand) => ({
-            position: TilePosition.Hand,
-            index: hand,
-            seat: seat as PlayerIndex,
-            rotated: false,
-            tile: null,
-            public: false,
-        })),
-        ...new Array(24).fill(1).map((_, discard) => ({
-            position: TilePosition.Discards,
-            index: discard,
-            seat: seat as PlayerIndex,
-            rotated: false,
-            tile: null,
-            public: false,
-        }))
-    ]).flat();
+        new Array(4).fill(1).map((_, seat) => [
+            ...new Array(14).fill(1).map((_, hand) => ({
+                position: TilePosition.Hand,
+                index: hand,
+                seat: seat as PlayerIndex,
+                rotated: false,
+                tile: null,
+                public: false,
+            })),
+            ...new Array(24).fill(1).map((_, discard) => ({
+                position: TilePosition.Discards,
+                index: discard,
+                seat: seat as PlayerIndex,
+                rotated: false,
+                tile: null,
+                public: false,
+            }))
+        ]).flat();
 
     protected clickTile(tileIndex: TileIndex) {
         switch (this.tileClickBehaviour$.value) {

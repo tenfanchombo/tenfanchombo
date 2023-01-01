@@ -1,5 +1,5 @@
-import { Component, ViewEncapsulation, ChangeDetectionStrategy, forwardRef, Input, HostListener, ChangeDetectorRef, HostBinding } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, HostBinding, HostListener, Input, ViewEncapsulation } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 let id = 0;
 
@@ -22,7 +22,7 @@ export class RadioGroupComponent implements ControlValueAccessor {
     @Input() ariaTitle: string | undefined;
     @Input() name: string | undefined;
 
-    @Input() options: {caption: string, value: number}[] | undefined;
+    @Input() options: { caption: string, value: number }[] | undefined;
     value: number | undefined;
     id = ++id;
 

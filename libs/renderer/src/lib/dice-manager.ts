@@ -4,25 +4,27 @@
 
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
-import { TileInstance, TILE_DEPTH_2, TILE_HEIGHT_2, TILE_WIDTH_2 } from './tile-instance';
+
+import { TILE_DEPTH_2, TILE_HEIGHT_2, TILE_WIDTH_2, TileInstance } from './tile-instance';
 
 export const DIE_SIZE = 0.016;
 export const DIE_MASS = 0.0041;
 
+const PROFILE_SIMULATION = false;
+
 function getDisplayedValue(dieBody: CANNON.Body) {
     const points = [
-        /* 1 */ new CANNON.Vec3( 0, -1,  0),
-        /* 2 */ new CANNON.Vec3( 1,  0,  0),
-        /* 3 */ new CANNON.Vec3( 0,  0,  1),
-        /* 4 */ new CANNON.Vec3( 0,  0, -1),
-        /* 5 */ new CANNON.Vec3(-1,  0,  0),
-        /* 6 */ new CANNON.Vec3( 0,  1,  0),
+        /* 1 */ new CANNON.Vec3(0, -1, 0),
+        /* 2 */ new CANNON.Vec3(1, 0, 0),
+        /* 3 */ new CANNON.Vec3(0, 0, 1),
+        /* 4 */ new CANNON.Vec3(0, 0, -1),
+        /* 5 */ new CANNON.Vec3(-1, 0, 0),
+        /* 6 */ new CANNON.Vec3(0, 1, 0),
     ]
 
     const translatedPoints = points.map(p => dieBody.pointToWorldFrame(p).y);
     return translatedPoints.indexOf(Math.max(...translatedPoints)) + 1;
 }
-
 
 export function createDiceAnimation(dice: readonly Die[], values: readonly number[], tiles: readonly TileInstance[]): THREE.AnimationAction[] {
     //const diceBodyMaterial = new CANNON.Material();
@@ -31,7 +33,7 @@ export function createDiceAnimation(dice: readonly Die[], values: readonly numbe
     const tileShape = new CANNON.Box(new CANNON.Vec3(TILE_WIDTH_2, TILE_HEIGHT_2, TILE_DEPTH_2));
     //const tileMaterial = new CANNON.Material();
 
-    const p = performance.now();
+    const perfStart = performance.now();
     const world = new CANNON.World({
         gravity: new CANNON.Vec3(0, -9.82, 0),
         broadphase: new CANNON.NaiveBroadphase(),
@@ -107,10 +109,10 @@ export function createDiceAnimation(dice: readonly Die[], values: readonly numbe
     });
 
     world.hasActiveBodies = true;
-    
+
     let time = 0.6;
     const times = [0, time];
-    const positionTracks: {x: number, y: number, z: number}[][] = dice.map((d, i) => [
+    const positionTracks: { x: number, y: number, z: number }[][] = dice.map((d, i) => [
         d.object.position.clone(),
         dieBodies[i].position.clone()
     ]);
@@ -118,7 +120,7 @@ export function createDiceAnimation(dice: readonly Die[], values: readonly numbe
         new CANNON.Quaternion(d.object.quaternion.x, d.object.quaternion.y, d.object.quaternion.z, d.object.quaternion.w),
         dieBodies[i].quaternion.clone()
     ]);
-    
+
     const MAX_FRAMES = 500;
     const STEPS_PER_FRAME = 10;
 
@@ -134,23 +136,27 @@ export function createDiceAnimation(dice: readonly Die[], values: readonly numbe
             quaternionTracks[di].push(db.quaternion.clone());
         }
     }
-
-    // console.info(`simulated die roll in ${Math.ceil(performance.now() - p)}ms, taking ${positionTracks[0].length / 3} frames`, dieBodies.map(dieBody => getDisplayedValue(dieBody)));
+    if (PROFILE_SIMULATION) {
+        console.info(
+            `simulated die roll in ${Math.ceil(performance.now() - perfStart)}ms, taking ${positionTracks[0].length / 3} frames`,
+            dieBodies.map(dieBody => getDisplayedValue(dieBody))
+        );
+    }
 
     for (let di = 0; di < dice.length; di++) {
         const dieBody = dieBodies[di];
         const value = values[di];
-        
+
         const displayedValue = getDisplayedValue(dieBody);
 
         const rotateValueToSide: (number[] | undefined)[][] = [
             [],  //   x         1             2             3             4             5             6
-            /* 1 */ [ [],  undefined,   [ 0,  0, +1], [-1,  0,  0], [+1,  0,  0], [ 0,  0, -1], [+1,  0,  0] ],
-            /* 2 */ [ [], [ 0,  0, -1],  undefined,   [ 0, -1,  0], [ 0, +1,  0], [ 0,  0, -1], [ 0,  0,  1] ],
-            /* 3 */ [ [], [+1,  0,  0], [ 0, +1,  0],  undefined,   [+1,  0,  0], [ 0, -1,  0], [-1,  0,  0] ],
-            /* 4 */ [ [], [-1,  0,  0], [ 0, -1,  0], [ 0, +1,  0],  undefined,   [ 0, +1,  0], [+1,  0,  0] ],
-            /* 5 */ [ [], [ 0,  0,  1], [ 0, +1,  0], [ 0, +1,  0], [ 0, -1,  0],  undefined,   [ 0,  0, -1] ],
-            /* 6 */ [ [], [ 0,  0, -1], [0,  0,  -1], [+1,  0,  0], [-1,  0,  0], [ 0,  0, +1],  undefined   ],
+            /* 1 */[[], undefined, [0, 0, +1], [-1, 0, 0], [+1, 0, 0], [0, 0, -1], [+1, 0, 0]],
+            /* 2 */[[], [0, 0, -1], undefined, [0, -1, 0], [0, +1, 0], [0, 0, -1], [0, 0, 1]],
+            /* 3 */[[], [+1, 0, 0], [0, +1, 0], undefined, [+1, 0, 0], [0, -1, 0], [-1, 0, 0]],
+            /* 4 */[[], [-1, 0, 0], [0, -1, 0], [0, +1, 0], undefined, [0, +1, 0], [+1, 0, 0]],
+            /* 5 */[[], [0, 0, 1], [0, +1, 0], [0, +1, 0], [0, -1, 0], undefined, [0, 0, -1]],
+            /* 6 */[[], [0, 0, -1], [0, 0, -1], [+1, 0, 0], [-1, 0, 0], [0, 0, +1], undefined],
         ];
 
         const rotationAxis = rotateValueToSide[value][displayedValue];
@@ -185,7 +191,7 @@ export class Die {
 
         this.object.receiveShadow = true;
         this.object.castShadow = true;
-        
+
         this.object.children[0].receiveShadow = true;
         this.object.children[0].castShadow = true;
     }

@@ -1,12 +1,10 @@
 import { DECK_SIZE, PlayerIndex, TileIndex, TileInfo } from '@tenfanchombo/game-core';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper'
+import Stats from 'three/examples/jsm/libs/stats.module'
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
-import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper'
-
-import Stats from 'three/examples/jsm/libs/stats.module'
-
 
 import { TestDice } from './dice';
 import { TileInstance } from './tile-instance';
@@ -115,7 +113,7 @@ export class RiichiRenderer {
             case 2: this.camera.position.set(0, 0.650, -0.450); break;
             case 3: this.camera.position.set(0.450, 0.650, 0); break;
         }
-        
+
         this.camera.lookAt(new THREE.Vector3(0, 0, 0));
     }
 
@@ -146,7 +144,7 @@ export class RiichiRenderer {
         const dieObj = await this.objLoader.loadAsync("assets/die.obj");
         this.dice = new TestDice(this.scene, this.tiles, dieObj);
 
-        this.normalHelper = new VertexNormalsHelper( this.dice.dice[0].object.children[0], 0.0001, 0xff8000 );
+        this.normalHelper = new VertexNormalsHelper(this.dice.dice[0].object.children[0], 0.0001, 0xff8000);
         // this.scene.add(this.normalHelper);
     }
 
@@ -191,5 +189,3 @@ export class RiichiRenderer {
         return needResize;
     }
 }
-
-

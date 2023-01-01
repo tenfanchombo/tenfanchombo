@@ -1,5 +1,6 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter, UrlSegment } from '@angular/router';
+
 import { AppComponent } from './app/app.component';
 import { GameResolver } from './app/game.resolver';
 import { GameComponent } from './app/game/game.component';

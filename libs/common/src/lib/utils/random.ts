@@ -1,4 +1,4 @@
-export function *randomNumberGenerator(seed?: number): Iterator<number> {
+export function* randomNumberGenerator(seed?: number): Iterator<number> {
     let w = seed ?? new Date().getTime();
     let x = 987654321;
     const mask = 0xffffffff;
@@ -9,7 +9,7 @@ export function *randomNumberGenerator(seed?: number): Iterator<number> {
     }
 }
 
-export function *sequentialNumberGenerator(seed = 0): Iterator<number> {
+export function* sequentialNumberGenerator(seed = 0): Iterator<number> {
     while (true) {
         yield seed++;
     }

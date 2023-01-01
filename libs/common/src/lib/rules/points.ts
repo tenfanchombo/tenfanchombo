@@ -1,7 +1,7 @@
-import { FuDefinition } from '../types/points';
-import { isSimple, isHonor, isTerminal, isDragon } from '../utils/tile-checks';
 import { FinalMeldKind } from '../types/hand';
+import { FuDefinition } from '../types/points';
 import { tileRank } from '../utils/tile';
+import { isDragon, isHonor, isSimple, isTerminal } from '../utils/tile-checks';
 
 export const defaultFuDefinitions: FuDefinition[] = [
     {
@@ -132,4 +132,3 @@ export const defaultFuDefinitions: FuDefinition[] = [
         check: hand => hand.isOpen && hand.chis.length === 4 && hand.valuelessPair
     }
 ];
-

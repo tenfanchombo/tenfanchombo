@@ -1,5 +1,5 @@
-import { Component, Input, ChangeDetectionStrategy, HostBinding, ViewEncapsulation } from '@angular/core';
-import { Tile, TileKind, Wind, Dragon, tileRank, tileKind } from '@tenfanchombo/common';
+import { ChangeDetectionStrategy, Component, HostBinding, Input, ViewEncapsulation } from '@angular/core';
+import { Dragon, Tile, TileKind, tileKind, tileRank, Wind } from '@tenfanchombo/common';
 
 @Component({
     selector: 'scorer-tile',
@@ -34,12 +34,12 @@ export class TileComponent {
                 case TileKind.Sou: return 'Sou' + tileRank(this.tile);
                 case TileKind.Honor: {
                     switch (tileRank(this.tile)) {
-                        case Wind.East:  return 'Ton';
+                        case Wind.East: return 'Ton';
                         case Wind.South: return 'Nan';
-                        case Wind.West:  return 'Shaa';
+                        case Wind.West: return 'Shaa';
                         case Wind.North: return 'Pei';
-                        case Dragon.Chun:  return 'Chun';
-                        case Dragon.Haku:  return 'Haku';
+                        case Dragon.Chun: return 'Chun';
+                        case Dragon.Haku: return 'Haku';
                         case Dragon.Hatsu: return 'Hatsu';
                     }
                 }

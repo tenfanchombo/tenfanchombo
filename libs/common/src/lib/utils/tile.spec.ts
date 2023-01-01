@@ -3,7 +3,7 @@ import { distinct } from "./array";
 import { createDummySetOfTiles, tileKind, tileToUnicode } from "./tile";
 
 describe('Tile utils', () => {
-     it('should create a set of tiles', () => {
+    it('should create a set of tiles', () => {
         const tiles = createDummySetOfTiles();
         expect(tiles.length).toBe(9 + 9 + 9 + 4 + 3);
         expect(tiles.filter(distinct).length).toBe(tiles.length);
@@ -11,7 +11,7 @@ describe('Tile utils', () => {
         expect(tiles.filter(t => tileKind(t) === TileKind.Pin).length).toBe(9);
         expect(tiles.filter(t => tileKind(t) === TileKind.Sou).length).toBe(9);
         expect(tiles.filter(t => tileKind(t) === TileKind.Honor).length).toBe(4 + 3);
-     });
+    });
 
     it('should translate tiles to unicode', () => {
         //expect(tileToUnicode(null)).toMatch('🀫');
@@ -55,27 +55,27 @@ describe('Tile utils', () => {
         expect(tileToUnicode(`${TileKind.Pin}9`)).toMatch('🀡');
     });
 
-//     it('should translate hands to unicode', () => {
-//         expect(utils.handToUnicode([TileDef.Chun, TileDef.Hatsu, TileDef.Man1, TileDef.Pin2])).toMatch('🀄 🀅 🀇 🀚');
-//     });
+    //     it('should translate hands to unicode', () => {
+    //         expect(utils.handToUnicode([TileDef.Chun, TileDef.Hatsu, TileDef.Man1, TileDef.Pin2])).toMatch('🀄 🀅 🀇 🀚');
+    //     });
 
-//     it('should make/deconstruct tiles correctly', () => {
-//         for (const suit of [TileSuit.None, TileSuit.Man, TileSuit.Sou, TileSuit.Pin, TileSuit.Wind, TileSuit.Dragon]) {
-//             for (let value = 1; value <= utils.valuesInSuit(suit); value++) {
-//                 const tile = utils.makeTileDef(suit, value);
-//                 expect(utils.getSuitFromTile(tile)).toBe(suit);
-//                 expect(utils.getValueFromTile(tile)).toBe(value);
-//             }
-//         }
-//     });
+    //     it('should make/deconstruct tiles correctly', () => {
+    //         for (const suit of [TileSuit.None, TileSuit.Man, TileSuit.Sou, TileSuit.Pin, TileSuit.Wind, TileSuit.Dragon]) {
+    //             for (let value = 1; value <= utils.valuesInSuit(suit); value++) {
+    //                 const tile = utils.makeTileDef(suit, value);
+    //                 expect(utils.getSuitFromTile(tile)).toBe(suit);
+    //                 expect(utils.getValueFromTile(tile)).toBe(value);
+    //             }
+    //         }
+    //     });
 
-//     it('should create new decks', () => {
-//         const deck = utils.createNewDeck();
-//         expect(deck.length).toBe(136);
+    //     it('should create new decks', () => {
+    //         const deck = utils.createNewDeck();
+    //         expect(deck.length).toBe(136);
 
-//         for (const tile of Object.keys(TileDef).map(k => TileDef[k]).filter(t => t && typeof t === 'number')) {
-//             const numberOfTheseTiles = deck.filter(t => t === tile);
-//             expect(numberOfTheseTiles.length).toBe(4);
-//         }
-//     });
+    //         for (const tile of Object.keys(TileDef).map(k => TileDef[k]).filter(t => t && typeof t === 'number')) {
+    //             const numberOfTheseTiles = deck.filter(t => t === tile);
+    //             expect(numberOfTheseTiles.length).toBe(4);
+    //         }
+    //     });
 });

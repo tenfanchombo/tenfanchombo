@@ -1,18 +1,18 @@
 import { HandHelper } from './internal/hand-helper';
-import { Mahjong } from './types/hand';
-import { countYaku } from './yaku-calculator';
 import { calculatePayments, countFu, } from './points-calculator';
-import { CountedYaku, CountedFu, PaymentInfo } from './types/points';
-import { defaultYakuCollection } from './rules/yaku';
-import { defaultFuDefinitions } from './rules/points';
 import { defaultLimits } from './rules/limits';
+import { defaultFuDefinitions } from './rules/points';
+import { defaultYakuCollection } from './rules/yaku';
+import { Mahjong } from './types/hand';
+import { CountedFu, CountedYaku, PaymentInfo } from './types/points';
 import { WinState } from './types/win-state';
+import { countYaku } from './yaku-calculator';
 
 export interface ScoredHand {
     readonly mahjong: Mahjong;
     readonly state: WinState;
     readonly yaku: readonly CountedYaku[];
-    readonly fu:   readonly CountedFu[];
+    readonly fu: readonly CountedFu[];
     readonly payment: PaymentInfo;
 
     readonly totalHan: number;
@@ -31,7 +31,7 @@ export function getWinningScore(mahjong: Mahjong, round: WinState, rules = defau
     const fu = countFu(helper, rules.fu);
 
     const totalFu = fu.reduce((total, f) => total + f.definition.fu, 0);
-    const totalHan = yaku.reduce((total, y) => total + y.han + y.extras.length , 0);
+    const totalHan = yaku.reduce((total, y) => total + y.han + y.extras.length, 0);
 
     const payments = calculatePayments(helper, totalHan, totalFu, rules.limits);
 

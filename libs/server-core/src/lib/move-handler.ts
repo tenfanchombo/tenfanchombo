@@ -1,16 +1,16 @@
 import {
-    CallType,
     LogEntryType,
     MoveFunctions,
     PlayerIndex,
     TileIndex,
     TilePosition
 } from '@tenfanchombo/game-core';
+
 import { InternalGameDocument } from "./internal/documents";
 
 const allPlayers: readonly PlayerIndex[] = [0, 1, 2, 3];
 
-export const moveHandlers: {[K in keyof MoveFunctions]: MoveFunctions[K] extends (...args: infer P) => void ? (game: InternalGameDocument, callingPlayer: PlayerIndex, ...args: P) => void : never } = {
+export const moveHandlers: { [K in keyof MoveFunctions]: MoveFunctions[K] extends (...args: infer P) => void ? (game: InternalGameDocument, callingPlayer: PlayerIndex, ...args: P) => void : never } = {
     rollDice(game: InternalGameDocument, callingPlayer: PlayerIndex) {
         // TODO: should we store the seed or current w/x in the InternalGameDocument so this is deterministic?
         game.ledger.push({
@@ -78,19 +78,19 @@ export const moveHandlers: {[K in keyof MoveFunctions]: MoveFunctions[K] extends
         });
     },
 
-    makeCall(game: InternalGameDocument, callingPlayer: PlayerIndex, call: CallType) {
+    makeCall(/*game: InternalGameDocument, callingPlayer: PlayerIndex, call: CallType*/) {
         throw new Error("Function not implemented.");
     },
 
-    warnPlayer(game: InternalGameDocument, callingPlayer: PlayerIndex, player: PlayerIndex) {
+    warnPlayer(/*game: InternalGameDocument, callingPlayer: PlayerIndex, player: PlayerIndex*/) {
         throw new Error("Function not implemented.");
     },
 
-    returnTileToWall(game: InternalGameDocument, callingPlayer: PlayerIndex, tileIndex: TileIndex) {
+    returnTileToWall(/*game: InternalGameDocument, callingPlayer: PlayerIndex, tileIndex: TileIndex*/) {
         throw new Error("Function not implemented.");
     },
 
-    returnTileToPlayersDiscards(game: InternalGameDocument, callingPlayer: PlayerIndex, tileIndex: TileIndex, player: PlayerIndex) {
+    returnTileToPlayersDiscards(/*game: InternalGameDocument, callingPlayer: PlayerIndex, tileIndex: TileIndex, player: PlayerIndex*/) {
         throw new Error("Function not implemented.");
     },
 }

@@ -1,15 +1,16 @@
+import { CommonModule } from '@angular/common';
 import {
     ChangeDetectionStrategy,
     Component,
     inject,
     ViewEncapsulation,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DummyPlayerData } from '../test-server';
+import { Router } from '@angular/router';
 import { Tile, Wind } from '@tenfanchombo/common';
 import { TileComponent } from '@tenfanchombo/components';
-import { Router } from '@angular/router';
+
+import { DummyPlayerData } from '../test-server';
 
 @Component({
     selector: 'rth-lobby',

@@ -1,10 +1,10 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { TileInfo, TileIndex, TilePosition, WALL_SIZE } from "@tenfanchombo/game-core";
+import { TileIndex, TileInfo, TilePosition, WALL_SIZE } from "@tenfanchombo/game-core";
 
 const TILE_WIDTH = 24 - 1;
 const TILE_HEIGHT = 32 - 1;
 
-@Pipe({name: 'tileTransform', standalone: true}) export class TileTransformPipe implements PipeTransform {
+@Pipe({ name: 'tileTransform', standalone: true }) export class TileTransformPipe implements PipeTransform {
     transform(tile: TileInfo, index: TileIndex, wallSplits: TileIndex[]) {
         let x = 0;
         let y = 0;
@@ -17,7 +17,7 @@ const TILE_HEIGHT = 32 - 1;
                 const sideStart = Math.floor(index / WALL_SIZE) * WALL_SIZE;
                 const sideEnd = sideStart + WALL_SIZE;
                 const splitsOnThisSide = wallSplits.filter(ti => ti >= sideStart && ti <= sideEnd);
-                
+
                 if (splitsOnThisSide.length > 1) {
                     x += 10;
                 }
@@ -50,9 +50,9 @@ const TILE_HEIGHT = 32 - 1;
 
         switch (tile.seat) {
             case 0: break;
-            case 1: [x, y] = [-y,  x]; break;
+            case 1: [x, y] = [-y, x]; break;
             case 2: [x, y] = [-x, -y]; break;
-            case 3: [x, y] = [ y, -x]; break;
+            case 3: [x, y] = [y, -x]; break;
         }
 
         const rotate = `rotate(${tile.seat * 90}deg)`;
