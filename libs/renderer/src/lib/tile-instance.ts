@@ -2,18 +2,18 @@ import { TileKind, tileKind, tileValue } from '@tenfanchombo/common';
 import { PlayerIndex, TileIndex, TileInfo, TilePosition, WALL_SIZE } from '@tenfanchombo/game-core';
 import * as THREE from 'three';
 
-const TILE_HEIGHT = 0.026;
-const TILE_WIDTH  = 0.019;
-const TILE_DEPTH  = 0.016;
+export const TILE_HEIGHT = 0.026;
+export const TILE_WIDTH  = 0.019;
+export const TILE_DEPTH  = 0.016;
 
-const TILE_HEIGHT_2 = TILE_HEIGHT / 2;
-const TILE_WIDTH_2  = TILE_WIDTH  / 2;
-const TILE_DEPTH_2  = TILE_DEPTH  / 2;
+export const TILE_HEIGHT_2 = TILE_HEIGHT / 2;
+export const TILE_WIDTH_2  = TILE_WIDTH  / 2;
+export const TILE_DEPTH_2  = TILE_DEPTH  / 2;
 
 const WALL_FROM_CENTER = 0.2;
 const HAND_FROM_CENTER = 0.25;
 
-export class TileInstace {
+export class TileInstance {
     constructor(private readonly tileIndex: TileIndex, tile: THREE.Group, texture: THREE.Texture, normalMap: THREE.Texture) {
         this.tile = tile.clone();
         this.texture = texture.clone();
@@ -35,8 +35,7 @@ export class TileInstace {
                     color: 0xFFFFFF,
                     vertexColors: true,
                     map: this.texture,
-                    normalMap: this.normalMap,
-                    // normalScale: new THREE.Vector2(1, 1),
+                    normalMap: this.normalMap
                 });
 
                 material.onBeforeCompile = function (shader) {
@@ -66,7 +65,7 @@ export class TileInstace {
         this.tile.position.setY(this.tile.position.y - TILE_HEIGHT * 3);
     }
 
-    private readonly tile: THREE.Group;
+    public readonly tile: THREE.Group;
     private readonly texture: THREE.Texture;
     private readonly normalMap: THREE.Texture;
 
@@ -78,7 +77,7 @@ export class TileInstace {
         const quaternion = new THREE.Quaternion();
         const scale = new THREE.Vector3();
         target.decompose(position, quaternion, scale);
-        
+
         const animationMixer = new THREE.AnimationMixer(this.tile);
         animationMixer.timeScale = 3;
         const positionTrack = !liftBy ? new THREE.VectorKeyframeTrack('.position', [0, 1], [

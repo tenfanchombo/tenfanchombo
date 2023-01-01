@@ -38,7 +38,6 @@ import { TableComponent } from '../table/table.component';
 export class GameComponent {
     constructor(activatedRoute: ActivatedRoute) {
         activatedRoute.data.subscribe(data => {
-            console.log(data['game']);
             this.gameService = data['game'];
             if (this.gameService) {
                 const splits$ = this.gameService.log$.pipe(filterLogType(LogEntryType.WallSplit));
