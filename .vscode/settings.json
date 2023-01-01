@@ -1,10 +1,22 @@
 {
-    "editor.tabSize": 4,
-    "editor.insertSpaces": true,
-    "editor.detectIndentation": false,
-    "eslint.codeActionsOnSave.mode": "all",
-    "files.exclude": {
-        "dist": true,
-        "node_modules": true
-    }
+  "editor.tabSize": 4,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "editor.renderWhitespace": "all",
+  "files.exclude": {
+    ".angular": true,
+    ".firebase": true,
+    "dist": true,
+    "node_modules": true,
+    "tmp": true
+  },
+  "eslint.alwaysShowStatus": true,
+  "eslint.format.enable": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "eslint.validate": ["javascript", "typescript"],
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  "editor.formatOnSave": true,
+  "prettier.enable": false,
 }
