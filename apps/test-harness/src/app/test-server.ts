@@ -37,7 +37,7 @@ export const DummyPlayerData: readonly PlayerInfo[] = [
 
 export class TestServer {
 
-    useTrainingWheels = true;
+    useTrainingWheels = false;
     private store = new TestFirebaseStore();
 
     async connect(players: readonly PlayerInfo[], gameId: string, playerIndex: PlayerIndex): Promise<GameService> {
