@@ -5,6 +5,7 @@ import {
     inject,
     ViewEncapsulation,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { filterLogType, GameService, LogEntry, LogEntryType } from '@tenfanchombo/game-core';
 import { BehaviorSubject, filter, skip, take } from 'rxjs';
@@ -21,6 +22,7 @@ import { TileClickBehaviourSelectComponent } from '../tile-click-behaviour-selec
     imports: [
         CommonModule,
         RouterModule,
+        FormsModule,
         RendererHostComponent,
         TileClickBehaviourSelectComponent,
         TableComponent
@@ -49,6 +51,7 @@ export class GameComponent {
         });
     }
 
+    protected showOverlay = false;
     protected testServer = inject(TestServer);
     protected readonly tileClickBehaviour$ = inject<BehaviorSubject<TileClickBehaviour>>(TILE_CLICK_BEHAVIOUR);
     protected gameService: GameService | undefined;

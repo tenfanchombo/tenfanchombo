@@ -4,6 +4,7 @@ import {
     ChangeDetectionStrategy,
     Component,
     ElementRef,
+    inject,
     Input,
     OnChanges,
     OnDestroy,
@@ -11,9 +12,11 @@ import {
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
-import { GameService, PlayerIndex } from '@tenfanchombo/game-core';
+import { DECK_SIZE, GameService, PlayerIndex, TileIndex } from '@tenfanchombo/game-core';
 import { RiichiRenderer } from '@tenfanchombo/renderer';
 import { BehaviorSubject, combineLatest, filter, Subject, takeUntil } from 'rxjs';
+
+import { TILE_CLICK_BEHAVIOUR,TileClickBehaviour } from '../state/state';
 
 @Component({
     selector: 'rth-renderer-host',
@@ -32,6 +35,7 @@ export class RendererHostComponent implements OnChanges, AfterViewInit, OnDestro
     private renderer: RiichiRenderer | undefined;
     private gameServiceChange$ = new Subject<void>();
     private viewReady$ = new BehaviorSubject(false);
+    protected readonly tileClickBehaviour$ = inject<BehaviorSubject<TileClickBehaviour>>(TILE_CLICK_BEHAVIOUR);
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes['gameService']) {
@@ -42,6 +46,9 @@ export class RendererHostComponent implements OnChanges, AfterViewInit, OnDestro
                     .subscribe(([ti, splits]) => {
                         this.renderer?.updateTile(i, ti, splits);
                     });
+            }
+            if (this.renderer) {
+                this.renderer.gameService = this.gameService;
             }
             this.gameService.diceValues$
                 .pipe(takeUntil(this.gameServiceChange$))
@@ -60,6 +67,8 @@ export class RendererHostComponent implements OnChanges, AfterViewInit, OnDestro
         RiichiRenderer.create(this.canvasElement.nativeElement).then(renderer => {
             this.renderer = renderer;
             this.renderer.moveToSeat(this.activeSeat);
+            this.renderer.gameService = this.gameService;
+            this.renderer.onClickTile = (tileIndex) => this.clickTile(tileIndex);
             this.viewReady$.next(true);
         });
     }
@@ -67,5 +76,30 @@ export class RendererHostComponent implements OnChanges, AfterViewInit, OnDestro
     ngOnDestroy() {
         this.gameServiceChange$.next();
         this.gameServiceChange$.complete();
+    }
+    
+    protected clickTile(tileIndex: TileIndex) {
+        switch (this.tileClickBehaviour$.value) {
+            case TileClickBehaviour.SplitAfter: {
+                this.gameService.move.splitWall(tileIndex);
+                break;
+            }
+            case TileClickBehaviour.SplitBefore: {
+                this.gameService.move.splitWall((tileIndex + DECK_SIZE - 2) % DECK_SIZE);
+                break;
+            }
+            case TileClickBehaviour.Flip: {
+                this.gameService.move.flipTile(tileIndex);
+                break;
+            }
+            case TileClickBehaviour.Take: {
+                this.gameService.move.takeTile(tileIndex);
+                break;
+            }
+            case TileClickBehaviour.Discard: {
+                this.gameService.move.discard(tileIndex);
+                break;
+            }
+        }
     }
 }

@@ -1,21 +1,28 @@
+<div
+    style="display:flex;justify-content: space-between; width: 648px; position: fixed; z-index:10000; left:100px; top:5px">
+    <rth-tile-click-behaviour-select></rth-tile-click-behaviour-select>
+</div>
+
 <ng-container *ngIf="gameService">
     <rth-renderer-host [gameService]="gameService" [activeSeat]="gameService.playerIndex"></rth-renderer-host>
 
-    <div style="margin: 10px 0; position:relative; z-index:10000; color: white">
-        <input type="checkbox" id="training_wheels" #inputTrainingWheels [checked]="testServer.useTrainingWheels"
-        (input)="testServer.useTrainingWheels = inputTrainingWheels.checked" />
-        <label for="training_wheels">Training wheels</label>
-    </div>
-    <div style="display:flex;justify-content: space-between; width: 648px; position:relative; z-index:10000">
-        <rth-tile-click-behaviour-select></rth-tile-click-behaviour-select>
-    </div>
-
-    <rth-table [gameService]="gameService" [attr.data-tile-click-behaviour]="tileClickBehaviour$ | async">
-        <span style="font-size: 2em; line-height: 0.1em; vertical-align: middle;cursor: pointer;color:white" (click)="gameService.move.rollDice()">
+    <rth-table *ngIf="showOverlay" [gameService]="gameService"
+        [attr.data-tile-click-behaviour]="tileClickBehaviour$ | async">
+        <span style="font-size: 2em; line-height: 0.1em; vertical-align: middle;cursor: pointer;color:white"
+            (click)="gameService.move.rollDice()">
             {{die((gameService.diceValues$ | async)?.[0])}}
             {{die((gameService.diceValues$ | async)?.[1])}}
         </span>
     </rth-table>
 </ng-container>
-
-<button class="rth-game__return-to-lobby" [routerLink]="['']">Return to lobby</button>
+<div class="rth-game__controls">
+    <button [routerLink]="['']">Return to lobby</button>
+    <div>
+        <label for="training_wheels">Training wheels</label>
+        <input type="checkbox" id="training_wheels" [(ngModel)]="testServer.useTrainingWheels" />
+    </div>
+    <div>
+        <label for="show_overlay">Show 2D overlay</label>
+        <input type="checkbox" id="show_overlay" [(ngModel)]="showOverlay" />
+    </div>
+</div>

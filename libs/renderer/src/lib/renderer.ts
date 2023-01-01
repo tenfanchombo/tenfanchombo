@@ -1,4 +1,4 @@
-import { DECK_SIZE, PlayerIndex, TileIndex, TileInfo } from '@tenfanchombo/game-core';
+import { DECK_SIZE, GameService, PlayerIndex, TileIndex, TileInfo } from '@tenfanchombo/game-core';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper'
@@ -101,10 +101,22 @@ export class RiichiRenderer {
 
         this.moveToSeat(0);
 
+        document.addEventListener('mousemove', (event) => this.onMouseMove(event));
+        document.addEventListener('click', () => {
+            if (this.hoveredOverDice) {
+                this.gameService?.move.rollDice();
+            }
+            if (this.hoveredOverTile !== -1 && this.onClickTile) {
+                this.onClickTile(this.hoveredOverTile);
+            }
+        })
+
         this.render();
     }
 
     private dice: TestDice | undefined;
+    onClickTile?: (tileIndex: TileIndex) => void;
+    gameService: GameService | undefined;
 
     moveToSeat(seat: PlayerIndex) {
         switch (seat) {
@@ -123,6 +135,15 @@ export class RiichiRenderer {
 
     updateDice(values: readonly number[]) {
         this.dice?.roll(values);
+    }
+
+    private readonly mouse = new THREE.Vector2();
+    private readonly raycaster = new THREE.Raycaster();
+
+    onMouseMove(event: MouseEvent) {
+        event.preventDefault();
+        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
     }
 
     private tiles: TileInstance[] = [];
@@ -158,6 +179,9 @@ export class RiichiRenderer {
     private readonly camera: THREE.PerspectiveCamera;
     private readonly scene: THREE.Scene;
 
+    private hoveredOverDice = false;
+    private hoveredOverTile: TileIndex | -1 = -1;
+
     private render = () => {
         requestAnimationFrame(this.render);
         this.resizeRendererToDisplaySize();
@@ -165,6 +189,15 @@ export class RiichiRenderer {
         const canvas = this.renderer.domElement;
         this.camera.aspect = canvas.clientWidth / canvas.clientHeight;
         this.camera.updateProjectionMatrix();
+
+        this.raycaster.setFromCamera(this.mouse, this.camera);
+
+        const tiles = this.tiles.map(t => t.tile.children[0]);
+        const die = this.dice?.dice.map(d => d.object.children[0]) ?? [];
+        const intersection = this.raycaster.intersectObjects(tiles.concat(die));
+        this.hoveredOverDice = intersection.length > 0 && die.includes(intersection[0].object);
+        this.hoveredOverTile = intersection.length > 0 ? tiles.indexOf(intersection[0].object) : -1;
+        this.canvas.style.cursor = (this.hoveredOverDice || this.hoveredOverTile !== -1) ? 'pointer' : '';
 
         for (const tile of this.tiles) {
             tile.animateIfNeeded();
