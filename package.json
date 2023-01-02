@@ -40,7 +40,7 @@
     "@nrwl/jest": "15.2.1",
     "@nrwl/js": "15.2.1",
     "@nrwl/linter": "15.2.1",
-    "@nrwl/workspace": "15.2.1",
+    "@nrwl/workspace": "15.4.2",
     "@types/jest": "28.1.1",
     "@types/node": "16.11.7",
     "@types/three": "^0.146.0",
