@@ -3,40 +3,59 @@ import { randomNumberGenerator } from './random';
 
 export function createDummySetOfTiles(): Tile[] {
     return [
-        'm1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'm8', 'm9',
-        'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9',
-        's1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9',
-        'z1', 'z2', 'z3', 'z4',
-        'z5', 'z6', 'z7'
+        '1m', '2m', '3m', '4m', '5m', '6m', '7m', '8m', '9m',
+        '1p', '2p', '3p', '4p', '5p', '6p', '7p', '8p', '9p',
+        '1s', '2s', '3s', '4s', '5s', '6s', '7s', '8s', '9s',
+        '1z', '2z', '3z', '4z',
+        '5z', '6z', '7z'
     ];
 }
 
 export function tileKind(tile: Tile): TileKind {
-    return tile[0] as TileKind;
+    return tile[1] as TileKind;
 }
 
 export function tileRank(tile: Tile): TileRank {
-    return tile[1] as TileRank;
+    return tile[0] as TileRank;
 }
 
 export function tileValue(tile: Tile): number {
-    return +tile[1];
+    return +tile[0];
+}
+
+export function buildTile(kind: TileKind | string, rank: TileRank | string): Tile {
+    switch (kind) {
+        case TileKind.Man:
+        case TileKind.Pin:
+        case TileKind.Sou:
+            if (rank !== '1' && rank !== '2' && rank !== '3' && rank !== '4' && rank !== '5' && rank !== '6' && rank !== '7' && rank !== '8' && rank !== '9') {
+                throw new Error('Tile rank is out of range');
+            }
+            return `${rank}${kind}`;
+        case TileKind.Honor:
+            if (rank !== '1' && rank !== '2' && rank !== '3' && rank !== '4' && rank !== '5' && rank !== '6' && rank !== '7') {
+                throw new Error('Tile rank is out of range');
+            }
+            return `${rank}${kind}`;
+        default:
+            throw new Error('Tile kind is out of range');
+    }
 }
 
 export function getDoraFromIndicator(indicator: Tile): Tile {
-    if (indicator[0] === TileKind.Honor) {
-        switch (indicator[1]) {
-            case Wind.East: return `${TileKind.Honor}${Wind.South}`;
-            case Wind.South: return `${TileKind.Honor}${Wind.West}`;
-            case Wind.West: return `${TileKind.Honor}${Wind.North}`;
-            case Wind.North: return `${TileKind.Honor}${Wind.East}`;
-            case Dragon.Haku: return `${TileKind.Honor}${Dragon.Hatsu}`;
-            case Dragon.Hatsu: return `${TileKind.Honor}${Dragon.Chun}`;
-            case Dragon.Chun: return `${TileKind.Honor}${Dragon.Haku}`;
+    if (tileKind(indicator) === TileKind.Honor) {
+        switch (tileRank(indicator)) {
+            case Wind.East: return `${Wind.South}${TileKind.Honor}`;
+            case Wind.South: return `${Wind.West}${TileKind.Honor}`;
+            case Wind.West: return `${Wind.North}${TileKind.Honor}`;
+            case Wind.North: return `${Wind.East}${TileKind.Honor}`;
+            case Dragon.Haku: return `${Dragon.Hatsu}${TileKind.Honor}`;
+            case Dragon.Hatsu: return `${Dragon.Chun}${TileKind.Honor}`;
+            case Dragon.Chun: return `${Dragon.Haku}${TileKind.Honor}`;
         }
     }
 
-    return indicator[0] + (+indicator[1] % 9 + 1) as Tile;
+    return buildTile(tileKind(indicator), (tileValue(indicator) % 9 + 1).toString());
 }
 
 export function createNewDeck(rng?: Iterator<number>): Tile[] {

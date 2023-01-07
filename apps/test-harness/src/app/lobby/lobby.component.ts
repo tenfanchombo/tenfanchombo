@@ -29,7 +29,7 @@ export class LobbyComponent {
     private router = inject(Router);
 
     protected makeWindTile(wind: Wind): Tile {
-        return `z${wind}`;
+        return `${wind}z`;
     }
 
     protected onSubmit() {

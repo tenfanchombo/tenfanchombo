@@ -10,7 +10,7 @@ describe('Mahjong detector', () => {
 
     it('should calculate pair wait with open hand', () => {
         const hand = handFromNotation(`2p 1'23p 1'23m 1'23s 111z `);
-        expect(calculateWaits(hand)).toEqual(['p2']);
+        expect(calculateWaits(hand)).toEqual(['2p']);
     });
 
     it('should calculate 8 tile waits', () => {

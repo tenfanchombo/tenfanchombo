@@ -21,7 +21,7 @@ export const enum Dragon {
 export type TileRank = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
 
 export type Tile =
-    | `${TileKind.Man | TileKind.Pin | TileKind.Sou}${TileRank}`
-    | `${TileKind.Honor}${Wind | Dragon}`;
+    | `${TileRank}${TileKind.Man | TileKind.Pin | TileKind.Sou}`
+    | `${Wind | Dragon}${TileKind.Honor}`;
 
 export type UnknownTile = 'xx'

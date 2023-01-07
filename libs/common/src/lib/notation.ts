@@ -1,8 +1,8 @@
 import { validHandExpression } from './notation.expression';
 import { Hand, MeldKind as MeldKind } from './types/hand';
-import { Tile, TileKind, Wind } from './types/tile';
+import { Tile, TileKind, TileRank, Wind } from './types/tile';
 import { sequentialNumberGenerator } from './utils/random';
-import { createNewDeck } from './utils/tile';
+import { buildTile, createNewDeck } from './utils/tile';
 import { RelativeSeat, relativeSeatToWind } from './utils/wind';
 
 /*
@@ -55,7 +55,7 @@ export function handFromNotation(str: string, forWind: Wind = Wind.East, deck?: 
         const kind = kindFromLetter(s.charAt(s.length - 1));
 
         if (s.charAt(1) === 'x') {
-            const rank = parseInt(s.charAt(0), 10);
+            const rank = s.charAt(0) as TileRank;
             // special handling for closed kan
             hand.melds.push({
                 kind: MeldKind.ConcealedKan,
@@ -76,7 +76,7 @@ export function handFromNotation(str: string, forWind: Wind = Wind.East, deck?: 
             throw new HandNotationError('Internal error');
         }
         const values = matches.map(t => ({
-            rank: parseInt(t === 'x' ? s.charAt(0) : t, 10),
+            rank: (t === 'x' ? s.charAt(0) : t.charAt(0)) as TileRank,
             claimed: t.length > 1
         }));
 
@@ -110,7 +110,7 @@ export function handFromNotation(str: string, forWind: Wind = Wind.East, deck?: 
                 });
             } else {
                 const ranks = values.map(v => v.rank).sort();
-                if (!ranks.every((r, i) => r === ranks[0] + i)) {
+                if (!ranks.every((r, i) => r === `${+ranks[0] + i}`)) {
                     throw new HandNotationError(`Invalid values for a chi: ${ranks.join(',')}`);
                 }
                 hand.melds.push({
@@ -140,10 +140,11 @@ function kindFromLetter(letter: string) {
     throw new HandNotationError(`Invalid tile kind '${letter}'`);
 }
 
-function takeTile(deck: Tile[], kind: TileKind, rank: number) {
-    const index = deck.indexOf(`${kind}${rank}` as Tile);
+function takeTile(deck: Tile[], kind: TileKind, rank: TileRank) {
+    const tile = buildTile(kind, rank);
+    const index = deck.indexOf(tile);
     if (index === -1) {
-        throw new HandNotationError(`Deck does not contain all required tiles. Cannot find ${kind}${rank}`);
+        throw new HandNotationError(`Deck does not contain all required tiles. Cannot find tile`);
     }
     return deck.splice(index, 1)[0];
 }
