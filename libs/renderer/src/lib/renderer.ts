@@ -102,7 +102,9 @@ export class RiichiRenderer {
         this.moveToSeat(0);
 
         document.addEventListener('mousemove', (event) => this.onMouseMove(event));
-        document.addEventListener('click', () => {
+        document.addEventListener('click', (event) => {
+            this.onMouseMove(event);
+            this.performRayCast();
             if (this.hoveredOverDice) {
                 this.gameService?.move.rollDice();
             }
@@ -182,14 +184,7 @@ export class RiichiRenderer {
     private hoveredOverDice = false;
     private hoveredOverTile: TileIndex | -1 = -1;
 
-    private render = () => {
-        requestAnimationFrame(this.render);
-        this.resizeRendererToDisplaySize();
-
-        const canvas = this.renderer.domElement;
-        this.camera.aspect = canvas.clientWidth / canvas.clientHeight;
-        this.camera.updateProjectionMatrix();
-
+    private performRayCast() {
         this.raycaster.setFromCamera(this.mouse, this.camera);
 
         const tiles = this.tiles.map(t => t.tile.children[0]);
@@ -198,6 +193,17 @@ export class RiichiRenderer {
         this.hoveredOverDice = intersection.length > 0 && die.includes(intersection[0].object);
         this.hoveredOverTile = intersection.length > 0 ? tiles.indexOf(intersection[0].object) : -1;
         this.canvas.style.cursor = (this.hoveredOverDice || this.hoveredOverTile !== -1) ? 'pointer' : '';
+    }
+
+    private render = () => {
+        requestAnimationFrame(this.render);
+        this.resizeRendererToDisplaySize();
+
+        const canvas = this.renderer.domElement;
+        this.camera.aspect = canvas.clientWidth / canvas.clientHeight;
+        this.camera.updateProjectionMatrix();
+
+        this.performRayCast();
 
         for (const tile of this.tiles) {
             tile.animateIfNeeded();
