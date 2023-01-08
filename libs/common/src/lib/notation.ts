@@ -1,8 +1,7 @@
 import { validHandExpression } from './notation.expression';
 import { Hand, MeldKind as MeldKind } from './types/hand';
 import { Tile, TileKind, TileRank, Wind } from './types/tile';
-import { sequentialNumberGenerator } from './utils/random';
-import { buildTile, createNewDeck } from './utils/tile';
+import { buildTile, createUnshuffledDeck } from './utils/tile';
 import { RelativeSeat, relativeSeatToWind } from './utils/wind';
 
 /*
@@ -35,7 +34,7 @@ export class HandNotationError {
 }
 
 export function handFromNotation(str: string, forWind: Wind = Wind.East, deck?: Tile[]): Hand {
-    const tempDeck = deck ? deck.slice() : createNewDeck(sequentialNumberGenerator());
+    const tempDeck = deck ? deck.slice() : createUnshuffledDeck();
     str = str.toLowerCase()
         .replace(/\s/g, '')   // remove all whitespace
         .replace(/['"]/g, '`'); // convert all chi markers to backtick

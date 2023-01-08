@@ -42,4 +42,5 @@ export interface GameDocument {
     readonly players: readonly PlayerInfo[];
     readonly tiles: readonly TileInfo[];
     readonly ledger: readonly LogEntry[];
+    readonly deckIntegrity: string;
 }

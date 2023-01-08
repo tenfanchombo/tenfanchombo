@@ -16,6 +16,8 @@ export interface InternalTileInfo {
 /** The internal state of a game that should never be seen by the client */
 export interface InternalGameDocument {
     prevelantWind: Wind;
+    seed: number;
+    deckIntegrity: string;
     readonly players: readonly PlayerInfo[];
     tiles: InternalTileInfo[];
     ledger: LogEntry[];

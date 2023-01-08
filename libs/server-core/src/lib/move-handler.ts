@@ -1,3 +1,4 @@
+import { RandomNumberGenerator } from '@tenfanchombo/common';
 import {
     LogEntryType,
     MoveFunctions,
@@ -12,13 +13,14 @@ const allPlayers: readonly PlayerIndex[] = [0, 1, 2, 3];
 
 export const moveHandlers: { [K in keyof MoveFunctions]: MoveFunctions[K] extends (...args: infer P) => void ? (game: InternalGameDocument, callingPlayer: PlayerIndex, ...args: P) => void : never } = {
     rollDice(game: InternalGameDocument, callingPlayer: PlayerIndex) {
-        // TODO: should we store the seed or current w/x in the InternalGameDocument so this is deterministic?
+        // TODO: should we store the seed or current w/z in the InternalGameDocument so this is deterministic?
+        const rng = new RandomNumberGenerator();
         game.ledger.push({
             type: LogEntryType.DiceRolled,
             callingPlayer,
             values: [
-                Math.floor(Math.random() * 6) + 1,
-                Math.floor(Math.random() * 6) + 1,
+                rng.next(6) + 1,
+                rng.next(6) + 1,
             ]
         });
     },

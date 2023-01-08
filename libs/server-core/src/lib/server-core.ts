@@ -1,16 +1,21 @@
-import { createNewDeck, randomNumberGenerator, Wind } from "@tenfanchombo/common";
+import { createUnshuffledDeck, RandomNumberGenerator, shuffleTiles, Wind } from "@tenfanchombo/common";
 import { GameDocument, MoveFunctions, PlayerIndex, PlayerInfo, TilePosition, WALL_SIZE } from "@tenfanchombo/game-core";
+import { SHA256 } from 'crypto-js'
 
 import { InternalGameDocument } from "./internal/documents";
 import { moveHandlers } from "./move-handler";
 import { DocumentStore } from "./stores";
 
-export function createNewGameDocument(players: readonly PlayerInfo[], rng: Iterator<number> = randomNumberGenerator()): InternalGameDocument {
+export function createNewGameDocument(players: readonly PlayerInfo[], seed?: number): InternalGameDocument {
+    seed ??= new RandomNumberGenerator().next(0xFFFFFFFF);
+    const deck = shuffleTiles(createUnshuffledDeck(), seed);
     return {
         players,
         prevelantWind: Wind.East,
         ledger: [],
-        tiles: createNewDeck(rng).map((tile, index) => ({
+        seed,
+        deckIntegrity: SHA256(deck.join('')).toString(),
+        tiles: deck.map((tile, index) => ({
             position: TilePosition.Wall,
             seat: Math.floor(index / WALL_SIZE) as PlayerIndex,
             index: index % WALL_SIZE,
@@ -29,6 +34,7 @@ export function createPlayerGameDocument(game: InternalGameDocument, playerId: s
     return {
         prevelantWind: game.prevelantWind,
         players: game.players,
+        deckIntegrity: game.deckIntegrity,
         tiles: game.tiles.map(tile => ({
             position: tile.position,
             seat: tile.seat,

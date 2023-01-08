@@ -1,5 +1,5 @@
 import { Dragon, Tile, TileKind, TileRank, Wind } from '../types/tile';
-import { randomNumberGenerator } from './random';
+import { RandomNumberGenerator } from './random';
 
 export function createDummySetOfTiles(): Tile[] {
     return [
@@ -58,15 +58,24 @@ export function getDoraFromIndicator(indicator: Tile): Tile {
     return buildTile(tileKind(indicator), (tileValue(indicator) % 9 + 1).toString());
 }
 
-export function createNewDeck(rng?: Iterator<number>): Tile[] {
-    const deck = [...createDummySetOfTiles(), ...createDummySetOfTiles(), ...createDummySetOfTiles(), ...createDummySetOfTiles()];
+export function createUnshuffledDeck(): Tile[] {
+    return [...createDummySetOfTiles(), ...createDummySetOfTiles(), ...createDummySetOfTiles(), ...createDummySetOfTiles()];
+}
 
-    rng ??= randomNumberGenerator();
-
-    return deck
-        .map(tile => ({ tile, v: rng?.next().value }))
-        .sort((t1, t2) => t1.v - t2.v)
-        .map(t => t.tile);
+/**
+ * Shuffles tiles using the fisher-yates method
+ * @param tiles The array of the tiles to shuffle
+ * @param seed An optional seed 
+ * @returns The shuffled tiles
+ */
+export function shuffleTiles(tiles: readonly Tile[], seed?: number): Tile[] {
+    const deck = tiles.slice();
+    const rng = new RandomNumberGenerator(seed);
+    for (let i = tiles.length - 1; i > 0; i--) {
+        const j = rng.next(i + 1);
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+    return deck;
 }
 
 export function allSuitsPresent(tiles: readonly Tile[]) {
