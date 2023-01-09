@@ -103,7 +103,8 @@ export class RiichiRenderer {
 
         document.addEventListener('mousemove', (event) => this.onMouseMove(event));
         document.addEventListener('click', (event) => {
-            this.onMouseMove(event);
+            this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
             this.performRayCast();
             if (this.hoveredOverDice) {
                 this.gameService?.move.rollDice();
