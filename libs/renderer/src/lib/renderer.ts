@@ -8,6 +8,7 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 
 import { TestDice } from './dice';
 import { TileInstance } from './tile-instance';
+import { TilePlacementManager } from './tile-placement-manager';
 
 const AMBIENT_LIGHT_INTENSITY = 0.3;
 const TABLE_SIZE = 0.7;
@@ -157,8 +158,10 @@ export class RiichiRenderer {
         const tileTexture = await this.textureLoader.loadAsync('assets/tiles_texture.png');
         const tileTextureNormals = await this.textureLoader.loadAsync('assets/tiles_normals.png');
 
+        const tilePlacementManager = new TilePlacementManager();
+
         this.tiles = new Array(DECK_SIZE).fill(1).map((_, i) => {
-            const tile = new TileInstance(i, tileObj, tileTexture, tileTextureNormals);
+            const tile = new TileInstance(i, tileObj, tileTexture, tileTextureNormals, tilePlacementManager);
             tile.addToScene(this.scene);
             return tile;
         });
