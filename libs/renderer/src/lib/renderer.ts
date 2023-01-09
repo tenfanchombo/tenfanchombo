@@ -4,9 +4,15 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper'
 import Stats from 'three/examples/jsm/libs/stats.module'
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
+import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader';
 
 import { TestDice } from './dice';
+import { CustomOutlinePass } from './processing/custom-outline-pass';
 import { TileInstance } from './tile-instance';
 
 const AMBIENT_LIGHT_INTENSITY = 0.3;
@@ -103,7 +109,8 @@ export class RiichiRenderer {
 
         document.addEventListener('mousemove', (event) => this.onMouseMove(event));
         document.addEventListener('click', (event) => {
-            this.onMouseMove(event);
+            this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
             this.performRayCast();
             if (this.hoveredOverDice) {
                 this.gameService?.move.rollDice();
@@ -112,6 +119,27 @@ export class RiichiRenderer {
                 this.onClickTile(this.hoveredOverTile);
             }
         })
+
+        // postprocessing
+
+        this.composer = new EffectComposer(this.renderer);
+
+        const renderPass = new RenderPass(this.scene, this.camera);
+        this.composer.addPass(renderPass);
+
+        this.outlinePass = new OutlinePass(new THREE.Vector2(window.innerWidth, window.innerHeight), this.scene, this.camera);
+        //this.composer.addPass(this.outlinePass);
+
+        const customOutline = new CustomOutlinePass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            this.scene,
+            this.camera);
+        customOutline.updateMaxSurfaceId(189);
+        this.composer.addPass(customOutline);
+
+        this.effectFXAA = new ShaderPass(FXAAShader);
+        this.effectFXAA.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
+        this.composer.addPass(this.effectFXAA);
 
         this.render();
     }
@@ -122,7 +150,7 @@ export class RiichiRenderer {
 
     moveToSeat(seat: PlayerIndex) {
         switch (seat) {
-            case 0: this.camera.position.set(0, 0.650, 0.450); break;
+            case 0: this.camera.position.set(0, 0.250, 0.550); break;
             case 1: this.camera.position.set(-0.450, 0.650, 0); break;
             case 2: this.camera.position.set(0, 0.650, -0.450); break;
             case 3: this.camera.position.set(0.450, 0.650, 0); break;
@@ -159,6 +187,8 @@ export class RiichiRenderer {
         this.tiles = new Array(DECK_SIZE).fill(1).map((_, i) => {
             const tile = new TileInstance(i, tileObj, tileTexture, tileTextureNormals);
             tile.addToScene(this.scene);
+            this.outlinePass.selectedObjects.push(tile.tile);
+            this.outlinePass.hiddenEdgeColor.setHex(0xff0000);
             return tile;
         });
         const dieMaterials = await this.mtlLoader.loadAsync("assets/die.mtl");
@@ -168,6 +198,7 @@ export class RiichiRenderer {
         this.dice = new TestDice(this.scene, this.tiles, dieObj);
 
         this.normalHelper = new VertexNormalsHelper(this.dice.dice[0].object.children[0], 0.0001, 0xff8000);
+
         // this.scene.add(this.normalHelper);
     }
 
@@ -177,6 +208,9 @@ export class RiichiRenderer {
     private readonly mtlLoader = new MTLLoader();
     private readonly controls: OrbitControls;
     private readonly textureLoader = new THREE.TextureLoader();
+    private readonly composer: EffectComposer;
+    private readonly outlinePass: OutlinePass;
+    private readonly effectFXAA: ShaderPass;
     private readonly renderer: THREE.WebGLRenderer;
     private readonly camera: THREE.PerspectiveCamera;
     private readonly scene: THREE.Scene;
@@ -212,7 +246,8 @@ export class RiichiRenderer {
         this.dice?.animateIfNeeded();
         this.normalHelper?.update();
 
-        this.renderer.render(this.scene, this.camera);
+        // this.renderer.render(this.scene, this.camera);
+        this.composer.render();
 
         this.stats.update();
     }
@@ -224,6 +259,8 @@ export class RiichiRenderer {
         const needResize = this.canvas.width !== width || this.canvas.height !== height;
         if (needResize) {
             this.renderer.setSize(width, height, false);
+            this.composer.setSize(width, height);
+            this.effectFXAA.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
         }
         return needResize;
     }

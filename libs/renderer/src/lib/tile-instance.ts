@@ -1,6 +1,9 @@
+import { ThisReceiver } from '@angular/compiler';
 import { TileKind, tileKind, tileValue } from '@tenfanchombo/common';
 import { PlayerIndex, TileIndex, TileInfo, TilePosition, WALL_SIZE } from '@tenfanchombo/game-core';
 import * as THREE from 'three';
+
+import FindSurfaces from './processing/find-surfaces';
 
 export const TILE_HEIGHT = 0.026;
 export const TILE_WIDTH = 0.019;
@@ -12,6 +15,8 @@ export const TILE_DEPTH_2 = TILE_DEPTH / 2;
 
 const WALL_FROM_CENTER = 0.2;
 const HAND_FROM_CENTER = 0.25;
+
+const surfaceFinder = new FindSurfaces();
 
 export class TileInstance {
     constructor(private readonly tileIndex: TileIndex, tile: THREE.Group, texture: THREE.Texture, normalMap: THREE.Texture) {
@@ -29,6 +34,8 @@ export class TileInstance {
 
         this.tile.castShadow = true;
         this.tile.receiveShadow = true;
+
+        // this.tile.children[0] = this.tile.children[0].clone();
         this.tile.traverse(child => {
             if (child instanceof THREE.Mesh) {
                 const material = new THREE.MeshPhongMaterial({
@@ -47,11 +54,22 @@ export class TileInstance {
                     shader.fragmentShader = shader.fragmentShader.replace('#include <map_fragment>', custom_map_fragment);
                 };
 
+                child.geometry = child.geometry.clone();
+                child.geometry.setAttribute(
+                    "surfaceIdColor",
+                    new THREE.BufferAttribute(new Float32Array(new Array(child.geometry.attributes["position"].count).fill([tileIndex, 0, 0, 1]).flat()), 4)
+                );
+
                 child.material = material;
                 child.castShadow = true;
                 child.receiveShadow = true;
             }
         });
+
+        const outline_mat = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.BackSide });
+        this.outline = new THREE.Mesh((this.tile.children[0].clone() as THREE.Mesh).geometry, outline_mat);
+        this.outline.scale.multiplyScalar(1.05);
+        // this.tile.add(this.outline);
 
         const position = this.matrixFromInfo({
             position: TilePosition.Wall,
@@ -66,6 +84,7 @@ export class TileInstance {
     }
 
     public readonly tile: THREE.Group;
+    public readonly outline: THREE.Mesh;
     private readonly texture: THREE.Texture;
     private readonly normalMap: THREE.Texture;
 

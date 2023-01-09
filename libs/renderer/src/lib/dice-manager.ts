@@ -184,14 +184,21 @@ export function createDiceAnimation(dice: readonly Die[], values: readonly numbe
 }
 
 export class Die {
-    constructor(dieMesh: THREE.Group) {
+    constructor(dieMesh: THREE.Group, index: number) {
         this.object = dieMesh.clone();
 
         this.object.receiveShadow = true;
         this.object.castShadow = true;
 
+        const child = this.object.children[0] as THREE.Mesh;
         this.object.children[0].receiveShadow = true;
         this.object.children[0].castShadow = true;
+
+        child.geometry = child.geometry.clone();
+        child.geometry.setAttribute(
+            "surfaceIdColor",
+            new THREE.BufferAttribute(new Float32Array(new Array(child.geometry.attributes["position"].count).fill([0, 128, index, 1]).flat()), 4)
+        );
     }
 
     readonly object: THREE.Group;
