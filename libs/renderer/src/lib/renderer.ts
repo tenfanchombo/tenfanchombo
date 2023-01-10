@@ -102,6 +102,36 @@ export class RiichiRenderer {
 
         this.moveToSeat(0);
 
+        const extrudeSettings: THREE.ExtrudeGeometryOptions = {
+            steps: 2,
+            depth: 0.01,
+            bevelEnabled: true,
+            bevelThickness: 0.01,
+            bevelSize: 0.01,
+            bevelOffset: 0.01,
+            bevelSegments: 2,
+            curveSegments: 12
+        };
+
+        const bumperOutline = new THREE.Shape([
+            new THREE.Vector2(-0.35, -0.35),
+            new THREE.Vector2(+0.35, -0.35),
+            new THREE.Vector2(+0.35, +0.35),
+            new THREE.Vector2(-0.35, +0.35),
+        ]);
+        bumperOutline.holes = [new THREE.Shape([
+            new THREE.Vector2(-0.349, -0.349),
+            new THREE.Vector2(+0.349, -0.349),
+            new THREE.Vector2(+0.349, +0.349),
+            new THREE.Vector2(-0.349, +0.349),
+        ])];
+        const bumperMesh = new THREE.ExtrudeGeometry(bumperOutline, extrudeSettings);
+        // const bumperMaterial = new THREE.MeshToonMaterial({ color: 0x204020 });
+        const bumperMaterial = new THREE.MeshPhongMaterial({ color: 0x204020 });
+        const bumpers = new THREE.Mesh(bumperMesh, bumperMaterial);
+        bumpers.rotation.x = Math.PI * -.5;
+        this.scene.add(bumpers);
+
         document.addEventListener('mousemove', (event) => this.onMouseMove(event));
         document.addEventListener('click', (event) => {
             this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
