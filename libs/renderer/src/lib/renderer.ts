@@ -69,8 +69,8 @@ export class RiichiRenderer {
         light.castShadow = true;
         light.position.set(1, 1, 0.5);
         this.scene.add(light);
-        light.shadow.mapSize.width = 2048;
-        light.shadow.mapSize.height = 2048;
+        light.shadow.mapSize.width = 512;
+        light.shadow.mapSize.height = 512;
         light.shadow.bias = -0.001; // TODO: review this value. it is needed as it prevents the striping caused by self-casting shadows
         light.shadow.radius = 3;
         light.shadow.camera.near = 1;
