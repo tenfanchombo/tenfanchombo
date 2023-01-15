@@ -12,7 +12,7 @@ import {
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
-import { DECK_SIZE, GameService, PlayerIndex, TileIndex } from '@tenfanchombo/game-core';
+import { DECK_SIZE, GameService, PlayerIndex, TileIndex, TilePosition } from '@tenfanchombo/game-core';
 import { RiichiRenderer } from '@tenfanchombo/renderer';
 import { BehaviorSubject, combineLatest, filter, Subject, takeUntil } from 'rxjs';
 
@@ -88,20 +88,14 @@ export class RendererHostComponent implements OnChanges, AfterViewInit, OnDestro
                 this.gameService.move.splitWall((tileIndex + DECK_SIZE - 2) % DECK_SIZE);
                 break;
             }
-            case TileClickBehaviour.Flip: {
-                this.gameService.move.flipTile(tileIndex);
-                break;
-            }
-            case TileClickBehaviour.Take: {
-                this.gameService.move.takeTile(tileIndex);
-                break;
-            }
-            case TileClickBehaviour.Meld: {
-                this.gameService.move.moveToMeld(tileIndex);
-                break;
-            }
-            case TileClickBehaviour.Discard: {
-                this.gameService.move.discard(tileIndex);
+            case TileClickBehaviour.Pickup: {
+                this.gameService.move.moveTile(tileIndex, {
+                    position: TilePosition.Palm,
+                    seat: this.activeSeat, // nice! if we pick another seat, we can move a tile into somebody else's hand
+                    index: 0, // could we hold more in our hand?
+                    rotated: false,
+                    flipped: false
+                });
                 break;
             }
         }

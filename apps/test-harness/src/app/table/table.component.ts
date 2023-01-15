@@ -43,16 +43,16 @@ export class TableComponent {
                 index: hand,
                 seat: seat as PlayerIndex,
                 rotated: false,
+                flipped: false,
                 tile: null,
-                public: false,
             })),
             ...new Array(24).fill(1).map((_, discard) => ({
                 position: TilePosition.Discards,
                 index: discard,
                 seat: seat as PlayerIndex,
                 rotated: false,
+                flipped: false,
                 tile: null,
-                public: false,
             }))
         ]).flat();
 
@@ -64,22 +64,6 @@ export class TableComponent {
             }
             case TileClickBehaviour.SplitBefore: {
                 this.gameService.move.splitWall((tileIndex + DECK_SIZE - 2) % DECK_SIZE);
-                break;
-            }
-            case TileClickBehaviour.Flip: {
-                this.gameService.move.flipTile(tileIndex);
-                break;
-            }
-            case TileClickBehaviour.Take: {
-                this.gameService.move.takeTile(tileIndex);
-                break;
-            }
-            case TileClickBehaviour.Meld: {
-                this.gameService.move.moveToMeld(tileIndex);
-                break;
-            }
-            case TileClickBehaviour.Discard: {
-                this.gameService.move.discard(tileIndex);
                 break;
             }
         }

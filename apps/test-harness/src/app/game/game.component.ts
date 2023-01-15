@@ -7,8 +7,8 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { filterLogType, GameService, LogEntry, LogEntryType } from '@tenfanchombo/game-core';
-import { BehaviorSubject, filter, skip, take } from 'rxjs';
+import { GameService, LogEntry, LogEntryType } from '@tenfanchombo/game-core';
+import { BehaviorSubject } from 'rxjs';
 
 import { RendererHostComponent } from '../renderer-host/renderer-host.component';
 import { TILE_CLICK_BEHAVIOUR, TileClickBehaviour } from '../state/state';
@@ -30,7 +30,7 @@ import { TileClickBehaviourSelectComponent } from '../tile-click-behaviour-selec
     providers: [
         {
             provide: TILE_CLICK_BEHAVIOUR,
-            useValue: new BehaviorSubject<TileClickBehaviour>(TileClickBehaviour.Take)
+            useValue: new BehaviorSubject<TileClickBehaviour>(TileClickBehaviour.Pickup)
         }
     ],
     templateUrl: './game.component.html',
@@ -43,10 +43,10 @@ export class GameComponent {
         activatedRoute.data.subscribe(data => {
             this.gameService = data['game'];
             if (this.gameService) {
-                const splits$ = this.gameService.log$.pipe(filterLogType(LogEntryType.WallSplit));
-                splits$.pipe(take(1), filter(() => this.testServer.useTrainingWheels)).subscribe(() => this.tileClickBehaviour$.next(TileClickBehaviour.SplitBefore));
-                splits$.pipe(skip(1), take(1), filter(() => this.testServer.useTrainingWheels)).subscribe(() => this.tileClickBehaviour$.next(TileClickBehaviour.Flip));
-                this.gameService.log$.pipe(filterLogType(LogEntryType.FlippedTile), filter(() => this.testServer.useTrainingWheels)).subscribe(() => this.tileClickBehaviour$.next(TileClickBehaviour.Take));
+                // const splits$ = this.gameService.log$.pipe(filterLogType(LogEntryType.WallSplit));
+                // splits$.pipe(take(1), filter(() => this.testServer.useTrainingWheels)).subscribe(() => this.tileClickBehaviour$.next(TileClickBehaviour.SplitBefore));
+                // splits$.pipe(skip(1), take(1), filter(() => this.testServer.useTrainingWheels)).subscribe(() => this.tileClickBehaviour$.next(TileClickBehaviour.Flip));
+                // this.gameService.log$.pipe(filterLogType(LogEntryType.FlippedTile), filter(() => this.testServer.useTrainingWheels)).subscribe(() => this.tileClickBehaviour$.next(TileClickBehaviour.Take));
             }
         });
     }
