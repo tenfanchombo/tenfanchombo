@@ -4,7 +4,12 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper'
 import Stats from 'three/examples/jsm/libs/stats.module'
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
+import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader';
 
 import { TestDice } from './dice';
 import { TileInstance } from './tile-instance';
@@ -143,7 +148,34 @@ export class RiichiRenderer {
             if (this.hoveredOverTile !== -1 && this.onClickTile) {
                 this.onClickTile(this.hoveredOverTile);
             }
-        })
+        });
+
+        // const gridHelper = new THREE.GridHelper(1, 100, new THREE.Color(128, 128, 128));
+        // gridHelper.material = new THREE.LineDashedMaterial({
+        //     dashSize: 0.005,
+        //     gapSize: 0.005,
+        //     scale: 0.02
+
+        // })
+        // this.scene.add(gridHelper);
+
+        //const gridHelper2 = new THREE.GridHelper(1, 10, new THREE.Color(255, 255, 0));
+        //this.scene.add(gridHelper2);
+
+        // postprocessing
+
+        this.composer = new EffectComposer(this.renderer);
+
+        const renderPass = new RenderPass(this.scene, this.camera);
+        this.composer.addPass(renderPass);
+
+        this.highlightPass = new OutlinePass(new THREE.Vector2(window.innerWidth, window.innerHeight), this.scene, this.camera);
+        this.highlightPass.pulsePeriod = 1;
+        this.composer.addPass(this.highlightPass);
+
+        this.effectFXAA = new ShaderPass(FXAAShader);
+        this.effectFXAA.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
+        this.composer.addPass(this.effectFXAA);
 
         this.render();
     }
@@ -212,6 +244,9 @@ export class RiichiRenderer {
     private readonly controls: OrbitControls;
     private readonly textureLoader = new THREE.TextureLoader();
     private readonly renderer: THREE.WebGLRenderer;
+    private readonly composer: EffectComposer;
+    private readonly highlightPass: OutlinePass;
+    private readonly effectFXAA: ShaderPass;
     private readonly camera: THREE.PerspectiveCamera;
     private readonly scene: THREE.Scene;
 
@@ -227,6 +262,17 @@ export class RiichiRenderer {
         this.hoveredOverDice = intersection.length > 0 && die.includes(intersection[0].object);
         this.hoveredOverTile = intersection.length > 0 ? tiles.indexOf(intersection[0].object) : -1;
         this.canvas.style.cursor = (this.hoveredOverDice || this.hoveredOverTile !== -1) ? 'pointer' : '';
+        if (this.hoveredOverDice) {
+            this.highlightPass.selectedObjects = die;
+            this.highlightPass.enabled = true;
+        } else if (intersection.length) {
+            this.highlightPass.selectedObjects = [intersection[0].object];
+            this.highlightPass.enabled = true;
+
+        } else {
+            this.highlightPass.selectedObjects = [];
+            this.highlightPass.enabled = false;
+        }
     }
 
     private render = () => {
@@ -246,7 +292,8 @@ export class RiichiRenderer {
         this.dice?.animateIfNeeded();
         this.normalHelper?.update();
 
-        this.renderer.render(this.scene, this.camera);
+        // this.renderer.render(this.scene, this.camera);
+        this.composer.render();
 
         this.stats.update();
     }
@@ -258,6 +305,9 @@ export class RiichiRenderer {
         const needResize = this.canvas.width !== width || this.canvas.height !== height;
         if (needResize) {
             this.renderer.setSize(width, height, false);
+            this.highlightPass.setSize(width, height);
+            this.composer.setSize(width, height);
+            this.effectFXAA.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
         }
         return needResize;
     }
