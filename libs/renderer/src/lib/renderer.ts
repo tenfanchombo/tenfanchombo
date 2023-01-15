@@ -11,7 +11,7 @@ import { TileInstance } from './tile-instance';
 import { TilePlacementManager } from './tile-placement-manager';
 
 const AMBIENT_LIGHT_INTENSITY = 0.3;
-const TABLE_SIZE = 0.7;
+const TABLE_SIZE = 0.6;
 
 export class RiichiRenderer {
     static async create(canvas: HTMLCanvasElement) {
@@ -114,16 +114,16 @@ export class RiichiRenderer {
         };
 
         const bumperOutline = new THREE.Shape([
-            new THREE.Vector2(-0.35, -0.35),
-            new THREE.Vector2(+0.35, -0.35),
-            new THREE.Vector2(+0.35, +0.35),
-            new THREE.Vector2(-0.35, +0.35),
+            new THREE.Vector2(-0.301, -0.301),
+            new THREE.Vector2(+0.301, -0.301),
+            new THREE.Vector2(+0.301, +0.301),
+            new THREE.Vector2(-0.301, +0.301),
         ]);
         bumperOutline.holes = [new THREE.Shape([
-            new THREE.Vector2(-0.349, -0.349),
-            new THREE.Vector2(+0.349, -0.349),
-            new THREE.Vector2(+0.349, +0.349),
-            new THREE.Vector2(-0.349, +0.349),
+            new THREE.Vector2(-0.3, -0.3),
+            new THREE.Vector2(+0.3, -0.3),
+            new THREE.Vector2(+0.3, +0.3),
+            new THREE.Vector2(-0.3, +0.3),
         ])];
         const bumperMesh = new THREE.ExtrudeGeometry(bumperOutline, extrudeSettings);
         // const bumperMaterial = new THREE.MeshToonMaterial({ color: 0x204020 });
