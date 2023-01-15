@@ -6,6 +6,7 @@ export const enum TileClickBehaviour {
     SplitAfter = 'splitAfter',
     SplitBefore = 'splitBefore',
     Take = 'take',
+    Meld = 'meld',
     Flip = 'flip',
     Discard = 'discard',
 }

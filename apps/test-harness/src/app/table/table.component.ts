@@ -74,6 +74,10 @@ export class TableComponent {
                 this.gameService.move.takeTile(tileIndex);
                 break;
             }
+            case TileClickBehaviour.Meld: {
+                this.gameService.move.moveToMeld(tileIndex);
+                break;
+            }
             case TileClickBehaviour.Discard: {
                 this.gameService.move.discard(tileIndex);
                 break;

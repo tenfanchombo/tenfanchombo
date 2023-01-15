@@ -17,6 +17,7 @@ export const enum LogEntryType {
     CancelledCall, // can't cancel a call for Ron or Tsumo, but Pon/Chi/Kan can be canelled before discarding (even after taking the tile and exposing thier own)
     // cancelling a call after discarding results in a dead hand
     TookTile,
+    MeldedTiled,
     DiscardedTile
 }
 
@@ -36,7 +37,7 @@ export type LogEntry = {
     readonly callingPlayer: PlayerIndex,
     readonly call: CallType
 } | {
-    readonly type: LogEntryType.TookTile | LogEntryType.DiscardedTile,
+    readonly type: LogEntryType.TookTile | LogEntryType.DiscardedTile | LogEntryType.MeldedTiled,
     readonly callingPlayer: PlayerIndex,
     readonly tileIndex: TileIndex
 } | {

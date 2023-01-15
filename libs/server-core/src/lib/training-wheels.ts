@@ -110,6 +110,10 @@ export const moveValidators: { [K in keyof MoveFunctions]: MoveFunctions[K] exte
         throw new Error("Function not implemented.");
     },
 
+    moveToMeld() {
+        return 'Can not meld with training wheels on';
+    },
+
     warnPlayer(/*game: GameDocument, callingPlayer: PlayerIndex, player: PlayerIndex*/) {
         throw new Error("Function not implemented.");
     },

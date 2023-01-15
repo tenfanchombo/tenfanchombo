@@ -26,6 +26,7 @@ export class TileClickBehaviourSelectComponent {
         { name: 'Split After', value: TileClickBehaviour.SplitAfter },
         { name: 'Split Before', value: TileClickBehaviour.SplitBefore },
         { name: 'Take', value: TileClickBehaviour.Take },
+        { name: 'Meld', value: TileClickBehaviour.Meld },
         { name: 'Flip', value: TileClickBehaviour.Flip },
         { name: 'Discard', value: TileClickBehaviour.Discard },
     ]

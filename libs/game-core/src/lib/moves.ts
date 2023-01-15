@@ -23,6 +23,8 @@ export interface MoveFunctions {
     /** Called when discarding a tile */
     discard(tileIndex: TileIndex): void;
 
+    moveToMeld(tileIndex: TileIndex): void;
+
     makeCall(call: CallType): void;
 
     /**

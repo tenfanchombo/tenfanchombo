@@ -53,6 +53,25 @@ export const moveHandlers: { [K in keyof MoveFunctions]: MoveFunctions[K] extend
         });
     },
 
+    moveToMeld(game: InternalGameDocument, callingPlayer: PlayerIndex, tileIndex) {
+        game.tiles[tileIndex] = {
+            position: TilePosition.Melds,
+            seat: callingPlayer,
+            index: nextIndex(game, TilePosition.Melds, callingPlayer),
+            rotated: game.tiles[tileIndex].position === TilePosition.Discards,
+            tile: game.tiles[tileIndex].tile,
+            seenBy: allPlayers
+        };
+
+        // TODO: reindex player hand if needed
+
+        game.ledger.push({
+            type: LogEntryType.MeldedTiled,
+            callingPlayer,
+            tileIndex
+        });
+    },
+
     flipTile(game: InternalGameDocument, callingPlayer: PlayerIndex, tileIndex: TileIndex) {
         // TODO: handle flipping after kan
         game.tiles[tileIndex].seenBy = allPlayers;

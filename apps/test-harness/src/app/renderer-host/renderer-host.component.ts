@@ -16,7 +16,7 @@ import { DECK_SIZE, GameService, PlayerIndex, TileIndex } from '@tenfanchombo/ga
 import { RiichiRenderer } from '@tenfanchombo/renderer';
 import { BehaviorSubject, combineLatest, filter, Subject, takeUntil } from 'rxjs';
 
-import { TILE_CLICK_BEHAVIOUR,TileClickBehaviour } from '../state/state';
+import { TILE_CLICK_BEHAVIOUR, TileClickBehaviour } from '../state/state';
 
 @Component({
     selector: 'rth-renderer-host',
@@ -77,7 +77,7 @@ export class RendererHostComponent implements OnChanges, AfterViewInit, OnDestro
         this.gameServiceChange$.next();
         this.gameServiceChange$.complete();
     }
-    
+
     protected clickTile(tileIndex: TileIndex) {
         switch (this.tileClickBehaviour$.value) {
             case TileClickBehaviour.SplitAfter: {
@@ -94,6 +94,10 @@ export class RendererHostComponent implements OnChanges, AfterViewInit, OnDestro
             }
             case TileClickBehaviour.Take: {
                 this.gameService.move.takeTile(tileIndex);
+                break;
+            }
+            case TileClickBehaviour.Meld: {
+                this.gameService.move.moveToMeld(tileIndex);
                 break;
             }
             case TileClickBehaviour.Discard: {

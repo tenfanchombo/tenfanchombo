@@ -5,6 +5,7 @@ import { TILE_DEPTH, TILE_DEPTH_2, TILE_HEIGHT, TILE_HEIGHT_2, TILE_WIDTH, TILE_
 
 const WALL_FROM_CENTER = 0.2;
 const HAND_FROM_CENTER = 0.25;
+const MELDS_FROM_CENTER = 0.267;
 
 export class TilePlacementManager {
     private readonly discardAdjustments: THREE.Matrix4[][] = [[], [], [], []];
@@ -42,6 +43,17 @@ export class TilePlacementManager {
             }
             case TilePosition.Discards: {
                 m.multiply(this.getDiscardMatrix(info.seat, info.index));
+                break;
+            }
+            case TilePosition.Melds: {
+                m.multiply(new THREE.Matrix4().makeTranslation(MELDS_FROM_CENTER - (info.index) * TILE_WIDTH, TILE_DEPTH_2, MELDS_FROM_CENTER));
+                if (info.rotated) {
+                    m.multiply(new THREE.Matrix4().makeTranslation(-(TILE_HEIGHT_2 - TILE_WIDTH_2), 0, (TILE_HEIGHT_2 - TILE_WIDTH_2)));
+                }
+                m.multiply(new THREE.Matrix4().makeRotationX(Math.PI / -2));
+                if (info.rotated) {
+                    m.multiply(new THREE.Matrix4().makeRotationZ(Math.PI / -2));
+                }
                 break;
             }
         }
