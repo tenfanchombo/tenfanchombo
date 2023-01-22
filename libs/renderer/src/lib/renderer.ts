@@ -1,4 +1,4 @@
-import { DECK_SIZE, GameService, PlayerIndex, TileIndex, TileInfo } from '@tenfanchombo/game-core';
+import { DECK_SIZE, GameService, PlayerIndex, TileIndex, TileInfo, TilePosition } from '@tenfanchombo/game-core';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper'
@@ -13,10 +13,12 @@ import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader';
 
 import { TestDice } from './dice';
 import { TileInstance } from './tile-instance';
+import { TilePlaceHolder } from './tile-place-holder';
 import { TilePlacementManager } from './tile-placement-manager';
 
 const AMBIENT_LIGHT_INTENSITY = 0.3;
 const TABLE_SIZE = 0.6;
+const allPlayers: readonly PlayerIndex[] = [0, 1, 2, 3];
 
 export class RiichiRenderer {
     static async create(canvas: HTMLCanvasElement) {
@@ -101,11 +103,12 @@ export class RiichiRenderer {
         this.camera.updateProjectionMatrix();
         this.camera.position.set(0, 0.650, 0.450);
 
-        this.controls = new OrbitControls(this.camera, canvas);
-        this.controls.target.set(0, 0, 0);
-        this.controls.update();
+        //this.controls = new OrbitControls(this.camera, canvas);
+        //this.controls.target.set(0, 0, 0);
+        //this.controls.update();
+        //this.controls.enabled = false;
 
-        this.moveToSeat(0);
+        this.moveToSeat(this.playerIndex);
 
         const extrudeSettings: THREE.ExtrudeGeometryOptions = {
             steps: 2,
@@ -114,8 +117,8 @@ export class RiichiRenderer {
             bevelThickness: 0.01,
             bevelSize: 0.01,
             bevelOffset: 0.01,
-            bevelSegments: 2,
-            curveSegments: 12
+            bevelSegments: 12,
+            curveSegments: 2
         };
 
         const bumperOutline = new THREE.Shape([
@@ -137,16 +140,31 @@ export class RiichiRenderer {
         bumpers.rotation.x = Math.PI * -.5;
         this.scene.add(bumpers);
 
+        document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('mousemove', (event) => this.onMouseMove(event));
-        document.addEventListener('click', (event) => {
+        document.addEventListener('pointerdown', (event) => {
+            console.log(event.button);
             this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
             this.performRayCast();
             if (this.hoveredOverDice) {
                 this.gameService?.move.rollDice();
+                event.preventDefault();
             }
-            if (this.hoveredOverTile !== -1 && this.onClickTile) {
-                this.onClickTile(this.hoveredOverTile);
+            if (this.hoveredOverTile && this.onClickTile) {
+                this.onClickTile(this.hoveredOverTile.tileIndex);
+                event.preventDefault();
+            }
+            if (this.hoveredOverPlaceholder) {
+                const holdingTile = this.gameService?.tiles.findIndex(t => t.position === TilePosition.Palm && t.seat === this.playerIndex) ?? -1;
+                if (holdingTile !== -1) {
+                    this.gameService?.move.moveTile(holdingTile,
+                        {
+                            ...this.hoveredOverPlaceholder.placement,
+                            flipped: this.hoveredOverPlaceholder.placement.position !== TilePosition.Hand && event.button != 2,
+                        });
+                    event.preventDefault();
+                }
             }
         });
 
@@ -181,10 +199,18 @@ export class RiichiRenderer {
     }
 
     private dice: TestDice | undefined;
+
+    get playerIndex() { return this.gameService?.playerIndex ?? 0; }
     onClickTile?: (tileIndex: TileIndex) => void;
     gameService: GameService | undefined;
 
     moveToSeat(seat: PlayerIndex) {
+
+        this.camera.position.set(0, 0.5842509449129343, 0.35900076188358626);
+        this.camera.quaternion.set(-0.5214559994674611, 0, 0, 0.853278173059285);
+        // this.controls.c
+        return;
+
         switch (seat) {
             case 0: this.camera.position.set(0, 0.650, 0.450); break;
             case 1: this.camera.position.set(-0.450, 0.650, 0); break;
@@ -196,7 +222,14 @@ export class RiichiRenderer {
     }
 
     updateTile(index: number, tileInfo: TileInfo, splits: TileIndex[]) {
-        this.tiles[index].update(tileInfo, splits);
+        this.tilePlacementManager.updateSplits(splits);
+
+        this.tiles[index].update(tileInfo);
+        const anyInPalm = this.gameService?.tiles.some(t => t.position === TilePosition.Palm && t.seat === this.playerIndex) ?? false;
+        for (const placeHolder of this.tilePlaceHolders) {
+            placeHolder.object.visible = anyInPalm && (this.gameService?.tiles.every(t => t.seat !== placeHolder.placement.seat || t.position !== placeHolder.placement.position || t.index !== placeHolder.placement.index) ?? false);
+            placeHolder.updatePlacement();
+        }
     }
 
     updateDice(values: readonly number[]) {
@@ -212,7 +245,9 @@ export class RiichiRenderer {
         this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
     }
 
+    private readonly tilePlacementManager = new TilePlacementManager();
     private tiles: TileInstance[] = [];
+    private tilePlaceHolders: TilePlaceHolder[] = [];
     private readonly stats: Stats;
 
     private async loadScene() {
@@ -220,13 +255,46 @@ export class RiichiRenderer {
         const tileTexture = await this.textureLoader.loadAsync('assets/tiles_texture.png');
         const tileTextureNormals = await this.textureLoader.loadAsync('assets/tiles_normals.png');
 
-        const tilePlacementManager = new TilePlacementManager();
-
         this.tiles = new Array(DECK_SIZE).fill(1).map((_, i) => {
-            const tile = new TileInstance(i, tileObj, tileTexture, tileTextureNormals, tilePlacementManager);
+            const tile = new TileInstance(i, tileObj, tileTexture, tileTextureNormals, this.tilePlacementManager);
             tile.addToScene(this.scene);
             return tile;
         });
+        this.tilePlaceHolders = allPlayers.map(seat => [
+            ...new Array(DECK_SIZE / 4).fill(1).map((_, i) =>
+                new TilePlaceHolder(tileObj, this.tilePlacementManager, {
+                    position: TilePosition.Wall,
+                    seat: seat,
+                    index: i,
+                    rotated: false,
+                    flipped: false
+                })),
+            ...new Array(14).fill(1).map((_, i) =>
+                new TilePlaceHolder(tileObj, this.tilePlacementManager, {
+                    position: TilePosition.Hand,
+                    seat: seat,
+                    index: i,
+                    rotated: false,
+                    flipped: false
+                })),
+            ...new Array(24).fill(1).map((_, i) =>
+                new TilePlaceHolder(tileObj, this.tilePlacementManager, {
+                    position: TilePosition.Discards,
+                    seat: seat,
+                    index: i,
+                    rotated: false,
+                    flipped: false
+                })),
+            ...new Array(12).fill(1).map((_, i) =>
+                new TilePlaceHolder(tileObj, this.tilePlacementManager, {
+                    position: TilePosition.Melds,
+                    seat: seat,
+                    index: i,
+                    rotated: false,
+                    flipped: false
+                }))
+        ]).flat();
+        this.scene.add(...this.tilePlaceHolders.map(t => t.object));
         const dieMaterials = await this.mtlLoader.loadAsync("assets/die.mtl");
         dieMaterials.preload();
         this.objLoader.setMaterials(dieMaterials)
@@ -241,7 +309,7 @@ export class RiichiRenderer {
 
     private readonly objLoader = new OBJLoader();
     private readonly mtlLoader = new MTLLoader();
-    private readonly controls: OrbitControls;
+    //private readonly controls: OrbitControls;
     private readonly textureLoader = new THREE.TextureLoader();
     private readonly renderer: THREE.WebGLRenderer;
     private readonly composer: EffectComposer;
@@ -251,24 +319,33 @@ export class RiichiRenderer {
     private readonly scene: THREE.Scene;
 
     private hoveredOverDice = false;
-    private hoveredOverTile: TileIndex | -1 = -1;
+    private hoveredOverTile: TileInstance | undefined;
+    private hoveredOverPlaceholder: TilePlaceHolder | undefined;
 
     private performRayCast() {
         this.raycaster.setFromCamera(this.mouse, this.camera);
 
-        const tiles = this.tiles.map(t => t.tile.children[0]);
+        const holdingTile = this.gameService?.tiles.some(t => t.position === TilePosition.Palm && t.seat === this.playerIndex) ?? false;
         const die = this.dice?.dice.map(d => d.object.children[0]) ?? [];
-        const intersection = this.raycaster.intersectObjects(tiles.concat(die));
+        const tiles = this.tiles.map(t => t.tile.children[0]);
+        const placeHolders = holdingTile
+            ? this.tilePlaceHolders?.filter(t => t.object.visible).map(t => t.object)
+            : [];
+
+        const objects = holdingTile ? placeHolders : [...die, ...tiles];
+
+        const intersection = this.raycaster.intersectObjects(objects);
         this.hoveredOverDice = intersection.length > 0 && die.includes(intersection[0].object);
-        this.hoveredOverTile = intersection.length > 0 ? tiles.indexOf(intersection[0].object) : -1;
-        this.canvas.style.cursor = (this.hoveredOverDice || this.hoveredOverTile !== -1) ? 'pointer' : '';
+        this.hoveredOverTile = !holdingTile && intersection.length > 0 ? this.tiles.find(t => t.tile.children[0] === intersection[0].object) : undefined;
+        this.hoveredOverPlaceholder = holdingTile && intersection.length > 0 ? this.tilePlaceHolders.find(t => t.object === intersection[0].object) : undefined;
+        this.canvas.style.cursor = (this.hoveredOverDice || this.hoveredOverTile || this.hoveredOverPlaceholder) ? 'pointer' : '';
+
         if (this.hoveredOverDice) {
             this.highlightPass.selectedObjects = die;
             this.highlightPass.enabled = true;
         } else if (intersection.length) {
             this.highlightPass.selectedObjects = [intersection[0].object];
             this.highlightPass.enabled = true;
-
         } else {
             this.highlightPass.selectedObjects = [];
             this.highlightPass.enabled = false;

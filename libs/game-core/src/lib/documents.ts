@@ -25,13 +25,16 @@ export const enum TilePosition {
     Melds = 'melds',
 }
 
-export interface TileInfo {
+export interface TilePlacement {
     readonly position: TilePosition;
     readonly seat: PlayerIndex;
     readonly index: number;
     readonly rotated: boolean;
+    readonly flipped: boolean;
+}
+
+export interface TileInfo extends TilePlacement {
     readonly tile: Tile | null;
-    readonly public: boolean;
 }
 
 /**

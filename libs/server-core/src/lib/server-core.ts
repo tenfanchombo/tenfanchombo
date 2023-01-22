@@ -20,8 +20,8 @@ export function createNewGameDocument(players: readonly PlayerInfo[], seed?: num
             seat: Math.floor(index / WALL_SIZE) as PlayerIndex,
             index: index % WALL_SIZE,
             rotated: false,
+            flipped: false,
             tile,
-            seenBy: []
         }))
     };
 }
@@ -40,8 +40,8 @@ export function createPlayerGameDocument(game: InternalGameDocument, playerId: s
             seat: tile.seat,
             index: tile.index,
             rotated: tile.rotated,
-            tile: tile.seenBy.includes(playerIndex) ? tile.tile : null,
-            public: tile.seenBy.length === 4
+            flipped: tile.flipped,
+            tile: tile.flipped || (tile.seat === playerIndex && (tile.position === TilePosition.Hand || tile.position === TilePosition.Palm)) ? tile.tile : null,
         })),
         ledger: [...game.ledger]
     };

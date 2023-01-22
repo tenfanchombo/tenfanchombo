@@ -1,4 +1,4 @@
-import { PlayerIndex, TileIndex } from "./documents";
+import { PlayerIndex, TileIndex, TilePlacement } from "./documents";
 
 export const enum CallType {
     Pon,
@@ -17,6 +17,8 @@ export interface MoveFunctions {
 
     /** Called when taking a tile, this could be either from the wall, or from a player's discard pile */
     takeTile(tileIndex: TileIndex): void;
+
+    moveTile(tileIndex: TileIndex, newPlacement: TilePlacement): void;
 
     flipTile(tileIndex: TileIndex): void;
 

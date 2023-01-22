@@ -1,3 +1,18 @@
+strengthen view
+  should be able to have the view mostly top down (only a very small angle)
+  board has bumpers with troughs for stick
+  the current player's hand may need to be artifically shifted to keep in view
+  move the camera as screen is resized
+  
+mouse controls:
+  when hovering over a tile, we can highlight it
+  when holding a tile, we can highlight where the tile is going to go (ghost tile)
+  
+
+
+
+
+
 TODO:
 
 Document - How the game is saved within the server, this does not exist outside of server core

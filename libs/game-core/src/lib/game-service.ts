@@ -28,6 +28,7 @@ export class GameService {
                 playerSubjects$[i].next(doc.players[i]);
             }
 
+            this.tiles = [...doc.tiles];
             for (let i = 0; i < DECK_SIZE; i++) {
                 tileSubjects$[i].next(doc.tiles[i]);
             }
@@ -47,8 +48,8 @@ export class GameService {
             && tileInfoA.seat === tileInfoB.seat
             && tileInfoA.index === tileInfoB.index
             && tileInfoA.rotated === tileInfoB.rotated
-            && tileInfoA.tile === tileInfoB.tile
-            && tileInfoA.public === tileInfoB.public;
+            && tileInfoA.flipped === tileInfoB.flipped
+            && tileInfoA.tile === tileInfoB.tile;
     }
 
     private readonly logSubject$ = new ReplaySubject<LogEntry>();
@@ -59,6 +60,7 @@ export class GameService {
      * Array of observables with tile info.
      * Each entry in the array represents a single tile
      * */
+    tiles: readonly TileInfo[] = [];
     readonly tiles$array: Observable<TileInfo>[];
     readonly wallSplits$: Observable<TileIndex[]>;
 

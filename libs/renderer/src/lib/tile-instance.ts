@@ -1,5 +1,5 @@
 import { TileKind, tileKind, tileValue } from '@tenfanchombo/common';
-import { PlayerIndex, TileIndex, TileInfo, TilePosition, WALL_SIZE } from '@tenfanchombo/game-core';
+import { TileIndex, TileInfo, TilePosition } from '@tenfanchombo/game-core';
 import * as THREE from 'three';
 
 import { TilePlacementManager } from './tile-placement-manager';
@@ -13,18 +13,18 @@ export const TILE_WIDTH_2 = TILE_WIDTH / 2;
 export const TILE_DEPTH_2 = TILE_DEPTH / 2;
 
 export class TileInstance {
-    constructor(private readonly tileIndex: TileIndex, tile: THREE.Group, texture: THREE.Texture, normalMap: THREE.Texture, private readonly tilePlacementManager: TilePlacementManager) {
+    constructor(public readonly tileIndex: TileIndex, tile: THREE.Group, texture: THREE.Texture, normalMap: THREE.Texture, private readonly tilePlacementManager: TilePlacementManager) {
         this.tile = tile.clone();
         this.texture = texture.clone();
-        this.normalMap = normalMap.clone();
+        // this.normalMap = normalMap.clone();
 
         this.texture.magFilter = THREE.LinearFilter;
-        this.normalMap.magFilter = THREE.LinearFilter;
+        //this.normalMap.magFilter = THREE.LinearFilter;
         this.texture.repeat.set(.1, .25);
-        this.normalMap.repeat.set(.1, .25);
+        //this.normalMap.repeat.set(.1, .25);
 
         this.texture.offset.set(.9, 0);
-        this.normalMap.offset.set(.9, 0);
+        //this.normalMap.offset.set(.9, 0);
 
         this.tile.castShadow = true;
         this.tile.receiveShadow = true;
@@ -33,8 +33,8 @@ export class TileInstance {
                 const material = new THREE.MeshPhongMaterial({
                     color: 0xFFFFFF,
                     vertexColors: true,
-                    map: this.texture,
-                    normalMap: this.normalMap
+                    map: this.texture//,
+                    //normalMap: this.normalMap
                 });
 
                 material.onBeforeCompile = function (shader) {
@@ -52,21 +52,20 @@ export class TileInstance {
             }
         });
 
-        const position = this.tilePlacementManager.tilePlacement(tileIndex, {
-            position: TilePosition.Wall,
-            seat: Math.floor(tileIndex / WALL_SIZE) as PlayerIndex,
-            index: tileIndex % WALL_SIZE,
-            rotated: false,
-            tile: null,
-            public: false
-        }, []);
-        position.decompose(this.tile.position, this.tile.quaternion, this.tile.scale);
-        this.tile.position.setY(this.tile.position.y - TILE_HEIGHT * 3);
+        // const position = this.tilePlacementManager.tilePlacement({
+        //     position: TilePosition.Wall,
+        //     seat: Math.floor(tileIndex / WALL_SIZE) as PlayerIndex,
+        //     index: tileIndex % WALL_SIZE,
+        //     rotated: false,
+        //     flipped: false
+        // });
+        // position.decompose(this.tile.position, this.tile.quaternion, this.tile.scale);
+        // this.tile.position.setY(this.tile.position.y - TILE_HEIGHT * 3);
     }
 
     public readonly tile: THREE.Group;
     private readonly texture: THREE.Texture;
-    private readonly normalMap: THREE.Texture;
+    // private readonly normalMap: THREE.Texture;
 
     private animationClock?: THREE.Clock;
     private animationAction?: THREE.AnimationAction;
@@ -114,6 +113,9 @@ export class TileInstance {
 
     private shouldLift(info: TileInfo) {
         if (!this.lastTileInfo) return false;
+        if (this.lastTileInfo.position === TilePosition.Palm || info.position === TilePosition.Palm) {
+            return false;
+        }
         if (info.position === TilePosition.Wall) {
             return this.lastTileInfo.position !== info.position
                 || this.lastTileInfo.index !== info.index
@@ -121,19 +123,19 @@ export class TileInstance {
         }
         return this.lastTileInfo.position !== info.position
             || this.lastTileInfo.index !== info.index
-            || this.lastTileInfo.public !== info.public;
+            || this.lastTileInfo.flipped !== info.flipped;
     }
 
-    update(info: TileInfo, wallSplits: TileIndex[]) {
-        const matrix = this.tilePlacementManager.tilePlacement(this.tileIndex, info, wallSplits);
+    update(info: TileInfo) {
+        const matrix = this.tilePlacementManager.tilePlacement(info);
 
         this.animate(matrix, this.shouldLift(info) ? TILE_HEIGHT * 2 : 0);
 
         this.lastTileInfo = { ...info };
 
         if (info.tile === null) {
-            this.texture.offset.set(.9, 0);
-            this.normalMap.offset.set(.9, 0);
+            // this.texture.offset.set(.9, 0);
+            //this.normalMap.offset.set(.9, 0);
         } else {
             const v = (tileValue(info.tile) - 1) / 10;
             const k = ({
@@ -143,7 +145,7 @@ export class TileInstance {
                 [TileKind.Honor]: 0,
             } as Record<TileKind, number>)[tileKind(info.tile)];
             this.texture.offset.set(v, k);
-            this.normalMap.offset.set(v, k);
+            //this.normalMap.offset.set(v, k);
         }
     }
 

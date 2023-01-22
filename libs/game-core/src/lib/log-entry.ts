@@ -1,6 +1,6 @@
 import { filter, OperatorFunction } from "rxjs";
 
-import { GameDocument, PlayerIndex, TileIndex } from "./documents";
+import { GameDocument, PlayerIndex, TileIndex, TilePlacement } from "./documents";
 import { CallType } from "./moves";
 
 export const enum LogEntryType {
@@ -18,7 +18,8 @@ export const enum LogEntryType {
     // cancelling a call after discarding results in a dead hand
     TookTile,
     MeldedTiled,
-    DiscardedTile
+    DiscardedTile,
+    MovedTile
 }
 
 export type LogEntry = {
@@ -44,6 +45,11 @@ export type LogEntry = {
     readonly type: LogEntryType.DiceRolled,
     readonly callingPlayer: PlayerIndex,
     readonly values: readonly [number, number]
+} | {
+    readonly type: LogEntryType.MovedTile,
+    readonly callingPlayer: PlayerIndex,
+    readonly tileIndex: TileIndex,
+    readonly placement: TilePlacement
 };
 
 export function findFirstInLedger<T extends LogEntryType>(game: GameDocument, logType: T): (LogEntry & { type: T }) | undefined {

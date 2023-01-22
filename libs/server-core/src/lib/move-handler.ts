@@ -4,6 +4,7 @@ import {
     MoveFunctions,
     PlayerIndex,
     TileIndex,
+    TilePlacement,
     TilePosition
 } from '@tenfanchombo/game-core';
 
@@ -34,14 +35,30 @@ export const moveHandlers: { [K in keyof MoveFunctions]: MoveFunctions[K] extend
         });
     },
 
+    moveTile(game: InternalGameDocument, callingPlayer: PlayerIndex, tileIndex: TileIndex, newPlacement: TilePlacement) {
+        game.tiles[tileIndex] = {
+            ...newPlacement,
+            tile: game.tiles[tileIndex].tile
+        };
+
+        // TODO: reindex tiles as needed
+
+        game.ledger.push({
+            type: LogEntryType.MovedTile,
+            callingPlayer,
+            tileIndex,
+            placement: newPlacement
+        });
+    },
+
     takeTile(game: InternalGameDocument, callingPlayer: PlayerIndex, tileIndex: TileIndex) {
         game.tiles[tileIndex] = {
             position: TilePosition.Hand,
             seat: callingPlayer,
             index: nextIndex(game, TilePosition.Hand, callingPlayer),
             rotated: false,
+            flipped: false,
             tile: game.tiles[tileIndex].tile,
-            seenBy: includePlayer(game.tiles[tileIndex].seenBy, callingPlayer)
         };
 
         // TODO: reindex player hand if needed
@@ -59,8 +76,8 @@ export const moveHandlers: { [K in keyof MoveFunctions]: MoveFunctions[K] extend
             seat: callingPlayer,
             index: nextIndex(game, TilePosition.Melds, callingPlayer),
             rotated: game.tiles[tileIndex].position === TilePosition.Discards,
+            flipped: true,
             tile: game.tiles[tileIndex].tile,
-            seenBy: allPlayers
         };
 
         // TODO: reindex player hand if needed
@@ -74,7 +91,10 @@ export const moveHandlers: { [K in keyof MoveFunctions]: MoveFunctions[K] extend
 
     flipTile(game: InternalGameDocument, callingPlayer: PlayerIndex, tileIndex: TileIndex) {
         // TODO: handle flipping after kan
-        game.tiles[tileIndex].seenBy = allPlayers;
+        game.tiles[tileIndex] = {
+            ...game.tiles[tileIndex],
+            flipped: true
+        };
         game.ledger.push({
             type: LogEntryType.FlippedTile,
             callingPlayer,
@@ -88,8 +108,8 @@ export const moveHandlers: { [K in keyof MoveFunctions]: MoveFunctions[K] extend
             seat: callingPlayer,
             index: nextIndex(game, TilePosition.Discards, callingPlayer),
             rotated: false,
-            tile: game.tiles[tileIndex].tile,
-            seenBy: allPlayers
+            flipped: true,
+            tile: game.tiles[tileIndex].tile
         };
 
         game.ledger.push({

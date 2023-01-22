@@ -106,6 +106,10 @@ export const moveValidators: { [K in keyof MoveFunctions]: MoveFunctions[K] exte
         return true;
     },
 
+    moveTile(/*game, callingPlayer, tileIndex, newPlacement*/) {
+        return 'Training wheels are out of date now :(';
+    },
+
     makeCall(/*game: GameDocument, callingPlayer: PlayerIndex, call: CallType*/) {
         throw new Error("Function not implemented.");
     },
