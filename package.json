@@ -46,7 +46,7 @@
     "@types/jest": "28.1.1",
     "@types/node": "16.11.7",
     "@types/three": "^0.146.0",
-    "@typescript-eslint/eslint-plugin": "^5.36.1",
+    "@typescript-eslint/eslint-plugin": "^5.48.2",
     "@typescript-eslint/parser": "^5.47.0",
     "cypress": "^11.0.0",
     "eslint": "~8.32.0",
