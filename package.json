@@ -51,7 +51,7 @@
     "cypress": "^11.0.0",
     "eslint": "~8.32.0",
     "eslint-plugin-cypress": "^2.10.3",
-    "eslint-plugin-simple-import-sort": "^9.0.0",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
     "jest": "28.1.1",
     "jest-environment-jsdom": "29.3.1",
     "jest-preset-angular": "~12.2.3",
