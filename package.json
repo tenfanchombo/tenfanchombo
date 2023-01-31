@@ -48,7 +48,7 @@
     "@types/three": "^0.146.0",
     "@typescript-eslint/eslint-plugin": "^5.48.2",
     "@typescript-eslint/parser": "^5.47.0",
-    "cypress": "^11.0.0",
+    "cypress": "^12.4.1",
     "eslint": "~8.32.0",
     "eslint-plugin-cypress": "^2.10.3",
     "eslint-plugin-simple-import-sort": "^9.0.0",
