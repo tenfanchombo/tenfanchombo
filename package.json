@@ -44,7 +44,7 @@
     "@nrwl/workspace": "15.4.2",
     "@types/crypto-js": "^4.1.1",
     "@types/jest": "28.1.1",
-    "@types/node": "16.11.7",
+    "@types/node": "18.11.19",
     "@types/three": "^0.146.0",
     "@typescript-eslint/eslint-plugin": "^5.48.2",
     "@typescript-eslint/parser": "^5.47.0",
